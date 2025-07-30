@@ -1,0 +1,203 @@
+<template>
+     <lightning-layout multiple-rows class="mainclass" padding="around-medium">
+        <!-- Donor Information header-->
+        <lightning-layout-item size="12" padding="around-small" class="headingcls">
+            Donor Information
+        </lightning-layout-item>
+        <!-- Donor Information header-->
+
+         <!--Description -->
+        <lightning-layout-item size="12" padding="around-small" >
+            <span class="textcls">
+                We think its incredible that you were able to grow your family with the help of an sperm donor Based on the code you entered, 
+                it seems that you worked with the following sperm donor
+            </span>
+        </lightning-layout-item>
+        <!--Description ends here-->
+    <template if:true={recordsList} for:each={recordsList} for:item="obj">
+        <!--Donor details -->
+        <lightning-layout-item key={obj.Name} size="12" padding="around-small">
+
+            <lightning-layout-item key={obj.Name} size="12" padding="around-small" class="donordetailscls">
+
+                <!--first section -->
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" padding="around-small" class="first" style="display:flex;flex-direction:column">
+                    <lightning-layout-item size="12" padding="around-small" class="textcls headingcls paddingcls">Sperm Donor: {obj.Name}</lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-small" class="textcls paddingcls">DONOR 21 ID: </lightning-layout-item>
+                     <lightning-layout-item size="12" padding="around-small" class="textcls paddingcls"> </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-small" style="background-white;" class="imgparentcls"> 
+                        <img class="imgcls" src="https://static.vecteezy.com/system/resources/previews/032/400/914/non_2x/charming-cute-3d-cartoon-girl-generate-ai-photo.jpg" style="max-width:100%;max-height:100%"/>
+                    </lightning-layout-item>
+                    
+                </lightning-layout-item>
+                <!-- second section-->
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" padding="around-small" class="second" style="display:flex;flex-direction:column">
+
+                    <lightning-layout-item size="12" padding="around-small" class="paddingcls donorDetailsParentCls">
+                        <span class="textcls">Month/Year Birth : </span>
+                        <span class="textcls slds-p-around_x-small donorDetailCls">{obj.Name}</span>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small" class="paddingcls donorDetailsParentCls">
+                        <span class="textcls"> Donor Age : </span>
+                         <span class="textcls slds-p-around_x-small donorDetailCls">{obj.Name}</span>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small" class="paddingcls donorDetailsParentCls">
+                        <span class="textcls">State of Residence : </span>
+                        <span class="textcls slds-p-around_x-small donorDetailCls">{obj.Name}</span>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small" class="paddingcls donorDetailsParentCls">
+                        <span class="textcls">Hair color :</span> 
+                        <span class="textcls slds-p-around_x-small donorDetailCls">{obj.Name}</span>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small" class="paddingcls donorDetailsParentCls">
+                        <span class="textcls">Eye color : </span>
+                        <span class="textcls slds-p-around_x-small donorDetailCls">{obj.Name}</span>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small" class="paddingcls donorDetailsParentCls">
+                        <span class="textcls"> Height :</span>
+                        <span class="textcls slds-p-around_x-small donorDetailCls">{obj.Name}</span>
+                    </lightning-layout-item>
+
+                </lightning-layout-item>
+
+            </lightning-layout-item>
+
+        </lightning-layout-item>
+         <!--Donor details -->
+
+         <!-- link this donor to my account -->
+
+          <lightning-layout-item key={obj.Name} size="12" padding="around-small">
+                <lightning-input type="checkbox" label="Yes, link this donor to my account" class="textcls"></lightning-input>
+          </lightning-layout-item>
+
+           <lightning-layout-item key={obj.Name} size="12" padding="around-small" >
+                <lightning-input type="checkbox" label="No, do not link this donor to my account" class="textcls"></lightning-input>
+           </lightning-layout-item>
+
+         <!-- link this donor to my account -->
+
+    <!-- clinic section starts -->
+        <lightning-layout-item key={obj.Name} size="12" padding="around-small" class="headingcls">
+            Clinic Details
+        </lightning-layout-item>
+
+        <!--Clinic details -->
+         <lightning-layout-item key={obj.Name} size="12" padding="around-small">
+            <lightning-layout-item key={obj.Name} size="12" padding="around-small" class="donorClinicdetailscls">
+                <!--first section -->
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" padding="around-small" class="first" >
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-input type="text" label="Name of clinic" value= "" class="textcls"></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-input type="text" label="Doctor Name" value= "" class="textcls"></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-input type="text" label="Clinic Website" value= "" class="textcls"></lightning-input>
+                    </lightning-layout-item>
+                    
+                </lightning-layout-item>
+                <!-- second section-->
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" padding="around-small" class="second">
+
+                    <lightning-layout-item size="12" padding="around-small" class="phonecls">
+                        <lightning-input type="text" label="Clinic Phone" value= "" class="textcls"></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-input type="text" label="Clinic Email" value= "" class="textcls"></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-input type="text" label="Approximate year worked with them?" value= "" class="textcls"></lightning-input>
+                    </lightning-layout-item>
+
+                </lightning-layout-item>
+
+            </lightning-layout-item>
+         </lightning-layout-item>
+         <!--Clinic details -->
+
+        <!-- cicnic info correct -->
+          <lightning-layout-item key={obj.Name} size="12" padding="around-small">
+               <lightning-combobox
+                name="status"
+                label=" How did you find this donor?"
+                placeholder="Select an option"
+                value={value}
+                onchange={handleChange}
+                options={options}
+                class="textcls"
+                >
+                </lightning-combobox>
+          </lightning-layout-item>
+        <!-- cicnic info correct -->
+
+     <!-- clinic section ends-->  
+
+     <!-- Donor Agency/Egg bank  section starts -->
+         <!-- Donor Agency/Egg details description -->
+          <lightning-layout-item key={obj.Name}  size="12" padding="around-small" class="headingcls">
+                     Sperm Bank details
+            </lightning-layout-item>
+         <!-- Donor Agency/Egg details description -->
+
+        <!-- Donor Agency/Egg details -->
+         <lightning-layout-item key={obj.Name} size="12" padding="around-small">
+            <lightning-layout-item key={obj.Name} size="12" padding="around-small" class="donorClinicdetailscls">
+                <!--first section -->
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" padding="around-small" class="first">
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-input type="text" label="Sperm Bank Name" class="textcls"></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-input type="text" label="Website Of Sperm Bank" class="textcls"></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-input type="text" label="Phone Of Sperm Bank" class="textcls"></lightning-input>
+                    </lightning-layout-item>
+
+                    
+                </lightning-layout-item>
+                <!-- second section-->
+                <lightning-layout-item key={obj.Name} size="12" small-device-size="12" medium-device-size="6" large-device-size="6" padding="around-small" class="second">
+
+                    <lightning-layout-item size="12" padding="around-small" class="phonecls">
+                        <lightning-input type="text" label="Email Of Sperm Bank" class="textcls"></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-input type="text" label="Coordinator Name At Sperm Bank(if known)" class="textcls"></lightning-input>
+                    </lightning-layout-item>
+
+                </lightning-layout-item>
+
+            </lightning-layout-item>
+         </lightning-layout-item>
+         <!-- Donor Agency/Egg details -->
+
+     <!-- Donor Agency/Egg bank  section ends-->   
+
+    </template>
+
+      <!-- buttons-->
+        <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+                <div  class="backbtn textcls">Back</div>
+                <div  class="nextbtncls textcls">Next</div>
+        </lightning-layout-item>
+    <!-- buttons -->
+
+     </lightning-layout>
+</template>

@@ -1,0 +1,567 @@
+<template>
+    <!-- Delete Confirmation Popup -->
+    <div if:true={showDeletePopup}>
+        <div class="modalBackdrop">
+            <div class="modalContainer slds-p-around_medium">
+                <lightning-icon icon-name="utility:warning" variant="warning" size="small" class="slds-p-top_small"></lightning-icon>
+                <span class="headingcls slds-p-top_medium">Confirm Deletion</span>
+                <span class="textcls slds-p-top_small slds-p-bottom_small">Are you sure you want to delete Fertility Attorney #{deleteAttorneyNumber}?</span>
+                <div class="confirmPopupCls slds-p-top_small">
+                    <button class="popupNextBtn" label="Yes" onclick={handleDeleteYes}>Yes</button>
+                    <button class="popupBackBtn" label="No" onclick={handleDeleteNo}>No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div if:true={showMissedCycles}>
+        <div class="modalBackdrop">
+            <div class="modalContainer slds-p-around_small">
+                <!-- <lightning-icon icon-name="utility:warning" variant="warning" size="small"></lightning-icon> -->
+                <img src={warningIcon} class="imgWarningCls"/>
+                <span class="headingcls slds-p-top_xx-small">Missing Attorney Information</span>
+                <div class="slds-p-around_small modalheightdivcls">
+                    <template for:each={unselectedCycles} for:item="cycle" for:index="index">
+                        <div key={cycle} if:false={cycle.confirmedNo} class="slds-p-around_small modalpaddinglcs">
+                            <span class="textcls">You didn't identify an Attorney for {cycle.label}. Did you work with an attorney for this cycle?</span>
+                            <!-- <span class="textcls">Did you work with an agency/egg bank for this cycle?</span> -->
+                            <div class="slds-p-around_large" style="display:flex;gap:1em;place-content:center;flex-direction: row;padding-bottom: 1%;">
+                                <button 
+                                    label="Yes" 
+                                    class="popupBackBtn"
+                                    data-cycle={cycle.cycledId} 
+                                    data-cyclename = {cycle.label} 
+                                    onclick={handleMissedCycleYesClick}>
+                                    Yes
+                                </button>
+                                <button 
+                                    label="No" 
+                                    class="popupNextBtn"
+                                    data-cycle={cycle.cycledId}
+                                    data-cyclename = {cycle.label} 
+                                    onclick={handleMissedCycleNoClick}>
+                                    No
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                    <span class="textcls slds-p-bottom_small" if:true={showMissedPopupBackButton}>Thank you for the information, please go back and add the details for the attorney for this cycle</span>
+                    <!-- <span class="textcls"  if:true={showNextFromMissedPopupButton}>Thank you for the information</span> -->
+                    <div class="slds-p-around_large popupbtnsparentCls">
+                        <button  
+                            class={disablePopupBackBtn}
+                            label="Back" 
+                            onclick={handleBackFromMissedPopup}>
+                            Back
+                        </button>
+                        <button 
+                            label="Next" 
+                            class={disablePopupNextBtn}
+                            onclick={handleNextFromMissedPopup}>
+                            Next
+                        </button>
+                        <!-- for disableing buttons -->
+                         <!-- for disableing buttons ends-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attorneys with EDN starts here -->
+    <template if:true={donationOutcomesListFromApex} for:each={donationOutcomesListFromApex} for:item="outcome">
+        <lightning-layout multiple-rows class="eggattorneycls slds-p-around_medium" key={outcome.index}>
+            <!-- header section starts here -->
+            <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+                <span class="textcls headingcls">Fertility Attorney #{outcome.index}</span>
+                <span class="textcls agencyDescriptionCls">
+                    Based on the EDN code you entered, it seems that you worked with this attorney/law firm:
+                </span>
+            </lightning-layout-item>
+            <!-- header section ends here -->
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4" class="slds-p-left_small slds-p-right_small attroneyinputparentcls">
+                <span class="textcls inputscls inputfontcls">Attorney Name</span>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7" class="slds-p-left_small slds-p-right_small attroneyinputparentcls">
+                <lightning-input 
+                    type="text" 
+                    value={outcome.Name} 
+                    class="textcls inputscls"
+                    onchange={handleApexInputChange}
+                    onblur={handleInputBlur}
+                    name="Name"
+                    data-index={outcome.index}
+                    maxlength="255"
+                    disabled={outcome.noAttorneyChecked}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4" class="slds-p-left_small slds-p-right_small slds-p-top_small attroneyinputparentcls">
+                <span class="textcls inputscls inputfontcls">Law Firm</span>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7" class="slds-p-left_small slds-p-right_small attroneyinputparentcls">
+                <lightning-input 
+                    type="text" 
+                    value={outcome.LawFirm} 
+                    class="textcls inputscls"
+                    onchange={handleApexInputChange}
+                    onblur={handleInputBlur}
+                    name="LawFirm"
+                    data-index={outcome.index}
+                    maxlength="255"
+                    disabled={outcome.noAttorneyChecked}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4" class="slds-p-left_small slds-p-right_small slds-p-top_small attroneyinputparentcls">
+                <span class="textcls inputscls inputfontcls">State</span>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7" class="slds-p-left_small slds-p-right_small attroneyinputparentcls">
+                <lightning-input 
+                    type="text" 
+                    value={outcome.State} 
+                    class="textcls inputscls"
+                    onchange={handleApexInputChange}
+                    onblur={handleInputBlur}
+                    name="State"
+                    data-index={outcome.index}
+                    maxlength="100"
+                    disabled={outcome.noAttorneyChecked}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4" class="slds-p-left_small slds-p-right_small slds-p-top_small attroneyinputparentcls">
+                <span class="textcls inputscls inputfontcls">Attorney Website</span>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7" class="slds-p-left_small slds-p-right_small attroneyinputparentcls">
+                <lightning-input 
+                    type="url" 
+                    value={outcome.Website} 
+                    class="textcls inputscls"
+                    onchange={handleApexInputChange}
+                    onblur={handleInputBlur}
+                    name="Website"
+                    data-index={outcome.index}
+                    placeholder="http://www.example.com"
+                    disabled={outcome.noAttorneyChecked}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4" class="slds-p-left_small slds-p-right_small slds-p-top_small attroneyinputparentcls">
+                <span class="textcls inputscls inputfontcls">Attorney Phone</span>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7" class="slds-p-left_small slds-p-right_small attroneyinputparentcls">
+                <lightning-input 
+                    type="tel" 
+                    value={outcome.Phone} 
+                    class="textcls inputscls"
+                    onchange={handleApexInputChange}
+                    onblur={handleInputBlur}
+                    name="Phone"
+                    pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                    message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                    data-index={outcome.index}
+                    disabled={outcome.noAttorneyChecked}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4" class="slds-p-left_small slds-p-right_small slds-p-top_small attroneyinputparentcls">
+                <span class="textcls inputscls inputfontcls">Attorney Email</span>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7" class="slds-p-left_small slds-p-right_small attroneyinputparentcls">
+                <lightning-input 
+                    type="email" 
+                    value={outcome.Email} 
+                    class="textcls inputscls"
+                    onchange={handleApexInputChange}
+                    onblur={handleInputBlur}
+                    name="Email"
+                    data-index={outcome.index}
+                    disabled={outcome.noAttorneyChecked}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small">
+                <span class="slds-m-top_large slds-m-bottom_large textcls"><b>Do you know your donor code with this attorney?</b></span>
+                <div class="checkboxcls">
+                    <lightning-input 
+                        type="radio" 
+                        name={outcome.index} 
+                        label="No" 
+                        value="no"
+                        onchange={handleApexRadioChange}
+                        checked={outcome.hideDonorCodeInput}
+                        data-index={outcome.index}>
+                    </lightning-input>
+                    <lightning-input 
+                        type="radio" 
+                        name={outcome.index} 
+                        label="Yes, please enter:"
+                        value="yes"
+                        onchange={handleApexRadioChange}
+                        checked={outcome.showDonorCodeInput}
+                        data-index={outcome.index}>
+                    </lightning-input>
+                </div>
+                <template if:true={outcome.showDonorCodeInput}>
+                    <lightning-input 
+                        class="slds-m-top_small textcls inputscls"
+                        placeholder="Enter donor code"
+                        variant="label-hidden"
+                        value={outcome.DonorCode}
+                        onchange={handleApexInputChange}
+                        onblur={handleInputBlur}
+                        name="DonorCode"
+                        data-index={outcome.index}
+                        maxlength="255"
+                        disabled={outcome.noAttorneyChecked}>
+                    </lightning-input>
+                </template>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" class="slds-p-left_small slds-p-right_small slds-p-top_small">
+                <div class="checkboxcls">
+                    <lightning-input 
+                        type="checkbox"
+                        label="Check to confirm this information is correct and that you did work with this attorney."
+                        checked={outcome.primaryConfirmed}
+                        onchange={handlePrimaryConfirmedChange}
+                        data-index={outcome.index}>
+                    </lightning-input>
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="slds-p-left_small slds-p-right_small slds-p-top_small">
+                <div class="checkboxcls">
+                    <lightning-input 
+                        type="checkbox"
+                        label="Check to confirm that you did not work with this attorney and do not want to include this attorney."
+                        checked={outcome.incorrectAttorneyChecked}
+                        onchange={handleIncorrectAttorneyChange}
+                        data-index={outcome.index}>
+                    </lightning-input>
+                </div>
+            </lightning-layout-item>
+            <!-- <lightning-layout-item size="12" class="slds-p-left_small slds-p-right_small slds-p-top_small">
+                <div class="checkboxcls">
+                    <lightning-input 
+                        type="checkbox"
+                        label="Check to confirm that you did not work with this attorney and do not want to include this attorney."
+                        checked={outcome.noAttorneyChecked}
+                        onchange={handleNoAttorneyChange}
+                        data-index={outcome.index}>
+                    </lightning-input>
+                </div>
+            </lightning-layout-item> -->
+
+            <hr>
+
+            <lightning-layout-item size="12" padding="around-small" class="cyclesDescriptioncls">
+                <span class="textcls agencyDescriptionCls">You said you did {totalDonationsCount} cycles, which cycles did you work with this attorney?</span>
+            </lightning-layout-item>
+
+            <!-- cycles -->
+            <lightning-layout-item size="12" padding="around-small" class="cyclesCls">
+                <template if:true={outcome.cycles} for:each={outcome.cycles} for:item="cycle">
+                    <div class="cycle slds-p-right_small slds-p-bottom_small" key={cycle.cycleName}>
+                        <lightning-input 
+                            type="checkbox" 
+                            class="textcls cycleCheckboxcls" 
+                            value={cycle.cycleId} 
+                            data-name="ApexCycle"
+                            checked={cycle.checked}
+                            disabled={cycle.disabled}
+                            onchange={handleApexCycleChange} 
+                            data-outcomeindex={outcome.index}
+                            data-cycleindex={cycle.index}>
+                        </lightning-input>
+                        <span class="textcls checkboxspancls">{cycle.cycleName}</span>
+                    </div>
+                </template>
+            </lightning-layout-item>
+            <!-- cycles -->
+        </lightning-layout>
+        <div style="min-height:2em;" key={outcome.index}></div>
+    </template>
+    <!-- Attorneys with EDN ends here -->
+
+    <!-- Additional attorney starts -->
+    <lightning-layout multiple-rows class="eggattorneycls slds-p-around_medium">
+        <!-- header section starts here -->
+        <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+            <span class="headingcls">Additional Attorneys</span>
+            <span class="textcls">
+                Please list the information for any additional fertility attorneys you worked with or are working with. If you don’t remember, don’t worry.
+            </span>
+            <div class="checkboxcls">
+                <!-- disabled={checkboxStatus} -->
+                <lightning-input 
+                    type="checkbox" 
+                   
+                    onchange={handleNoAdditionalAttorneyChange}
+                    checked={noAttorneyChecked}>
+                </lightning-input>
+                <span class="textcls checkboxspancls" style="word-break: break-all;">Check to confirm you did not work with any other attorneys.</span>
+            </div>
+            <div class="checkboxcls">
+                <!-- disabled={checkboxStatus} -->
+                <lightning-input 
+                    type="checkbox" 
+                    
+                    onchange={handleDontRememberChange}
+                    checked={dontRememberChecked}>
+                </lightning-input>
+                <span class="textcls checkboxspancls" style="word-break: break-all;">Check to confirm you do not remember any attorneys you worked with.</span>
+            </div>
+            <span style="color:red;" class="textcls" if:true={showInformation}>Please de-select all the cycles and re-confirm to proceed...</span>
+        </lightning-layout-item>
+        <!-- header section ends here -->
+
+        <template if:false={noAttorneyOrDontRemember}>
+            <template if:true={donationOutcomes} for:each={donationOutcomes} for:item="outcome" for:index="index">
+                <lightning-layout-item size="12" key={outcome.index}>
+                    <template if:true={index}>
+                        <div class="section-divider slds-p-bottom_medium"></div>
+                    </template>
+                    <div style="display:flex;justify-content:space-between;align-items:center;width:97%">
+                        <h3 class="headingcls secondheadingcls slds-p-left_x-small">
+                            <template if:false={showNumberedHeadings}>
+                                <template if:false={index}>
+                                    {outcome.agencyHeading}
+                                </template>
+                                <template if:true={index}>
+                                    Fertility Attorney #{outcome.headingIndex}
+                                </template>
+                            </template>
+                            <template if:true={showNumberedHeadings}>
+                                Fertility Attorney #{outcome.headingIndex}
+                            </template>
+                        </h3>
+                        <template if:true={showNumberedHeadings}>
+                            <lightning-icon 
+                                icon-name="action:delete" 
+                                size="small" 
+                                data-index={outcome.index} 
+                                onclick={handleDeleteConfirm}
+                                class="delete-icon">
+                            </lightning-icon>
+                        </template>
+                        <template if:false={showNumberedHeadings}>
+                            <template if:true={index}>
+                                <lightning-icon 
+                                    icon-name="action:delete" 
+                                    size="small" 
+                                    data-index={outcome.index} 
+                                    onclick={handleDeleteConfirm}
+                                    class="delete-icon">
+                                </lightning-icon>
+                            </template>
+                        </template>
+                    </div>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="attroneyinputparentcls">
+                    <span class="textcls inputscls inputfontcls">Attorney Name</span>
+                    <lightning-input 
+                        type="text" 
+                        variant="label-hidden"
+                        class="textcls inputscls" 
+                        value={outcome.Name} 
+                        onchange={handleInputChange} 
+                        onblur={handleInputBlur}
+                        name="Name" 
+                        data-index={outcome.index}
+                        maxlength="255"
+                        disabled={noAttorneyOrDontRemember}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="attroneyinputparentcls">
+                    <span class="textcls inputscls inputfontcls">Law Firm</span>
+                    <lightning-input 
+                        type="text" 
+                        variant="label-hidden"
+                        class="textcls inputscls" 
+                        value={outcome.LawFirm} 
+                        onchange={handleInputChange} 
+                        onblur={handleInputBlur}
+                        name="LawFirm" 
+                        data-index={outcome.index}
+                        maxlength="255"
+                        disabled={noAttorneyOrDontRemember}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="attroneyinputparentcls">
+                    <span class="textcls inputscls inputfontcls">State</span>
+                    <lightning-input 
+                        type="text" 
+                        variant="label-hidden"
+                        class="textcls inputscls" 
+                        value={outcome.State} 
+                        onchange={handleInputChange} 
+                        onblur={handleInputBlur}
+                        name="State" 
+                        data-index={outcome.index}
+                        maxlength="100"
+                        disabled={noAttorneyOrDontRemember}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="attroneyinputparentcls">
+                    <span class="textcls inputscls inputfontcls">Attorney Website</span>
+                    <lightning-input 
+                        type="url" 
+                        variant="label-hidden"
+                        class="textcls inputscls" 
+                        value={outcome.Website} 
+                        onchange={handleInputChange} 
+                        onblur={handleInputBlur}
+                        name="Website" 
+                        data-index={outcome.index}
+                        placeholder="http://www.example.com"
+                        disabled={noAttorneyOrDontRemember}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="attroneyinputparentcls">
+                    <span class="textcls inputscls inputfontcls">Attorney Phone</span>
+                    <lightning-input 
+                        type="tel" 
+                        variant="label-hidden"
+                        class="textcls inputscls" 
+                        value={outcome.Phone} 
+                        onchange={handleInputChange} 
+                        onblur={handleInputBlur}
+                        name="Phone" 
+                        data-index={outcome.index}
+                        pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                        message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                        disabled={noAttorneyOrDontRemember}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="attroneyinputparentcls">
+                    <span class="textcls inputscls inputfontcls">Attorney Email</span>
+                    <lightning-input 
+                        type="email" 
+                        variant="label-hidden"
+                        class="textcls inputscls" 
+                        value={outcome.Email} 
+                        onchange={handleInputChange} 
+                        onblur={handleInputBlur}
+                        name="Email" 
+                        data-index={outcome.index}
+                        disabled={noAttorneyOrDontRemember}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="cyclesDescriptioncls">
+                    <span class="textcls agencyDescriptionCls">You said you did {totalDonationsCount} cycles, which cycles did you work with this attorney?</span>
+                </lightning-layout-item>
+
+                <!-- cycles -->
+                <lightning-layout-item size="12" padding="around-small" class="cyclesCls" key={outcome.index}>
+                    <template if:true={outcome.cycles} for:each={outcome.cycles} for:item="cycle">
+                        <div class="cycle slds-p-right_small slds-p-bottom_small" key={cycle.cycleName}>
+                            <lightning-input 
+                                type="checkbox" 
+                                class="textcls cycleCheckboxcls" 
+                                value={cycle.cycleId} 
+                                data-name="additional"
+                                checked={cycle.checked}
+                                disabled={cycle.disabled}
+                                onchange={handleCycleChange} 
+                                data-outcomeindex={outcome.index}
+                                data-cycleindex={cycle.index}>
+                            </lightning-input>
+                            <span class="textcls checkboxspancls">{cycle.cycleName}</span>
+                        </div>
+                    </template>
+                </lightning-layout-item>
+                <!-- cycles -->
+            </template>
+        </template>
+        <lightning-layout-item size="12" padding="around-small" class="addagencyParentcls" if:false={isHideAddAnotherAttorney}>
+            <span class={disableAddAnotherAttorney} onclick={handleAddAnotherAttorney}>+ Add Another Attorney</span>
+        </lightning-layout-item>
+
+        <!-- Intended parent starts here -->
+        <!-- <lightning-layout-item size="12" padding="around-small" class="intendedparentcls">
+            <div class="textcls">
+                <b>Intended Parent Details</b>
+            </div>
+            <div class="textcls">
+                Do you know the identity of any of your Intended Parents (name, email, or phone)?
+            </div>
+            <div class="checkboxcls">
+                <lightning-input 
+                    type="radio" 
+                    name="intendedParent" 
+                    label="No" 
+                    value="no"
+                    onchange={handleIntendedParentChange}
+                    checked={hideIntendedParentInput}>
+                </lightning-input>
+                <lightning-input 
+                    type="radio" 
+                    name="intendedParent" 
+                    label="Yes, please offer whatever details you have for any Intended Parents you have worked with."
+                    value="yes"
+                    onchange={handleIntendedParentChange}
+                    checked={showIntendedParentInput}>
+                </lightning-input>
+            </div>
+            <template if:true={showIntendedParentInput}>
+                <lightning-layout-item size="12" padding="around-small" class="attroneyinputparentcls">
+                    <span class="textcls inputscls inputfontcls">Intended Parent Name</span>
+                    <lightning-input 
+                        type="text" 
+                        variant="label-hidden"
+                        class="textcls inputscls" 
+                        value={intendedParent.Name} 
+                        onchange={handleIntendedParentInputChange} 
+                        onblur={handleInputBlur}
+                        name="Name"
+                        maxlength="255">
+                    </lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" padding="around-small" class="attroneyinputparentcls">
+                    <span class="textcls inputscls inputfontcls">Intended Parent Email</span>
+                    <lightning-input 
+                        type="email" 
+                        variant="label-hidden"
+                        class="textcls inputscls" 
+                        value={intendedParent.Email} 
+                        onchange={handleIntendedParentInputChange} 
+                        onblur={handleInputBlur}
+                        name="Email">
+                    </lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" padding="around-small" class="attroneyinputparentcls">
+                    <span class="textcls inputscls inputfontcls">Intended Parent Phone</span>
+                    <lightning-input 
+                        type="tel" 
+                        variant="label-hidden"
+                        class="textcls inputscls" 
+                        value={intendedParent.Phone} 
+                        onchange={handleIntendedParentInputChange} 
+                        onblur={handleInputBlur}
+                        name="Phone"
+                        pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                        message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890.">
+                    </lightning-input>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout-item> -->
+        <!-- Intended parent ends here -->
+
+        <!-- buttons -->
+        <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
+            <div class="backbtn textcls" onclick={handleEggAttorneyWithEDNBack}>Back</div>
+            <div class="nextbtncls textcls" onclick={handleEggAttorneyWithEDNNext}>Next</div>
+        </lightning-layout-item>
+        <!-- buttons -->
+    </lightning-layout>
+    <!-- Additional attorney ends -->
+</template>

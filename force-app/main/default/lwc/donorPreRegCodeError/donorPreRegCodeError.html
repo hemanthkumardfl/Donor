@@ -1,0 +1,62 @@
+<template>
+    <template for:each={noMatchCode} for:item="item" for:index="index">
+        <div class="slds-card slds-p-around_large borderRadius" key={item.value}>
+            <div class="slds-box slds-text-color_error slds-p-around_small error-box errorPaddingCls">
+                <div class="slds-media slds-align-top ">
+                    <div class="slds-m-right_xx-small error-icon">
+                        <span class="icon">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="#b71c1c">
+                                <circle cx="10" cy="10" r="10" fill="#bb3939" />
+                                <text x="50%" y="55%" text-anchor="middle" fill="white" font-size="14px"
+                                    font-weight="bold" dy=".3em">?</text>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <p class="fontSizeClass"><b class="red-text">Error!</b></p>
+                        <div class="red-text">
+                            We checked the code you entered, and code {item.code} doesn't match what we have in our
+                            files.
+                            Please re-enter or select bypass this step to move forward without using this code.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br />
+            <!-- PMC Code Input - Static Fields -->
+            <div class="slds-form-element slds-p-top_small">
+                <div class="slds-form-element__control slds-grid slds-grid_align-center">
+                    <span class="slds-m-right_x-small" style="margin-top:7px;">
+                        <p><b>{item.key} -</b></p>
+                    </span>
+                    <div class="code-container">
+                        <input maxlength="1" data-index="0" class="input-box" oninput={handleInputChange}
+                            value={item.newCode.one} data-id={index} onkeydown={handleKeyDown}></input>
+                        <input maxlength="1" data-index="1" class="input-box" oninput={handleInputChange}
+                            value={item.newCode.two} data-id={index} onkeydown={handleKeyDown}></input>
+                        <input maxlength="1" data-index="2" class="input-box" oninput={handleInputChange}
+                            value={item.newCode.three} data-id={index} onkeydown={handleKeyDown}></input>
+                        <input maxlength="1" data-index="3" class="input-box" oninput={handleInputChange}
+                            value={item.newCode.four} data-id={index} onkeydown={handleKeyDown}></input>
+                        <input maxlength="1" data-index="4" class="input-box" oninput={handleInputChange}
+                            value={item.newCode.five} data-id={index} onkeydown={handleKeyDown}></input>
+                        <input maxlength="1" data-index="5" class="input-box" oninput={handleInputChange}
+                            value={item.newCode.six} data-id={index} onkeydown={handleKeyDown}></input>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bypass Option -->
+            <div class="slds-m-around_large slds-align_absolute-center checkboxParentcls">
+                <lightning-input type="checkbox" label="" checked={item.discard} data-index={index} onchange={handleCheckbox}></lightning-input>
+                <span>Check here to disregard this code and to bypass this step</span>
+            </div>
+        </div>
+    </template>
+    <br>
+    <div class="buttonscls">
+        <button class="backbtn textcls" onclick={handleCodeErrorBack}>Back</button>
+        <button class="nextbtncls textcls" onclick={handleCodeErrorNext}>Next</button>
+    </div>
+</template>

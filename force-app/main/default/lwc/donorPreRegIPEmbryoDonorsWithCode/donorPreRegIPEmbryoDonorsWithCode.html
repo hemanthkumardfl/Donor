@@ -1,0 +1,295 @@
+<template>
+    <div class="slds-card slds-p-around_medium borderRadius">
+        <div class="slds-p-horizontal_medium">
+            <h3 class="headingcls">Embryo Donors</h3>
+            <p class="slds-m-top_medium textcls">
+                We think it’s incredible that you were able to grow your family with the help of an embryo donor. Based on the PMC/EMB code you entered, we believe we found your match. Please confirm the details:
+            </p>
+            <!-- Clinic Details (Shown if Clinic is selected) -->
+           
+                <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC; border-color: black; border-width: 2.2px;">
+                    <h3 class="headingcls">Clinic embryos were stored at:</h3>
+                    <lightning-layout multiple-rows class="donationbasicscls">
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                            <label class="textcls">Clinic Name</label>
+                            <lightning-input
+                                variant="label-hidden"
+                                value={embryoProgram.name}
+                                data-field="name"
+                                data-section="embryoProgram"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                            <label class="textcls">Doctor Name</label>
+                            <lightning-input
+                                variant="label-hidden"
+                                value={embryoProgram.website}
+                                data-field="website"
+                                data-section="embryoProgram"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                            <label class="textcls">Clinic Website</label>
+                            <lightning-input
+                                type="url"
+                                variant="label-hidden"
+                                value={embryoProgram.phone}
+                                data-field="phone"
+                                data-section="embryoProgram"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                            <label class="textcls">Clinic Phone Number</label>
+                            <lightning-input
+                                variant="label-hidden"
+                                value={embryoProgram.cityState}
+                                data-field="cityState"
+                                data-section="embryoProgram"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                            <label class="textcls">Clinic City/State</label>
+                            <lightning-input
+                                variant="label-hidden"
+                                value={embryoProgram.coordinatorName}
+                                data-field="coordinatorName"
+                                data-section="embryoProgram"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                            <label class="textcls">Clinic Coordinator</label>
+                            <lightning-input
+                                variant="label-hidden"
+                                value={embryoProgram.coordinatorEmail}
+                                data-field="coordinatorEmail"
+                                data-section="embryoProgram"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                            <label class="textcls">Coordinator Email</label>
+                            <lightning-input
+                                type="email"
+                                variant="label-hidden"
+                                value={embryoProgram.coordinatorEmail}
+                                data-field="coordinatorEmail"
+                                data-section="embryoProgram"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+             <div class="slds-m-top_medium">
+               <lightning-input 
+            type="checkbox" 
+            label="Yes, the program info above is correct" 
+            checked={isProgramInfoCorrect}
+            onchange={handleCheckboxChange}>
+        </lightning-input>
+                  </div>
+            <!-- Donor Agency/Egg Bank Information (Shown if Donor is selected) -->
+           
+                <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC; border-color: black; border-width: 2.2px;">
+                    <h3 class="headingcls">Family who Donated the embryos to you:</h3>
+                    <lightning-layout multiple-rows class="donationbasicscls">
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                            <label class="textcls">1st Name</label>
+                            <lightning-input
+                                variant="label-hidden"
+                                value={clinic.name}
+                                data-field="name"
+                                data-section="clinic"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                            <label class="textcls">2nd Name</label>
+                            <lightning-input
+                                type="url"
+                                variant="label-hidden"
+                                value={clinic.website}
+                                data-field="website"
+                                data-section="clinic"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+                 <div class="slds-m-top_medium">
+               <lightning-input 
+            type="checkbox" 
+            label="Yes, the program info above is correct" 
+            checked={isProgramInfoCorrect}
+            onchange={handleCheckboxChange}>
+        </lightning-input>
+                  </div>
+
+                 <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC; border-color: black; border-width: 2.2px;">
+                    <h3 class="headingcls">Embryo Program/Agency:</h3>
+                    <lightning-layout multiple-rows class="donationbasicscls">
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                            <label class="textcls">Program Name</label>
+                            <lightning-input
+                                variant="label-hidden"
+                                value={clinic.name}
+                                data-field="name"
+                                data-section="clinic"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                            <label class="textcls">Program Website</label>
+                            <lightning-input
+                                type="url"
+                                variant="label-hidden"
+                                value={clinic.website}
+                                data-field="website"
+                                data-section="clinic"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                            <label class="textcls">Program Phone</label>
+                            <lightning-input
+                                type="tel"
+                                variant="label-hidden"
+                                value={clinic.phone}
+                                data-field="phone"
+                                data-section="clinic"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                            <label class="textcls">Program Email</label>
+                            <lightning-input
+                                type="email"
+                                variant="label-hidden"
+                                value={clinic.cityState}
+                                data-field="cityState"
+                                data-section="clinic"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                            <label class="textcls">Program Coordinato</label>
+                            <lightning-input
+                                variant="label-hidden"
+                                value={clinic.coordinatorName}
+                                data-field="coordinatorName"
+                                data-section="clinic"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+                   <div class="slds-m-top_medium">
+               <lightning-input 
+            type="checkbox" 
+            label="Yes, the program info above is correct" 
+            checked={isProgramInfoCorrect}
+            onchange={handleCheckboxChange}>
+        </lightning-input>
+                  </div>
+                  <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC; border-color: black; border-width: 2.2px;">
+                    <h3 class="headingcls">Fertility Attorney who you worked with:</h3>
+                    <lightning-layout multiple-rows class="donationbasicscls">
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                            <label class="textcls">Attorney Name</label>
+                            <lightning-input
+                                variant="label-hidden"
+                                value={clinic.name}
+                                data-field="name"
+                                data-section="clinic"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                            <label class="textcls">Attorney Email</label>
+                            <lightning-input
+                                type="url"
+                                variant="label-hidden"
+                                value={clinic.website}
+                                data-field="website"
+                                data-section="clinic"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                            <label class="textcls">Attorney Phone</label>
+                            <lightning-input
+                                type="tel"
+                                variant="label-hidden"
+                                value={clinic.phone}
+                                data-field="phone"
+                                data-section="clinic"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+                  <div class="slds-m-top_medium">
+               <lightning-input 
+            type="checkbox" 
+            label="Yes, the program info above is correct" 
+            checked={isProgramInfoCorrect}
+            onchange={handleCheckboxChange}>
+        </lightning-input>
+                  </div>
+                <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC; border-color: black; border-width: 2.2px;">
+                    <h3 class="headingcls">How the embryos were created</h3>
+                    <lightning-layout multiple-rows class="donationbasicscls">
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                            <label class="textcls">Egg Component</label>
+                            <lightning-input
+                                variant="label-hidden"
+                                value={clinic.name}
+                                data-field="name"
+                                data-section="clinic"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                            <label class="textcls">Sperm Component</label>
+                            <lightning-input
+                                type="url"
+                                variant="label-hidden"
+                                value={clinic.website}
+                                data-field="website"
+                                data-section="clinic"
+                                class="boxRadius"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+
+            <div class="buttonscls">
+                <div class="backbtn textcls" onclick={handleSpermBankInfoBack}>Back</div>
+                <div class="nextbtncls textcls" onclick={handleSpermBankInfoNext}>Next</div>
+            </div>
+        </div>
+    </div>
+</template>

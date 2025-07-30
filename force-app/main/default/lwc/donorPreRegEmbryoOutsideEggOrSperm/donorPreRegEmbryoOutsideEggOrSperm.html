@@ -1,0 +1,71 @@
+<template>
+    <div class="slds-card slds-p-around_medium">
+
+        <!-- Welcome Message -->
+        <h1 class="slds-text-heading_medium"><strong>Welcome to the Donor 21 Family!</strong></h1>
+        <p class="slds-m-top_small">
+            You’ve made an extraordinary and compassionate choice. By donating your remaining embryos, you're offering
+            another family the chance to grow—just as yours once did. We understand that these embryos are deeply
+            connected to you, your children, and families yet to be formed.
+            At Donor 21, we’re here to ensure that health updates, life updates, and future connection remain
+            possible—preserving the thread that ties each story together with care and respect.
+        </p>
+        <br>
+        <p class="slds-text-title_bold slds-m-bottom_small">Learn More About Staying Connected</p>
+
+        <!-- Video Placeholder -->
+        <div class="video-placeholder">
+            <lightning-icon icon-name="utility:play" alternative-text="Play Video" size="large"></lightning-icon>
+        </div>
+
+        <!-- Option 1 -->
+        <div class="slds-box slds-m-top_large">
+            <h3 class="slds-text-title_bold"><b>Option 1: Embryo Offspring Updates</b></h3>
+            <p class="slds-m-vertical_x-small">Would you like to receive updates if children are born from your donated
+                embryos?</p>
+            <p class="slds-text-body_small slds-m-bottom_small">This may include:</p>
+            <ul class="slds-list_dotted slds-m-left_medium">
+                <li>Milestone or photo updates (if shared by recipient families)</li>
+                <li>Medical or genetic information if it becomes available</li>
+                <li>Optional future contact or messaging (when appropriate and mutually agreed)</li>
+            </ul>
+            </p>
+            <br>
+            <i>This is a free feature.</i>
+            <lightning-radio-group name="offspringUpdates" options={yesNoOptions} value={offspringUpdates}
+                class="slds-m-top_small" onchange={handleChange}></lightning-radio-group>
+        </div>
+
+        <!-- Option 2 -->
+        <div class="slds-box slds-m-top_large">
+            <h3 class="slds-text-title_bold">Option 2: Egg and/or Sperm Donor Updates</h3>
+            <p class="slds-m-vertical_x-small">Did you create your embryos using an egg or sperm donor?</p>
+            <p class="slds-text-body_small">
+                If so, you can choose to receive updates from them, if they are open to it.
+            </p>
+            <br />
+            <p class="slds-text-body_small slds-m-bottom_small">This may include:</p>
+            <ul class="slds-list_dotted slds-m-left_medium">
+                <li>Updated medical or genetic information</li>
+                <li>Changes in contact status</li>
+                <li>Optional messaging or profile access (if available)</li>
+            </ul>
+            </p>
+            <br>
+            <i>This is a paid feature and only available if the donor is willing to participate. We will follow up for
+                you if interested.</i>
+            <lightning-radio-group name="donorUpdates" options={secondRadioList} value={donorUpdates}
+                class="slds-m-top_small" onchange={handleChange}></lightning-radio-group>
+        </div>
+
+        <!-- Buttons -->
+        <lightning-layout class="slds-p-top_small" horizontal-align="spread">
+            <lightning-layout-item size="6" medium-device-size="2" class="slds-p-right_xx-small">
+                <div class="backbtnCls" onclick={handleBack}>Back</div>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" medium-device-size="2" class="slds-p-left_xx-small">
+                <div class="nextbtnCls" onclick={handleNext}>Next</div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

@@ -1,0 +1,502 @@
+<template>
+    <div if:true={showDeletePopup}>
+        <div class="modalBackdrop">
+            <div class="modalContainer slds-p-around_medium">
+                <lightning-icon icon-name="utility:warning" variant="warning" size="small" class="slds-p-top_small">
+                </lightning-icon>
+                <span class="headingcls slds-p-top_medium">Confirm Deletion</span>
+                <span class="textcls slds-p-top_small slds-p-bottom_small">Are you sure you want to delete {deleteItemType}?</span>
+                <div class="confirmPopupCls slds-p-top_small">
+                    <button class="popupNextBtn" label="Yes" onclick={handleDeleteYes}>Yes</button>
+                    <button class="popupBackBtn" label="No" onclick={handleDeleteNo}>No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-card slds-p-around_medium slds-box">
+        <div class="slds-p-horizontal_medium borderRadiusCls">
+            <div>
+                <span class="headingcls">HIPAA Release Information</span>
+                <span class="agencyDescriptionCls">
+                    Was <span class="underline-name">{legalNamesri.firstName} {legalNamesri.lastName}</span> the name you
+                used and have on file with the agency/clinic/attorney?
+                </span>
+                <div class="radioinputs slds-p-bottom_small slds-p-top_small">
+                    <lightning-input type="radio" label="Yes" name="spermBank" value="Yes" checked={isYesChecked}
+                        onchange={handleSpermBankChange}></lightning-input>
+                    <lightning-input type="radio" label="No" name="spermBank" value="No" checked={isNoChecked}
+                        onchange={handleSpermBankChange}></lightning-input>
+                </div>
+            </div>
+
+            <!-- Legal Name -->
+            <span class="textcls agencyDescriptionCls inputscls">Enter the legal name on file with the clinic/agency:</span>
+            <lightning-layout multiple-rows="true" class="parentlayoutcls slds-p-bottom_small">
+                <lightning-layout-item class="slds-p-top_small recipientinputcls1" size="12" small-device-size="12"
+                    medium-device-size="6" large-device-size="6">
+                    <lightning-input label="First Name" value={legalNamesri.firstName} name="firstName"
+                        onchange={handleLegalNameChange} variant="label-hidden" placeholder="First Name"
+                        class="validateInputCls" disabled={isDisabled} required></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-p-top_small recipientinputcls2" size="12" small-device-size="12"
+                    medium-device-size="6" large-device-size="6">
+                    <lightning-input label="Last Name" value={legalNamesri.lastName} name="lastName"
+                        onchange={handleLegalNameChange} variant="label-hidden" class="validateInputCls"
+                        placeholder="Last Name" disabled={isDisabled} required></lightning-input>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <!-- Date of Birth -->
+            <span class="agencyDescriptionCls textcls">
+                In order to generate your HIPAA release, please enter your DOB. We ask for this as many
+                clinics/programs require this for information release.
+            </span>
+            <span class="inputscls textcls" style="padding-top: 1rem;">Date of Birth <span style="color:red;">*</span></span>
+            <lightning-input type="date" name="dob" value={dob} onchange={handleDobChange}
+                class="slds-m-bottom_medium dobcls validateInputCls" label=" " variant="label-stacked">
+            </lightning-input>
+            <template if:true={dobError}>
+                <div class="slds-text-color_error">{dobError}</div>
+            </template>
+
+            <!-- Address Section -->
+            <span class="agencyDescriptionCls textcls">
+               Please provide your address details for the HIPAA release.
+            </span>
+            <lightning-layout multiple-rows="true" class="parentlayoutcls slds-p-bottom_small">
+                <lightning-layout-item class="slds-p-top_small recipientinputcls1" size="12" small-device-size="12"
+                    medium-device-size="6" large-device-size="6">
+                    <span class="inputscls textcls">State <span style="color:red;">*</span></span>
+                    <lightning-input label="" value={address.state} name="state" data-field="state"
+                        onchange={handleAddressChange} placeholder="State" ></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-p-top_small recipientinputcls2" size="12" small-device-size="12"
+                    medium-device-size="6" large-device-size="6">
+                    <span class="inputscls textcls">City <span style="color:red;">*</span></span>
+                    <lightning-input label="" value={address.city} name="city" data-field="city"
+                        onchange={handleAddressChange} placeholder="City"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-p-top_small recipientinputcls1" size="12" small-device-size="12"
+                    medium-device-size="6" large-device-size="6">
+                    <span class="inputscls textcls">Street</span>
+                    <lightning-input label="" value={address.street} name="street" data-field="street"
+                        onchange={handleAddressChange} placeholder="Street"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-p-top_small recipientinputcls2" size="12" small-device-size="12"
+                    medium-device-size="6" large-device-size="6">
+                    <span class="inputscls textcls">Pincode</span>
+                    <lightning-input label="" value={address.pincode} name="pincode" data-field="pincode"
+                        onchange={handleAddressChange} placeholder="Pincode" type="text"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-p-top_small recipientinputcls1" size="12" small-device-size="12"
+                    medium-device-size="12" large-device-size="12">
+                    <span class="inputscls textcls">Additional Information</span>
+                    <lightning-textarea label="" value={address.additionalInfo} name="additionalInfo"
+                        data-field="additionalInfo" onchange={handleAddressChange}
+                        placeholder="Additional address information"></lightning-textarea>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <!-- Agencies/Egg Banks -->
+            <template if:true={showagencySection}>
+                <div class="slds-m-top_medium">
+                    <p class="textcls agencyDescriptionCls inputscls">You said you worked with the following
+                        agencies/egg banks:</p>
+                    <template for:each={agencies} for:item="agency" for:index="index">
+                        <div key={agency.id}
+                            class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
+                            <span>{agency.agencyName}</span>
+                            <div>
+                                <lightning-button-icon icon-name="utility:edit" variant="bare"
+                                    onclick={handleEditAgency} data-index={index} class="slds-m-right_x-small"
+                                    title="Edit Agency"></lightning-button-icon>
+                                <lightning-button-icon icon-name="action:delete" variant="bare"
+                                    onclick={handleDeleteAgency} data-index={index} title="Delete Agency"
+                                    class="delete-icon"></lightning-button-icon>
+                            </div>
+                        </div>
+                    </template>
+                    <br/>
+                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddAgencyClick}>
+                        + I need to add an agency or egg bank
+                    </div>
+                    <template if:true={showAgencyForm}>
+                        <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC;">
+                            <lightning-layout multiple-rows="true" class="parentlayoutcls">
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Agency/Egg Bank Name <span style="color:red;">*</span></span>
+                                    <lightning-input label="" value={newAgency.agencyName} data-field="agencyName"
+                                        onchange={handleAgencyFieldChange} required></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Agency/Egg Bank Phone</span>
+                                    <lightning-input label="" value={newAgency.phone} data-field="phone"
+                                        onchange={handleAgencyFieldChange} type="tel"></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Coordinator Name</span>
+                                    <lightning-input label="" value={newAgency.coordinatorName}
+                                        data-field="coordinatorName" onchange={handleAgencyFieldChange}>
+                                    </lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Agency/Egg Bank Website</span>
+                                    <lightning-input label="" value={newAgency.website} data-field="website"
+                                        onchange={handleAgencyFieldChange} type="url"></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">City/State</span>
+                                    <lightning-input label="" value={newAgency.cityState} data-field="cityState"
+                                        onchange={handleAgencyFieldChange}></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Agency/Egg Bank Email</span>
+                                    <lightning-input label="" value={newAgency.coordinatorEmail}
+                                        data-field="coordinatorEmail" onchange={handleAgencyFieldChange} type="email">
+                                    </lightning-input>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                            <lightning-layout class="slds-m-top_medium">
+                                <lightning-layout-item size="12" padding="around-small">
+                                    <div class="buttonscls">
+                                        <div class="backbtn textcls" style="place-content: center;"
+                                            onclick={handleCancelAgency}>Cancel</div>
+                                        <div class="nextbtncls textcls" style="place-content: center;"
+                                            onclick={handleSaveAgency}>{agencyButtonLabel}</div>
+                                    </div>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Sperm Banks -->
+            <template if:true={showSpermBankSection}>
+                <div class="slds-m-top_medium">
+                    <p class="textcls agencyDescriptionCls inputscls">You said you worked with the following sperm
+                        banks:</p>
+                    <template for:each={sperms} for:item="sperm" for:index="index">
+                        <div key={sperm.id}
+                            class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
+                            <span>{sperm.spermBankName}</span>
+                            <div>
+                                <template if:false={sperm.isFromPrimaryBanks}>
+                                    <lightning-button-icon icon-name="utility:edit" variant="bare"
+                                        onclick={handleEditSperm} data-index={index} class="slds-m-right_x-small"
+                                        title="Edit Sperm Bank"></lightning-button-icon>
+                                </template>
+                                <lightning-button-icon icon-name="action:delete" variant="bare"
+                                    onclick={handleDeleteSperm} data-index={index} title="Delete Sperm Bank"
+                                    class="delete-icon"></lightning-button-icon>
+                            </div>
+                        </div>
+                    </template>
+                    <template if:true={showSpermForm}>
+                        <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC;">
+                            <lightning-layout multiple-rows="true" class="parentlayoutcls">
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Sperm Bank Name <span style="color:red;">*</span></span>
+                                    <lightning-input label="" value={newSperm.spermBankName} data-field="spermBankName"
+                                        onchange={handleSpermFieldChange} required></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Sperm Bank Phone</span>
+                                    <lightning-input label="" value={newSperm.spermBankPhone}
+                                        data-field="spermBankPhone" onchange={handleSpermFieldChange} type="tel">
+                                    </lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Coordinator Name</span>
+                                    <lightning-input label="" value={newSperm.coordinatorName}
+                                        data-field="coordinatorName" onchange={handleSpermFieldChange}>
+                                    </lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Sperm Bank Website</span>
+                                    <lightning-input label="" value={newSperm.spermBankWebsite}
+                                        data-field="spermBankWebsite" onchange={handleSpermFieldChange} type="url">
+                                    </lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Sperm Bank Email</span>
+                                    <lightning-input label="" value={newSperm.spermBankEmail}
+                                        data-field="spermBankEmail" onchange={handleSpermFieldChange} type="email">
+                                    </lightning-input>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                            <lightning-layout class="slds-m-top_medium">
+                                <lightning-layout-item size="12" padding="around-small">
+                                    <div class="buttonscls">
+                                        <div class="backbtn textcls" style="place-content: center;"
+                                            onclick={handleCancelSperm}>Cancel</div>
+                                        <div class="nextbtncls textcls" style="place-content: center;"
+                                            onclick={handleSaveSperm}>{spermButtonLabel}</div>
+                                    </div>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </div>
+                    </template>
+                    <br/>
+                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddSpermClick}>
+                        + I need to add a sperm bank
+                    </div>
+                </div>
+            </template>
+
+            <!-- Clinics -->
+            <template if:true={showclinicSection}>
+                <div class="slds-m-top_medium">
+                    <p class="textcls inputscls">You said you worked with the following clinics:</p>
+                    <template for:each={clinics} for:item="clinic" for:index="index">
+                        <div key={clinic.id}
+                            class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
+                            <span>{clinic.clinicName}</span>
+                            <div>
+                                <template if:false={clinic.isFromPrimaryBanks}>
+                                    <lightning-button-icon icon-name="utility:edit" variant="bare"
+                                        onclick={handleEditClinic} data-index={index} class="slds-m-right_x-small"
+                                        title="Edit Clinic"></lightning-button-icon>
+                                </template>
+                                <lightning-button-icon icon-name="action:delete" variant="bare"
+                                    onclick={handleDeleteClinic} data-index={index} title="Delete Clinic"
+                                    class="delete-icon"></lightning-button-icon>
+                            </div>
+                        </div>
+                    </template>
+                    <template if:true={showClinicForm}>
+                        <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC;">
+                            <lightning-layout multiple-rows="true" class="parentlayoutcls">
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Clinic Name <span style="color:red;">*</span></span>
+                                    <lightning-input label="" value={newClinic.clinicName} data-field="clinicName"
+                                        onchange={handleClinicFieldChange} required></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Clinic Phone</span>
+                                    <lightning-input label="" value={newClinic.phone} data-field="phone"
+                                        onchange={handleClinicFieldChange} type="tel"></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Coordinator/Nurse Name</span>
+                                    <lightning-input label="" value={newClinic.coordinatorName}
+                                        data-field="coordinatorName" onchange={handleClinicFieldChange}>
+                                    </lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Clinic Website</span>
+                                    <lightning-input label="" value={newClinic.website} data-field="website"
+                                        onchange={handleClinicFieldChange} type="url"></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">City/State of Clinic</span>
+                                    <lightning-input label="" value={newClinic.cityState} data-field="cityState"
+                                        onchange={handleClinicFieldChange}></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Clinic Email</span>
+                                    <lightning-input label="" value={newClinic.coordinatorEmail}
+                                        data-field="coordinatorEmail" onchange={handleClinicFieldChange} type="email">
+                                    </lightning-input>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                            <lightning-layout class="slds-m-top_medium">
+                                <lightning-layout-item size="12" padding="around-small">
+                                    <div class="buttonscls">
+                                        <div class="backbtn textcls" style="place-content: center;"
+                                            onclick={handleCancelClinic}>Cancel</div>
+                                        <div class="nextbtncls textcls" style="place-content: center;"
+                                            onclick={handleSaveClinic}>{clinicButtonLabel}</div>
+                                    </div>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </div>
+                    </template>
+                    <br/>
+                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddClinicClick}>
+                        + I need to add a clinic
+                    </div>
+                </div>
+            </template>
+
+            <!-- Fertility Attorneys -->
+            <template if:true={showattorneySection}>
+                <div class="slds-m-top_medium">
+                    <p class="textcls inputscls">You said you worked with the following fertility attorneys:</p>
+                    <template for:each={attorneys} for:item="attorney" for:index="index">
+                        <div key={attorney.id}
+                            class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
+                            <span>{attorney.attorneyName}</span>
+                            <div>
+                                <lightning-button-icon icon-name="utility:edit" variant="bare"
+                                    onclick={handleEditAttorney} data-index={index} class="slds-m-right_x-small"
+                                    title="Edit Attorney"></lightning-button-icon>
+                                <lightning-button-icon icon-name="action:delete" variant="bare"
+                                    onclick={handleDeleteAttorney} data-index={index} title="Delete Attorney"
+                                    class="delete-icon"></lightning-button-icon>
+                            </div>
+                        </div>
+                    </template>
+                    <template if:true={showAttorneyForm}>
+                        <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC;">
+                            <lightning-layout multiple-rows="true" class="parentlayoutcls">
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Attorney Name <span style="color:red;">*</span></span>
+                                    <lightning-input label="" value={newAttorney.attorneyName} data-field="attorneyName"
+                                        onchange={handleAttorneyFieldChange} required></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Attorney Phone</span>
+                                    <lightning-input label="" value={newAttorney.phone} data-field="phone"
+                                        onchange={handleAttorneyFieldChange} type="tel"></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Law Firm (if known)</span>
+                                    <lightning-input label="" value={newAttorney.lawFirm} data-field="lawFirm"
+                                        onchange={handleAttorneyFieldChange}></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Website</span>
+                                    <lightning-input label="" value={newAttorney.website} data-field="website"
+                                        onchange={handleAttorneyFieldChange} type="url"></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">State they are located in</span>
+                                    <lightning-input label="" value={newAttorney.cityState} data-field="cityState"
+                                        onchange={handleAttorneyFieldChange}></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Attorney Email</span>
+                                    <lightning-input label="" value={newAttorney.email} data-field="email"
+                                        onchange={handleAttorneyFieldChange} type="email"></lightning-input>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                            <lightning-layout class="slds-m-top_medium">
+                                <lightning-layout-item size="12" padding="around-small">
+                                    <div class="buttonscls">
+                                        <div class="backbtn textcls" style="place-content: center;"
+                                            onclick={handleCancelAttorney}>Cancel</div>
+                                        <div class="nextbtncls textcls" style="place-content: center;"
+                                            onclick={handleSaveAttorney}>{attorneyButtonLabel}</div>
+                                    </div>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </div>
+                    </template>
+                    <br/>
+                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddAttorneyClick}>
+                        + I need to add a fertility attorney
+                    </div>
+                </div>
+            </template>
+
+            <!-- Recipient Details -->
+            <template if:true={showrecipientSection}>
+                <div class="slds-m-top_medium">
+                    <p class="textcls inputscls">You said you worked with the following Recipient Details:</p>
+                    <template for:each={recipients} for:item="recipient" for:index="index">
+                        <div key={recipient.id}
+                            class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
+                            <span>{recipient.Name}</span>
+                            <div>
+                                <template if:false={recipient.isFromPrimaryBanks}>
+                                    <lightning-button-icon icon-name="utility:edit" variant="bare"
+                                        onclick={handleEditRecipient} data-index={index} class="slds-m-right_x-small"
+                                        title="Edit Recipient"></lightning-button-icon>
+                                </template>
+                                <lightning-button-icon icon-name="action:delete" variant="bare"
+                                    onclick={handleDeleteRecipient} data-index={index} title="Delete Recipient"
+                                    class="delete-icon"></lightning-button-icon>
+                            </div>
+                        </div>
+                    </template>
+                    <template if:true={showRecipientForm}>
+                        <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC;">
+                            <lightning-layout multiple-rows="true" class="parentlayoutcls">
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Recipient First Name</span>
+                                    <lightning-input label="" value={newRecipient.firstName} data-field="firstName"
+                                        onchange={handleRecipientFieldChange}></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Recipient Last Name <span style="color:red;">*</span></span>
+                                    <lightning-input label="" value={newRecipient.lastName} data-field="lastName"
+                                        onchange={handleRecipientFieldChange} required></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Phone</span>
+                                    <lightning-input label="" value={newRecipient.phone} data-field="phone"
+                                        onchange={handleRecipientFieldChange} type="tel"></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <span class="inputscls textcls">Email</span>
+                                    <lightning-input label="" value={newRecipient.email} data-field="email"
+                                        onchange={handleRecipientFieldChange} type="email"></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
+                                    size="12" small-device-size="12" medium-device-size="12" large-device-size="12">
+                                    <span class="inputscls textcls">Additional Information</span>
+                                    <lightning-textarea label="" value={newRecipient.additionalInfo}
+                                        data-field="additionalInfo" onchange={handleRecipientFieldChange}>
+                                    </lightning-textarea>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                            <lightning-layout class="slds-m-top_medium">
+                                <lightning-layout-item size="12" padding="around-small">
+                                    <div class="buttonscls">
+                                        <div class="backbtn savebtnCls textcls" style="place-content: center;"
+                                            onclick={handleCancelRecipient}>Cancel</div>
+                                        <div class="nextbtncls savebtnCls textcls" style="place-content: center;"
+                                            onclick={handleSaveRecipient}>{recipientButtonLabel}</div>
+                                    </div>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </div>
+                    </template>
+                    <br/>
+                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddRecipientClick}>
+                        + I need to add a recipient
+                    </div>
+                </div>
+            </template>
+
+            <!-- Confirmation Checkbox -->
+            <lightning-input type="checkbox" class="slds-m-top_medium" name="confirmation" checked={isConfirmed}
+                onchange={handleConfirmationChange} label="I have reviewed and this information is accurate.">
+            </lightning-input>
+
+            <!-- Navigation Buttons -->
+            <div class="buttonscls">
+                <div class="backbtn textcls" style="place-content: center;" onclick={handleDonorHippaBack}>Back</div>
+                <div class="nextbtncls textcls" style="place-content: center;" onclick={handleDonorHippaNext}>Next</div>
+            </div>
+        </div>
+    </div>
+</template>

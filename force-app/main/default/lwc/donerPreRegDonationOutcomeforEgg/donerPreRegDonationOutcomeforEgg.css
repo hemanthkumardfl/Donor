@@ -1,0 +1,194 @@
+* {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.textcls, .headingcls {
+    font-family: 'Inter', sans-serif;
+}
+
+.fontSizeLarge {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.borderRadius {
+    border-radius: 10px;
+   /* width: 80%;*/
+}
+
+.radioinputs {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+.radioinputs div{
+    display: flex;
+    gap: 1em;
+    align-items: center;
+}
+
+.buttonscls {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+    margin-top: 2rem;
+}
+
+.backbtn, .nextbtncls {
+    width: 18%;
+    min-height: 3em;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2),
+                0 6px 20px rgba(0, 0, 0, 0.19);
+    text-align: center;
+}
+
+.backbtn {
+    border: 1px solid black;
+    background: white;
+    color: black;
+}
+
+.nextbtncls {
+    border: 1px solid black;
+    background: black;
+    color: white;
+}
+.parentlayoutcls{
+    display: flex;
+    gap: 0.5em;
+}
+
+.buttonscls{
+	display: flex;
+	place-content: center;
+	gap: 2em;
+	/* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
+}
+.backbtn{
+	border: 1px solid black;
+	background: white;
+	color: black;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding : 10px;
+	cursor: pointer;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.nextbtncls{
+	border: 1px solid black;
+	background: black;
+	color: white;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding : 10px;
+	cursor: pointer;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.textcls, .headingcls{
+    font-family: Inter, sans-serif;
+}
+/* For mobile devices - stack the navigation */
+@media (max-width: 768px) {
+    .radioinputs{
+        flex-direction: column;
+        align-items: baseline;
+    }
+    .radioinputs div{
+        display: flex;
+        gap: 0.5em;
+    }
+    .inputscls{
+        width: 50%;
+    }
+    
+    .buttonscls{
+		/* place-content: flex-start; */
+		flex-direction: column;
+		gap: 0.7em !important;
+	}
+	.backbtn, .nextbtncls{
+		width: 100%;
+        min-height: 3em;
+        font-size: medium;
+        font-weight: bold;
+		box-shadow: none
+	}
+     .textcls{
+        font-size: 14.2px;
+        font-weight: 600;
+    }
+
+    
+}
+/* media queries to target gap between side bar and its top*/
+@media (min-width: 1400px) and (max-width: 1599px) { /* 90 */
+	.textcls{
+        font-size: 14.2px;
+    }
+	.headingcls{
+		 font-size: 18.7px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {/* 100 */
+	.textcls{
+        font-size: 13.3px;
+    }
+	.headingcls{
+		 font-size: 17px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {/* 110 */
+	 .textcls{
+        font-size: 12.8px;
+    }
+	.headingcls{
+		 font-size: 15.9px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 769px) and (max-width: 1100px) { /* 125 && above*/
+	.textcls{
+        font-size: 11.4px;
+    }
+	.headingcls{
+		  font-size: 15.8px;
+		 font-weight: 600;
+	}
+}
+@media (min-width: 1600px) {
+    .textcls{
+        font-size: 15.4px;
+        font-weight:100;
+    }
+	.headingcls{
+		 font-size: 21.2px;
+		 font-weight: 600;
+	}
+}
+/* media queries to target gap between side bar and its top ends*/
+
+.boxRadius {
+   width: 100%;
+   height: 2rem;
+   border-radius: 0.3em;
+}
+.fontSizeLarge {
+    font-size: 1.25rem;
+}

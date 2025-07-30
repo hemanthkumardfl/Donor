@@ -1,0 +1,278 @@
+.getfirstnamecls, .getlastnamecls{
+	width: 50%;
+}
+.getnamescls{
+	display:flex;
+	gap:1em;
+}
+.getscreenclls {
+    background: white;
+    border-radius: 5px;
+    padding: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* WebKit-based browsers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 12px; 
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+/* scrollbar ends*/
+.buttonscls{
+	display: flex;
+	place-content: flex-end;
+	gap: 2em;
+	/* box-shadow: 0px 8px 10px 5px rgb(7 6 6 / 50%); */
+	box-shadow: 0 -1px 6px -2px rgba(7 6 6 / 50%);
+}
+
+.backbtn{
+	border: 1px solid black;
+	background: white;
+	color: black;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding: 10px;
+	cursor: pointer;
+}
+.nextbtncls2{
+	border: 1px solid black;
+	background: black;
+	color: white;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding: 10px;
+	cursor: pointer;
+}
+
+.textcls{
+	font-family: Inter, sans-serif;
+	
+}
+
+.imgcls{
+	box-shadow: 3px 6px 6px 0px rgba(0, 0, 0, 0.5)
+}
+
+.header-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.textcls1 {
+    font-size: x-large;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.textcls2 {
+    font-size: 1rem;
+    color: #4a4a4a;
+    line-height: 1.5;
+}
+
+.imgcls {
+    border-radius: 5px;
+    width: -webkit-fill-available;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.getnamescls {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.getfirstnamecls,
+.getlastnamecls {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Input field styles */
+.input-full-width {
+    width: 100%;
+}
+
+lightning-input {
+    margin-bottom: 0.5rem;
+}
+
+lightning-input .slds-form-element__label {
+    font-size: 0.875rem;
+    color: #3e3e3c;
+}
+
+lightning-input .slds-input {
+    border-radius: 4px;
+    border: 1px solid #dddbda;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+}
+
+lightning-input .slds-input:focus {
+    border-color: #1589ee;
+    box-shadow: 0 0 3px #1589ee;
+}
+
+/* Checkbox styles */
+.checkbox-input {
+    width: 100%;
+}
+
+.checkbox-container {
+    padding-left: 0 !important;
+    text-align: justify;
+}
+
+.checkboxtextcls {
+    width: 100%;
+    font-size: small;
+    line-height: 1.4;
+    color: #3e3e3c;
+}
+
+/* Button styles */
+.buttonscls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.backbtn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #0070d2;
+    border-radius: 4px;
+    color: #0070d2;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.2s ease;
+}
+
+.nextbtncls2 {
+    padding: 0.5rem 1rem;
+    background-color: #0070d2;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.2s ease;
+}
+
+.backbtn:hover {
+    background-color: #f3f3f3;
+}
+
+.nextbtncls2:hover {
+    background-color: #005fb2;
+}
+
+/* Error message styling */
+.error-message {
+    color: #c23934 !important;
+    font-size: 11px;
+    margin-top: 0.25rem;
+}
+
+/* For mobile devices - stack the navigation */
+@media (max-width: 768px) {
+	.getfirstnamecls, .getlastnamecls{
+	 	width: 100%;
+	}
+	.getnamescls{
+		display:flex;
+		flex-direction: column;
+		gap:1.4em;
+	}
+	.buttonscls{
+		flex-direction: column;
+	}
+	.nextbtncls2{
+		width: 100% !important;
+	}
+
+	.backbtn{
+		width: 100% !important;
+	}
+	.textcls{
+		font-family: Inter, sans-serif;
+		font-size: 16.1px;
+		transform: scale(1);
+	}
+	
+}
+
+/* media queries to target gap between side bar and its top*/
+@media (min-width: 1400px) and (max-width: 1599px) { /* 90 */
+	.textcls2{
+        font-size: 15.5px;
+    }
+	.checkboxtextcls{
+		position: relative;
+		right: 1.7em;
+	}
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {/* 100 */
+	.textcls2{
+        font-size: 14.5px;
+    }
+	.checkboxtextcls{
+		position: relative;
+		right: 1.6em;
+	}
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {/* 110 */
+	 .textcls2{
+        font-size: 14px;
+    }
+	.checkboxtextcls{
+		position: relative;
+		right: 1.2em;
+	}
+}
+
+@media (min-width: 769px) and (max-width: 1100px) { /* 125 && above*/
+	.textcls2{
+        font-size: 12.6px;
+    }
+	.checkboxtextcls{
+		position: relative;
+		right: 0.9em;
+	}
+}
+@media (min-width: 1600px) {
+    .textcls2{
+        font-size: 16.6px;
+    }
+	.checkboxtextcls{
+		position: relative;
+		right: 2em;
+	}
+}
+/* media queries to target gap between side bar and its top ends*/

@@ -1,0 +1,176 @@
+.donordetailscls{
+	display: flex;
+	background: #E8E3DC;
+	border: 2px solid black;
+	border-radius: 5px;
+}
+
+.donorClinicheadercls{
+	display:flex;
+	flex-direction:column;
+	border:2px solid black;
+	border-radius: 5px;
+	padding-top:0px
+}
+
+.donorClinicdetailscls{
+	display:flex;
+	border:2px solid black;
+	border-radius: 5px;
+	padding-top:0px
+}
+
+.mainclass{
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	background: white;
+	border-radius: 5px;
+}
+
+.textcls{
+	font-family: Inter, sans-serif;
+	
+}
+
+.imgcls{
+	box-shadow: 3px 6px 6px 0px rgba(0, 0, 0, 0.5);
+	border-radius: 5px;
+}
+
+.donordetailscls, .donorClinicdetailscls{
+		padding-top: 0;
+   }
+
+.donorClinicdetailscls .first{
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.donorClinicdetailscls .second{
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+
+/* scrollbar ends*/
+.buttonscls{
+	display: flex;
+	place-content: flex-end;
+	gap: 2em;
+	/* box-shadow: 0px 8px 10px 5px rgb(7 6 6 / 50%); */
+	box-shadow: 0 -1px 6px -2px rgba(7 6 6 / 50%);
+}
+
+.backbtn{
+	border: 1px solid black;
+	background: white;
+	color: black;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding: 10px;
+	cursor: pointer;
+}
+.nextbtncls{
+	border: 1px solid black;
+	background: black;
+	color: white;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding: 10px;
+	cursor: pointer;
+}
+
+
+/* For mobile devices - stack the navigation */
+@media (max-width: 768px) {
+	.buttonscls{
+		place-content: flex-start;
+	}
+	.backbtn, .nextbtncls{
+		width: 50%;
+        min-height: 3em;
+        font-size: large;
+        font-weight: bold;
+        padding-top: 3%;
+	}
+	.textcls{
+        font-size: 14.2px;
+        font-weight: 600;
+    }
+
+	.headingcls{
+		font-size: 18.7px;
+		font-weight: 600;
+   }
+   
+   .donordetailscls, .donorClinicdetailscls{
+		flex-direction: column;
+   }
+
+   .phonecls, .imgparentcls{
+		padding: 0;
+   }
+
+   .paddingcls{
+		padding-top: 0;
+		padding-left: 1%;
+   }
+
+}
+/* media queries to target gap between side bar and its top*/
+@media (min-width: 1400px) and (max-width: 1599px) { /* 90 */
+	.textcls{
+        font-size: 14.2px;
+    }
+	.headingcls{
+		 font-size: 18.7px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {/* 100 */
+	.textcls{
+        font-size: 13.3px;
+    }
+	
+	.headingcls{
+		 font-size: 17.5px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {/* 110 */
+	 .textcls{
+        font-size: 12.8px;
+    }
+
+	.headingcls{
+		 font-size: 16.1px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 769px) and (max-width: 1100px) { /* 125 && above*/
+	.textcls{
+        font-size: 11.4px;
+    }
+
+	.headingcls{
+		 font-size: 16px;
+		 font-weight: 600;
+	}
+}
+@media (min-width: 1600px) {
+    .textcls{
+        font-size: 15.4px;
+    }
+
+	.headingcls{
+		 font-size: 21.5px;
+		 font-weight: 600;
+	}
+}
+/* media queries to target gap between side bar and its top ends*/

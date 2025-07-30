@@ -1,0 +1,679 @@
+public without sharing class DonorPreRegHippaController2222 {
+    
+    @AuraEnabled
+    public static hipaaWrapper spermDonor(String donorId) {
+        hipaaWrapper hipaaWrapperlist = new hipaaWrapper();
+        
+        List<d21_Donor_Agency__c> Agencyjunctionlist = [
+            SELECT Id, d21_Egg_Donor__c, Agency__r.Name, Agency__c, Agency__r.Phone, 
+            Agency__r.d21_Coordinator_Name__c, Agency__r.Website, Agency__r.d21_Email__c 
+            FROM d21_Donor_Agency__c 
+            WHERE d21_Egg_Donor__c = :donorId AND Agency__c != null
+        ];
+              
+        List<d21_Donor_Fertility_Clinic__c> Clinicjunctionlist = [
+            SELECT Id, d21_Clinic__c, d21_Clinic__r.Name, d21_Donor__c, d21_Clinic__r.Phone,
+            d21_Clinic__r.d21_Coordinator_Name__c, d21_Clinic__r.Website, 
+            d21_Clinic__r.BillingCity, d21_Clinic__r.d21_Email__c 
+            FROM d21_Donor_Fertility_Clinic__c 
+            WHERE d21_Donor__c = :donorId AND d21_Clinic__c != null
+        ];
+        List<d21_Donor_Fertility_Attorney__c> Attorneyjunctionlist = [
+            SELECT Id, d21_Donor__c, d21_Attorney__c, d21_Attorney__r.Name,d21_Attorney__r.Email,d21_Attorney__r.Phone,d21_Attorney__r.MailingState,d21_Attorney__r.LastName
+            FROM d21_Donor_Fertility_Attorney__c 
+            WHERE d21_Donor__c = :donorId AND d21_Attorney__c != null
+        ];
+        List<d21_Donor_Recipient__c> RecipientjunctionList = [
+            SELECT Id, d21_Contact__c, d21_Recipient__c, d21_Recipient__r.Name
+            FROM d21_Donor_Recipient__c 
+            WHERE d21_Contact__c = :donorId AND d21_Recipient__c != null
+        ];
+        parentdetail parent = new parentdetail();
+        Contact con = [SELECT FirstName, LastName, d21_Date_Of_Birth__c,MailingState,MailingCity,MailingStreet,MailingPostalCode, Phone, Email FROM Contact WHERE Id = :donorId LIMIT 1];
+        parent.fristName = con.FirstName;
+        parent.Id = con.Id;
+        parent.lastName = con.LastName;
+        parent.dob = String.valueOf(con.d21_Date_Of_Birth__c);
+        parent.email = con.Email;
+        parent.phone = con.Phone;
+        parent.address = con.MailingState +','+ con.MailingCity +','+ con.MailingStreet +','+ con.MailingPostalCode;
+        parent.state = con.MailingState;
+        parent.street = con.MailingStreet;
+        parent.pincode = con.MailingPostalCode;
+         parent.city = con.MailingCity;
+        hipaaWrapperlist.parentdetails = parent;
+        
+        List<Agency> Agencylist = new List<Agency>();
+        List<Clinic> Cliniclist = new List<Clinic>();
+        List<Attorney> Attorneylist = new List<Attorney>();
+        List<Recipient> Recipientlist = new List<Recipient>();
+        
+        for (d21_Donor_Agency__c agencyJunction : Agencyjunctionlist) {
+            Agency a = new Agency();
+            a.Name = agencyJunction.Agency__r.Name;
+            a.Id = agencyJunction.Agency__c;
+            a.Phone = agencyJunction.Agency__r.Phone;
+            a.coordinatorName = agencyJunction.Agency__r.d21_Coordinator_Name__c;
+            a.website = agencyJunction.Agency__r.Website;
+            a.email = agencyJunction.Agency__r.d21_Email__c;
+            Agencylist.add(a);
+        }
+        hipaaWrapperlist.Agencylist = Agencylist;
+        
+        for (d21_Donor_Fertility_Clinic__c clinicJunction : Clinicjunctionlist) {
+            Clinic c = new Clinic();
+            c.Name = clinicJunction.d21_Clinic__r.Name;
+            c.Id = clinicJunction.d21_Clinic__c;
+            c.Phone = clinicJunction.d21_Clinic__r.Phone;
+            c.coordinatorName = clinicJunction.d21_Clinic__r.d21_Coordinator_Name__c;
+            c.website = clinicJunction.d21_Clinic__r.Website;
+            c.cityState = clinicJunction.d21_Clinic__r.BillingCity;
+            c.email = clinicJunction.d21_Clinic__r.d21_Email__c;
+            Cliniclist.add(c);
+        }
+        hipaaWrapperlist.Cliniclist = Cliniclist;
+        
+        Attorney at = new Attorney();
+        if (!Attorneyjunctionlist.isEmpty()) {
+            d21_Donor_Fertility_Attorney__c junction = Attorneyjunctionlist[0];
+            at.Id = junction.d21_Attorney__c;
+            Contact attorneyContact = junction.d21_Attorney__r;
+            /* String lawFirm = '';
+if (attorneyContact.AccountId != null) {
+Account acc = [SELECT Name FROM Account WHERE Id = :attorneyContact.AccountId LIMIT 1];
+lawFirm = acc.Name;
+}*/
+            at.lawFirm = '';
+            at.Phone = junction.d21_Attorney__r.Phone;
+            at.email = junction.d21_Attorney__r.Email;
+            at.cityState = junction.d21_Attorney__r.MailingState;
+            at.Name = junction.d21_Attorney__r.LastName ;
+            at.website = '';
+        }
+        hipaaWrapperlist.Attorneylist = new List<Attorney>{ at };
+            
+            /* Recipient recp = new Recipient();
+if (!RecipientjunctionList.isEmpty()) {
+d21_Donor_Recipient__c junction = RecipientjunctionList[0];
+recp.Id = junction.d21_Recipient__c;
+recp.fristName = junction.d21_Recipient__r.Name;
+contact conts =[select id,name,Phone,Email,LastName,d21_Additional_Information__c from contact where AccountId =:junction.d21_Recipient__c]; 
+recp.Phone = conts.Phone;
+recp.email = conts.Email;
+recp.lastName = conts.LastName;
+recp.additionalInfo = conts.d21_Additional_Information__c;
+}
+hipaaWrapperlist.Recipientlist = new List<Recipient>{ recp };*/
+            Recipient recp = new Recipient();
+        if (!RecipientjunctionList.isEmpty()) {
+            d21_Donor_Recipient__c junction = RecipientjunctionList[0];
+            recp.Id = junction.d21_Recipient__c;
+            recp.fristName = junction.d21_Recipient__r.Name;
+            
+            List<Contact> contList = [
+                SELECT Id, Name, Phone, Email, LastName, d21_Additional_Information__c
+                FROM Contact
+                WHERE AccountId = :junction.d21_Recipient__c
+                LIMIT 1
+            ];
+            
+            if (!contList.isEmpty()) {
+                Contact cont = contList[0];
+                recp.Phone = cont.Phone;
+                recp.email = cont.Email;
+                recp.lastName = cont.LastName;
+                recp.additionalInfo = cont.d21_Additional_Information__c;
+            }else{
+                recp.Phone = '';
+                recp.email = '';
+                recp.lastName = '';
+                recp.additionalInfo = '';   
+            }
+        }
+        
+        hipaaWrapperlist.Recipientlist = new List<Recipient>{ recp };
+            
+            return hipaaWrapperlist;
+    }
+    
+    public class hipaaWrapper {
+        @AuraEnabled public List<Agency> Agencylist;
+        @AuraEnabled public List<Clinic> Cliniclist; 
+        @AuraEnabled public List<Attorney> Attorneylist;
+        @AuraEnabled public List<Recipient> Recipientlist;
+        @AuraEnabled public parentdetail parentdetails;
+    }
+    
+    public class Agency {
+        @AuraEnabled public String Id;
+        @AuraEnabled public String Name; 
+        @AuraEnabled public String Phone;
+        @AuraEnabled public String coordinatorName;
+        @AuraEnabled public String website;
+        @AuraEnabled public String email;
+    }
+    
+    public class Clinic {
+        @AuraEnabled public String Id;
+        @AuraEnabled public String Name;
+        @AuraEnabled public String Phone;
+        @AuraEnabled public String coordinatorName;
+        @AuraEnabled public String website;
+        @AuraEnabled public String email;
+        @AuraEnabled public String cityState;
+    }
+    
+    public class Attorney {
+        @AuraEnabled public String Id;
+        @AuraEnabled public String Name;
+        @AuraEnabled public String Phone;
+        @AuraEnabled public String website;
+        @AuraEnabled public String email;
+        @AuraEnabled public String cityState;
+        @AuraEnabled public String lawFirm;
+    }
+    
+    public class Recipient {
+        @AuraEnabled public String Id;
+        @AuraEnabled public String fristName;
+        @AuraEnabled public String lastName;
+        @AuraEnabled public String Phone;
+        @AuraEnabled public String email;
+        @AuraEnabled public String additionalInfo;
+    }
+    
+    public class parentdetail {
+        @AuraEnabled public String Id;
+        @AuraEnabled public String fristName;
+        @AuraEnabled public String lastName;
+        @AuraEnabled public String dob;
+        @AuraEnabled public String email;
+        @AuraEnabled public String phone;
+        @AuraEnabled public String address;
+        @AuraEnabled public String city;
+        @AuraEnabled public String state;
+        @AuraEnabled public String street;
+        @AuraEnabled public String pincode;
+    }
+    
+    @AuraEnabled
+    public static void updateDonorName(String donorId, String firstName, String lastName, String dob,string city,string street,string pincode,string state) {
+        try {
+            if (String.isBlank(donorId)) {
+                throw new AuraHandledException('Donor ID is required.');
+            }
+            if (String.isNotBlank(dob)) {
+                Date dobDate = Date.valueOf(dob);
+                Date today = Date.today();
+                if (dobDate > today) {
+                    throw new AuraHandledException('Date of Birth cannot be in the future.');
+                }
+                Integer age = today.year() - dobDate.year();
+                if (today.month() < dobDate.month() || (today.month() == dobDate.month() && today.day() < dobDate.day())) {
+                    age--;
+                }
+                if (age < 18) {
+                    throw new AuraHandledException('Donor must be at least 18 years old.');
+                }
+            }
+            Contact donorContact = [SELECT Id, FirstName, LastName, d21_Date_Of_Birth__c FROM Contact WHERE Id = :donorId LIMIT 1];
+            if (donorContact == null) {
+                throw new AuraHandledException('Contact not found for the provided Donor ID.');
+            }
+            donorContact.FirstName = firstName;
+            donorContact.LastName = lastName;
+            donorContact.MailingCity = city;
+            donorContact.MailingStreet = street;
+            donorContact.MailingPostalCode = pincode;
+             donorContact.MailingState = state;
+            if (String.isNotBlank(dob)) {
+                donorContact.d21_Date_Of_Birth__c = Date.valueOf(dob);
+            }
+            update donorContact;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error updating donor information: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static void savePDFToContact(String contactId, String pdfBase64, String fileName) {
+        try {
+            if (String.isBlank(contactId)) {
+                throw new AuraHandledException('Contact ID is required.');
+            }
+            
+            Blob pdfBlob = EncodingUtil.base64Decode(pdfBase64);
+            
+            ContentVersion cv = new ContentVersion();
+            cv.Title = fileName;
+            cv.PathOnClient = fileName;
+            cv.VersionData = pdfBlob;
+            cv.FirstPublishLocationId = contactId;
+            cv.IsMajorVersion = true;
+            
+            insert cv;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error saving PDF: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static void deleteSpermBank(String donorId, String spermBankId) {
+        try {
+            if (String.isBlank(donorId) || String.isBlank(spermBankId)) {
+                throw new AuraHandledException('Donor ID and Sperm Bank ID are required.');
+            }
+            List<d21_Donor_Agency__c> junction = [
+                SELECT Id 
+                FROM d21_Donor_Agency__c 
+                WHERE d21_Egg_Donor__c = :donorId AND Agency__c = :spermBankId
+                LIMIT 1
+            ];
+            if (!junction.isEmpty()) {
+                delete junction[0];
+            } else {
+                throw new AuraHandledException('No matching sperm bank junction record found.');
+            }
+        } catch (Exception e) {
+            throw new AuraHandledException('Error deleting sperm bank: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static void deleteAgency(String donorId, String agencyId) {
+        try {
+            if (String.isBlank(donorId) || String.isBlank(agencyId)) {
+                throw new AuraHandledException('Donor ID and Agency ID are required.');
+            }
+            List<d21_Donor_Agency__c> junction = [
+                SELECT Id 
+                FROM d21_Donor_Agency__c 
+                WHERE d21_Egg_Donor__c = :donorId AND Agency__c = :agencyId
+                LIMIT 1
+            ];
+            if (!junction.isEmpty()) {
+                delete junction[0];
+            } else {
+                throw new AuraHandledException('No matching agency junction record found.');
+            }
+        } catch (Exception e) {
+            throw new AuraHandledException('Error deleting agency: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static void deleteClinic(String donorId, String clinicId) {
+        try {
+            if (String.isBlank(donorId) || String.isBlank(clinicId)) {
+                throw new AuraHandledException('Donor ID and Clinic ID are required.');
+            }
+            List<d21_Donor_Fertility_Clinic__c> junction = [
+                SELECT Id 
+                FROM d21_Donor_Fertility_Clinic__c 
+                WHERE d21_Donor__c = :donorId AND d21_Clinic__c = :clinicId
+                LIMIT 1
+            ];
+            if (!junction.isEmpty()) {
+                delete junction[0];
+            } else {
+                throw new AuraHandledException('No matching clinic junction record found.');
+            }
+        } catch (Exception e) {
+            throw new AuraHandledException('Error deleting clinic: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static void deleteAttorney(String donorId, String attorneyId) {
+        try {
+            if (String.isBlank(donorId) || String.isBlank(attorneyId)) {
+                throw new AuraHandledException('Donor ID and Attorney ID are required.');
+            }
+            List<d21_Donor_Fertility_Attorney__c> junction = [
+                SELECT Id 
+                FROM d21_Donor_Fertility_Attorney__c 
+                WHERE d21_Donor__c = :donorId AND d21_Attorney__c = :attorneyId
+                LIMIT 1
+            ];
+            if (!junction.isEmpty()) {
+                delete junction[0];
+            } else {
+                throw new AuraHandledException('No matching attorney junction record found.');
+            }
+        } catch (Exception e) {
+            throw new AuraHandledException('Error deleting attorney: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static void deleteRecipient(String donorId, String recipientId) {
+        try {
+            if (String.isBlank(donorId) || String.isBlank(recipientId)) {
+                throw new AuraHandledException('Donor ID and Recipient ID are required.');
+            }
+            List<d21_Donor_Recipient__c> junction = [
+                SELECT Id 
+                FROM d21_Donor_Recipient__c 
+                WHERE d21_Contact__c = :donorId AND d21_Recipient__c = :recipientId
+                LIMIT 1
+            ];
+            if (!junction.isEmpty()) {
+                delete junction[0];
+            } else {
+                throw new AuraHandledException('No matching recipient junction record found.');
+            }
+        } catch (Exception e) {
+            throw new AuraHandledException('Error deleting recipient: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static String addSpermBank(String donorId, String spermBankName, String phone, String coordinatorName, String website, String email) {
+        try {
+            if (String.isBlank(donorId) || String.isBlank(spermBankName)) {
+                throw new AuraHandledException('Donor ID and Sperm Bank Name are required.');
+            }
+            Id accountRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('d21_Sperm_Bank').getRecordTypeId();
+            Account spermBank = new Account( 
+                Name = spermBankName,
+                RecordTypeId = accountRecordTypeId,
+                Phone = phone,
+                d21_Coordinator_Name__c = coordinatorName,
+                Website = website,
+                d21_Email__c = email
+            );
+            insert spermBank;
+            
+            d21_Donor_Agency__c junction = new d21_Donor_Agency__c(
+                d21_Egg_Donor__c = donorId,
+                Agency__c = spermBank.Id
+            );
+            insert junction;
+            
+            return spermBank.Id;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error adding sperm bank: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static String addAgency(String donorId, String agencyName, String phone, String coordinatorName, String website, String cityState, String email) {
+        try {
+            if (String.isBlank(donorId) || String.isBlank(agencyName)) {
+                throw new AuraHandledException('Donor ID and Agency Name are required.');
+            }
+            Id accountRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('d21_Agency').getRecordTypeId();
+            Account agency = new Account(
+                Name = agencyName,
+                RecordTypeId = accountRecordTypeId,
+                Phone = phone,
+                d21_Coordinator_Name__c = coordinatorName,
+                Website = website,
+                BillingCity = cityState,
+                d21_Email__c = email
+            );
+            insert agency;
+            
+            d21_Donor_Agency__c junction = new d21_Donor_Agency__c(
+                d21_Egg_Donor__c = donorId,
+                Agency__c = agency.Id
+            );
+            insert junction;
+            
+            return agency.Id;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error adding agency: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static String addClinic(String donorId, String clinicName, String phone, String coordinatorName, String website, String cityState, String email) {
+        try {
+            if (String.isBlank(donorId) || String.isBlank(clinicName)) {
+                throw new AuraHandledException('Donor ID and Clinic Name are required.');
+            }
+            Account clinic = new Account(
+                Name = clinicName,
+                Phone = phone,
+                d21_Coordinator_Name__c = coordinatorName,
+                Website = website,
+                BillingCity = cityState,
+                d21_Email__c = email
+            );
+            insert clinic;
+            
+            d21_Donor_Fertility_Clinic__c junction = new d21_Donor_Fertility_Clinic__c(
+                d21_Donor__c = donorId,
+                d21_Clinic__c = clinic.Id
+            );
+            insert junction;
+            
+            return clinic.Id;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error adding clinic: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static String addAttorney(String donorId, String attorneyName, String phone, String lawFirm, String website, String cityState, String email) {
+        try {
+            if (String.isBlank(donorId) || String.isBlank(attorneyName)) {
+                throw new AuraHandledException('Donor ID and Attorney Name are required.');
+            }
+          //  Id accountRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('d21_Attorney').getRecordTypeId();
+            Account attorney = new Account(
+                Name = lawFirm,
+                Website = website
+            );
+            insert attorney;
+            
+            Contact attcontact = new Contact(
+                Phone = phone,
+               // RecordTypeId = accountRecordTypeId,
+                AccountId = attorney.Id,
+                LastName = attorneyName,
+                Email = email,
+                MailingState = cityState
+            );
+            insert attcontact;
+            
+            d21_Donor_Fertility_Attorney__c junction = new d21_Donor_Fertility_Attorney__c(
+                d21_Donor__c = donorId,
+                d21_Attorney__c = attcontact.Id
+            );
+            insert junction;
+            
+            return attorney.Id;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error adding attorney: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static String addRecipient(String donorId, String firstName, String lastName, String phone, String email, String additionalInfo) {
+        try {
+            if (String.isBlank(donorId) || String.isBlank(lastName)) {
+                throw new AuraHandledException('Donor ID and Recipient Last Name are required.');
+            }
+            Id accountRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('d21_Recipient').getRecordTypeId();
+            Account recipientAccount = new Account(
+                Name = String.isNotBlank(firstName) ? firstName + ' ' + lastName : lastName,
+                RecordTypeId = accountRecordTypeId
+            );
+            insert recipientAccount;
+            
+            Contact recipientContact = new Contact(
+                FirstName = firstName,
+                LastName = lastName,
+                AccountId = recipientAccount.Id,
+                Phone = phone,
+                Email = email,
+                d21_Additional_Information__c = additionalInfo
+            );
+            insert recipientContact;
+            
+            d21_Donor_Recipient__c junction = new d21_Donor_Recipient__c(
+                d21_Contact__c = donorId,
+                d21_Recipient__c = recipientAccount.Id
+            );
+            insert junction;
+            
+            return recipientAccount.Id;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error adding recipient: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static void editSpermBank(String accountId, String spermBankName, String phone, String coordinatorName, String website, String email) {
+        try {
+            if (String.isBlank(accountId) || String.isBlank(spermBankName)) {
+                throw new AuraHandledException('Sperm Bank ID and Name are required.');
+            }
+            Account spermBank = [
+                SELECT Id, Name, Phone, d21_Coordinator_Name__c, Website, d21_Email__c 
+                FROM Account 
+                WHERE Id = :accountId 
+                LIMIT 1
+            ];
+            spermBank.Name = spermBankName;
+            spermBank.Phone = phone;
+            spermBank.d21_Coordinator_Name__c = coordinatorName;
+            spermBank.Website = website;
+            spermBank.d21_Email__c = email;
+            update spermBank;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error updating sperm bank: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static void editAgency(String accountId, String agencyName, String phone, String coordinatorName, String website, String cityState, String email) {
+        try {
+            if (String.isBlank(accountId) || String.isBlank(agencyName)) {
+                throw new AuraHandledException('Agency ID and Name are required.');
+            }
+            Account agency = [
+                SELECT Id, Name, Phone, d21_Coordinator_Name__c, Website, BillingCity, d21_Email__c 
+                FROM Account 
+                WHERE Id = :accountId 
+                LIMIT 1
+            ];
+            agency.Name = agencyName;
+            agency.Phone = phone;
+            agency.d21_Coordinator_Name__c = coordinatorName;
+            agency.Website = website;
+            agency.BillingCity = cityState;
+            agency.d21_Email__c = email;
+            update agency;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error updating agency: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static void editClinic(String accountId, String clinicName, String phone, String coordinatorName, String website, String cityState, String email) {
+        try {
+            if (String.isBlank(accountId) || String.isBlank(clinicName)) {
+                throw new AuraHandledException('Clinic ID and Name are required.');
+            }
+            Account clinic = [
+                SELECT Id, Name, Phone, d21_Coordinator_Name__c, Website, BillingCity, d21_Email__c 
+                FROM Account 
+                WHERE Id = :accountId 
+                LIMIT 1
+            ];
+            clinic.Name = clinicName;
+            clinic.Phone = phone;
+            clinic.d21_Coordinator_Name__c = coordinatorName;
+            clinic.Website = website;
+            clinic.BillingCity = cityState;
+            clinic.d21_Email__c = email;
+            update clinic;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error updating clinic: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static void editAttorney(String accountId, String attorneyName, String phone, String lawFirm, String website, String cityState, String email) {
+        try {
+            if (String.isBlank(accountId) || String.isBlank(attorneyName)) {
+                throw new AuraHandledException('Attorney ID and Name are required.');
+            }
+            /* Account attorney = [
+SELECT Id, Name, Website 
+FROM Account 
+WHERE Id = :accountId 
+LIMIT 1
+];
+attorney.Name = lawFirm;
+attorney.Website = website;
+update attorney;*/
+            
+            Contact attContact = [
+                SELECT Id, Phone, Email, MailingState, LastName ,AccountId
+                FROM Contact 
+                WHERE id = :accountId 
+                LIMIT 1
+            ];
+            attContact.Phone = phone;
+            attContact.Email = email;
+            attContact.MailingState = cityState;
+            attContact.LastName = attorneyName;
+            // attContact.Account_r.name = attorneyName;
+            update attContact;
+            
+            if (attContact.AccountId != null) {
+                Account acc = [
+                    SELECT Id, Name, Website
+                    FROM Account
+                    WHERE Id = :attContact.AccountId
+                    LIMIT 1
+                ];
+                
+                if (!String.isBlank(lawFirm)) {
+                    acc.Name = lawFirm;
+                }
+                
+                acc.Website = website;
+                update acc;
+            }
+            
+        } catch (Exception e) {
+            throw new AuraHandledException('Error updating attorney: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static void editRecipient(String accountId, String firstName, String lastName, String phone, String email, String additionalInfo) {
+        try {
+            if (String.isBlank(accountId) || String.isBlank(lastName)) {
+                throw new AuraHandledException('Recipient ID and Last Name are required.');
+            }
+            Account recipientAccount = [
+                SELECT Id, Name 
+                FROM Account 
+                WHERE Id = :accountId 
+                LIMIT 1
+            ];
+            recipientAccount.Name = String.isNotBlank(firstName) ? firstName + ' ' + lastName : lastName;
+            update recipientAccount;
+            
+            Contact recipientContact = [
+                SELECT Id, FirstName, LastName, Phone, Email, d21_Additional_Information__c 
+                FROM Contact 
+                WHERE AccountId = :accountId 
+                LIMIT 1
+            ];
+            recipientContact.FirstName = firstName;
+            recipientContact.LastName = lastName;
+            recipientContact.Phone = phone;
+            recipientContact.Email = email;
+            recipientContact.d21_Additional_Information__c = additionalInfo;
+            update recipientContact;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error updating recipient: ' + e.getMessage());
+        }
+    }
+}

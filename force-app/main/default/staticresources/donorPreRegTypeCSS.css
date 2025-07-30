@@ -1,0 +1,92 @@
+/* Main layout container */
+.maindivheight {
+    background: #E8E3DC;
+    min-height: 100vh;
+}
+
+/* Centered layout item with flexbox and text alignment */
+.layout-item-center {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    text-align: center;
+}
+
+/* Font styles for text elements */
+.fontcls {
+    font-family: Inter, sans-serif;
+}
+
+.title-text {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.subtitle-text {
+    font-size: 1rem;
+    color: #333;
+}
+
+.info-text {
+    font-size: 1rem;
+    margin-top: 1rem;
+}
+
+/* Donor label container */
+.donor-label-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+/* Donor label styles */
+.donorLabelCls {
+    padding: 16px;
+    width: 100%;
+    border: 2px solid black;
+    border-radius: 5px;
+    background: white;
+    cursor: pointer;
+    font-family: Inter, sans-serif;
+    line-height: 1.5;
+}
+
+/* Next button styles */
+.btncls {
+    background-color: black;
+    color: white;
+    font-family: Inter, sans-serif;
+    padding: 1.5%;
+    border-radius: 6px;
+    width: 23%;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+/* Image container */
+.image-container {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    position: relative;
+}
+
+/* Image styles */
+.imgcls {
+    position: absolute;
+    right: 0em;
+    width: 100%;
+}
+
+/* Background class (if used elsewhere) */
+.bgcls {
+    color: #000;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    width: 100%;
+    position: relative;
+}

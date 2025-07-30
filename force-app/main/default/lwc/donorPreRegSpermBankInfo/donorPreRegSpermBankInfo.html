@@ -1,0 +1,203 @@
+<template>
+    <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium">
+        <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+            <span class="headingcls">Sperm Bank Details</span>
+            <span lang="en" class="textcls agencyDescriptionCls">
+                Please list the information for any sperm banks you completed a donation with or are working on completing a donation with:
+            </span>
+            <div class="checkboxcls">
+                <lightning-input 
+                    type="checkbox" 
+                    onchange={handleNoSpermBankChange} 
+                    disabled={checkboxStatus}
+                    checked={noSpermBankChecked}
+                    class="checkboxPrimaryCls">
+                </lightning-input>
+                <span lang="en" class="textcls agencyDescriptionCls">Check here if you did not work with any sperm banks</span>
+            </div>
+        </lightning-layout-item>
+        <c-d21_-custom-spinner load-spinner = {loadSpinner}></c-d21_-custom-spinner>
+
+        <!-- Delete Confirmation Popup -->
+        <div if:true={showDeletePopup}>
+            <div class="modalBackdrop">
+                <div class="modalContainer slds-p-around_medium">
+                    <lightning-icon icon-name="utility:warning" variant="warning" size="small" class="slds-p-top_small"></lightning-icon>
+                    <span class="headingcls slds-p-top_medium">Confirm Deletion</span>
+                    <span class="textcls slds-p-top_small slds-p-bottom_small">Are you sure you want to delete Sperm Bank #{deleteSpermBankNumber}?</span>
+                    <div class="confirmPopupCls slds-p-top_small" style="">
+                        <button class="popupNextBtn" label="Yes" onclick={handleDeleteYes}>Yes</button>
+                        <button class="popupBackBtn" label="No" onclick={handleDeleteNo}>No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <template if:true={spermBanks} for:each={spermBanks} for:item="spermBank" for:index="index">
+            <lightning-layout-item size="12" key={spermBank.id}>
+                <!-- Add line only if not the first section -->
+                <template if:true={index}>
+                    <div class="section-divider slds-p-bottom_medium"></div>
+                </template>
+                <div style="display:flex;justify-content:space-between;width:97%">
+                    <h3 class="headingcls slds-p-left_x-small">
+                        <template if:false={showNumberedHeadings}>
+                            <template if:false={index}>
+                                {spermBank.clinicHeading}
+                            </template>
+                            <template if:true={index}>
+                                Sperm Bank #{spermBank.clinicNumber}
+                            </template>
+                        </template>
+                        <template if:true={showNumberedHeadings}>
+                            Sperm Bank #{spermBank.clinicNumber}
+                        </template>
+                    </h3>
+                    <template if:true={showNumberedHeadings}>
+                        <lightning-icon icon-name="action:delete" size="small" data-index={index}
+                            onclick={handleDeleteConfirm} class="delete-icon">
+                        </lightning-icon>
+                    </template>
+                    <template if:false={showNumberedHeadings}>
+                        <template if:true={index}>
+                            <lightning-icon icon-name="action:delete" size="small" data-index={index}
+                                onclick={handleDeleteConfirm} class="delete-icon">
+                            </lightning-icon>
+                        </template>
+                    </template>
+                </div>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputParentCls">
+                <span class="textcls agencyDescriptionCls inputscls">Sperm Bank Name</span>
+                <lightning-input 
+                    type="text" 
+                    value={spermBank.name} 
+                    maxlength="255"
+                    onchange={handleInputChange} 
+                    onblur={handleInputBlur} 
+                    name="name" 
+                    data-index={index}
+                    disabled={noSpermBankChecked}
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputParentCls">
+                <span class="textcls inputscls">Sperm Bank Website</span>
+                <lightning-input 
+                    type="text" 
+                    value={spermBank.website}
+                    onchange={handleInputChange} 
+                    onblur={handleInputBlur} 
+                    name="website" 
+                    data-index={index}
+                    placeholder="https://www.youtube.com"
+                    disabled={noSpermBankChecked}
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputParentCls">
+                <span class="textcls inputscls">Sperm Bank Phone</span>
+                <lightning-input 
+                    type="tel" 
+                    value={spermBank.phone}
+                    onchange={handleInputChange}
+                    onblur={handleInputBlur} 
+                    name="phone" 
+                    data-index={index}
+                    disabled={noSpermBankChecked}
+                    pattern="^\+\d{1,3}(?=\d{10}$)\d{10}$"
+                    message-when-pattern-mismatch="Enter a valid phone number with country code, e.g: +911234567890."
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputParentCls">
+                <span class="textcls inputscls">Sperm Bank Email</span>
+                <lightning-input 
+                    type="email" 
+                    value={spermBank.email}
+                    onchange={handleInputChange} 
+                    onblur={handleInputBlur} 
+                    name="email" 
+                    data-index={index}
+                    disabled={noSpermBankChecked}
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputParentCls">
+                <span class="textcls inputscls">Coordinator Name</span>
+                <lightning-input 
+                    type="text" 
+                    value={spermBank.coordinator}
+                    onchange={handleInputChange} 
+                    onblur={handleInputBlur} 
+                    name="coordinator"
+                    data-index={index}
+                    disabled={noSpermBankChecked}
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={spermBank.id}>
+                <span class="textcls inputscls">Do you know your donor code with this bank?</span>
+                <lightning-radio-group
+                    name= {spermBank.clinicNumber}
+                    options={donorCodeOptions}
+                    value={spermBank.knowDonorCode}
+                    onchange={handleDonorCodeChange}
+                    type="radio"
+                    data-index={index}
+                    data-clinicnumber = {spermBank.clinicNumber}
+                    disabled={noSpermBankChecked}
+                    class="textcls donorcodeinputconfirmationcls">
+                </lightning-radio-group>
+            </lightning-layout-item>
+
+            <template if:true={spermBank.showDonorCodeInput}>
+                <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputParentCls">
+                    <span class="textcls inputscls">Please enter donor code:</span>
+                    <!-- <lightning-input
+                        type="text"
+                        value={spermBank.donorCode}
+                        onchange={handleInputChange}
+                        onblur={handleInputBlur}
+                        name="donorCode"
+                        placeholder="Please enter 6 digits donor code"
+                        
+                         pattern="^SDN-\d{6}$"
+                        message-when-pattern-mismatch="Format must be SDN- followed by 6 digits (e.g., SDN-123456)"
+                        data-index={index}
+                        disabled={noSpermBankChecked}
+                        class="textcls donorcodeinputcls">
+                    </lightning-input> -->
+
+                     <lightning-input
+                        type="text"
+                        value={spermBank.donorCode}
+                        onchange={handleInputChange}
+                        onblur={handleInputBlur}
+                        name="donorCode"
+                        placeholder="Please enter the donor code you were assigned by your sperm bank"
+                        data-index={index}
+                        disabled={noSpermBankChecked}
+                        class="textcls donorcodeinputcls">
+                    </lightning-input>
+
+                </lightning-layout-item>
+            </template>
+        </template>
+
+        <lightning-layout-item size="12" padding="around-small" class="addagencyParentcls">
+            <span class={disableAddAnotherSpermBank} onclick={handleAddAnotherClick}>+ Add Another Sperm Bank</span>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
+            <div class="backbtn textcls" onclick={handleSpermBankInfoBack}>Back</div>
+            <div class="nextbtncls textcls" onclick={handleSpermBankInfoNext}>Next</div>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

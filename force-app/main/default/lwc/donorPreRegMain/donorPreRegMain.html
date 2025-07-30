@@ -1,0 +1,55 @@
+<template>
+    <lightning-layout multiple-rows style="background: #E8E3DC;" class="maindivheight">
+
+        <!-- Donor header starts here -->
+        <lightning-layout-item size="12" style="position:fixed;z-index:9999">
+            <c-donor-pre-reg-header onhomebuttonclick={handleHomeButtonClick}></c-donor-pre-reg-header>
+        </lightning-layout-item>
+        <!-- Donor header ends here -->
+
+        <lightning-layout-item size="12" class="gapcls">
+        </lightning-layout-item>
+
+        <!-- Main Component Sidebar -->
+         <lightning-layout-item size={sideBarSize} class="sidebarcomponentcls" if:true={showSideBar}>
+            <c-donor-pre-reg-side-bar></c-donor-pre-reg-side-bar>
+         </lightning-layout-item>
+        <!-- Main Component sidebar ends here-->
+        
+         <!-- Main Component main section -->
+          <lightning-layout-item size={fullScreen} padding="around-small" class="layoutcontainercls">
+                <lightning-layout-item size="1" padding="around-small" class="maincomponentcls">
+                </lightning-layout-item>
+                <lightning-layout-item size="8" padding="around-small" class="maincomponentcls maincomponentbordercls"  >
+                     <lightning-progress-bar value= {progressValue} size="medium" class="" variant = "circular" style="--slds-g-color-brand-base-50 : black;"></lightning-progress-bar>
+                     <div class="slds-p-bottom_large"></div>
+
+                    <c-donor-pre-reg-types onnext={handleNext} if:true={showDonorTypes}></c-donor-pre-reg-types>
+
+                    <c-donor-pre-reg-video onback={handleBack} oncontinue={handleContinue} if:true={showVideo}></c-donor-pre-reg-video>
+
+                    <c-donor-pre-reg-get-started if:true={showGetStarted} oncancel={handleGetStartedCancel} oncontinue={handleGetStartedContinue}></c-donor-pre-reg-get-started>      
+
+                    <c-donor-pre-reg-code-submission onback={handleCodeSubmissionBack} onnext={handleCodeSubmissionNext} if:true={showCodeSubmission}></c-donor-pre-reg-code-submission>
+
+                    <c-donor-pre-reg-donation-basics onback={handleDonationBasicsBack} onnext={handleDonationBasicsNext} if:true={showDonationBasics}></c-donor-pre-reg-donation-basics>
+                    
+                    <c-donor-pre-reg-sperm-bank-info-with-s-d-n if:true={showSpermBankInfoWithSDN} onnext={handleSpermBankInfoWithSDNNext} onback={handleSpermBankInfoWithSDNBack}></c-donor-pre-reg-sperm-bank-info-with-s-d-n>
+
+                    <c-donor-pre-reg-clinic-info onnext={handleClinicInfoNext} onback={handleClinicInfoBack} if:true={showClinicInfoWithNoSDN}></c-donor-pre-reg-clinic-info>
+
+                    <c-donor-pre-reg-clinic-info-with-s-d-n onnext={handleClinicInfoWithSDNNext} onback={handleClinicInfoWithSDNBack} if:true={showClinicInfoWithSDN}></c-donor-pre-reg-clinic-info-with-s-d-n>
+
+                    <c-donor-pre-reg-sperm-bank-info onback={handleSpermBankInfoBack} onnext={handleSpermBankInfoNext} if:true={showSpermBankInfo}></c-donor-pre-reg-sperm-bank-info>
+
+                    <c-donor-pre-reg-recipient-details onback={handleRecipientDetailsBack} onnext={handleRecipientDetailsNext} if:true={showRecipientDetails}></c-donor-pre-reg-recipient-details>
+
+                </lightning-layout-item>   
+                <lightning-layout-item size="1"  class="scrollbarCls">
+                </lightning-layout-item>
+          </lightning-layout-item>
+         <!--mobile version -->
+        <!-- Main Component main section ends here-->
+    </lightning-layout>
+
+</template>

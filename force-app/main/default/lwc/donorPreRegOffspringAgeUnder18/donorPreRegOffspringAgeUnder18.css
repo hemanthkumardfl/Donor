@@ -1,0 +1,294 @@
+.offspringAgeUnder18Cls{
+    
+}
+.headerIconcls{
+	font-size: 30px;
+}
+.headerParentCls{
+	display: flex;
+	place-content: center;
+	flex-direction: column;
+    align-items: center;
+    gap: 1em;
+}
+.headerCls{
+	font-size: large;
+    font-weight: 600;
+    font-family: Inter, sans-serif;
+}
+.bodyCls{
+	background: white;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+.textcls{
+	font-family: Inter, sans-serif;
+}
+.subheadingcls{
+	font-family: Inter, sans-serif;
+	font-weight: 600;
+	font-size: medium;
+}
+.videocls{
+	width: 100%;
+	height: 350px; 
+	border: none;
+}
+.sectionsCls{
+	display: flex;
+	flex-direction: column;
+	gap: 1.5em;
+}
+.parentSectionCls{
+	display: flex;
+}
+.logoParentCls{
+	text-align : center;
+}
+
+.envelopeIconcls, .commentIconcls{
+	width: 60px;
+}
+.treeIconcls{
+	width: 40px;
+}
+
+.bellIconcls{
+	width: 30px;
+}
+.blueSymbolCls{
+	font-size: 28px;
+}
+
+.sectionheadercls{
+	font-family: Inter, sans-serif;
+	font-weight: 600;
+	font-size: 18px;
+}
+
+.buttoncls, .footerbuttoncls{
+	display: flex;
+	gap: 1em;
+}
+.footerbuttoncls{
+	justify-content: space-between;
+}
+
+.backbtn, .baseVariantBtnCls{
+	border: 1px solid black;
+	background: white;
+	color: black;
+	text-align: center;
+	border-radius: 5px;
+	width: max-content;
+	min-height: 3em;
+	padding: 11px;
+	cursor: pointer;
+	font-family: Inter, sans-serif;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.nextbtncls, .clickhereBtncls{
+	border: 1px solid black;
+	background: black;
+	color: white;
+	text-align: center;
+	border-radius: 5px;
+	width: max-content;
+	min-height: 3em;
+	padding: 10px;
+	cursor: pointer;
+	font-family: Inter, sans-serif;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.clickhereBtncls{
+	width: max-content;
+}
+.baseVariantBtnCls{
+	width: max-content;
+}
+
+.containerfootertext{
+	color: #787575;
+}
+ul{
+	list-style-type:disc
+}
+
+/* WebKit-based browsers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 12px; 
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+/* scrollbar ends*/
+
+
+/* For mobile devices - stack the navigation */
+@media (max-width: 768px) {
+	.buttoncls, .footerbuttoncls{
+		/* place-content: flex-start; */
+		flex-direction: column;
+		align-items: center;
+		gap: 0.7em;
+	}
+	
+	.backbtn, .nextbtncls, .baseVariantBtnCls, .clickhereBtncls{
+		width: 100%;
+        min-height: 3em;
+        font-size: large;
+        font-weight: bold;
+        /* padding-top: 3%; */
+	}
+	.videocls{
+		width: 100%; 
+		height: 200px;
+	}
+
+	.textcls{
+        font-size: 16.1px;
+		font-family: Inter, sans-serif;
+		hyphens: auto;
+		-webkit-hyphens: auto;
+		-ms-hyphens: auto;
+		word-break: break-word;
+		overflow-wrap: break-word;
+    }
+
+	.headingcls{
+		font-size: 18.7px;
+		font-weight: 600;
+   	}
+	.subheadingcls{
+		font-size: 16.7px;
+		font-weight: 600;
+	}
+	.sectionheadercls{
+		font-size: 15.7px;
+		font-weight: 600;
+	}
+	.sectionsCls, .parentSectionCls{
+		padding: 0;
+		padding-bottom: 2%;
+	}
+	.parentSectionCls{
+		gap: 1em;
+	}
+	.headerIconcls{
+		font-size: 20px;
+	}
+}
+/* media queries to target gap between side bar and its top*/
+@media (min-width: 1400px) and (max-width: 1599px) { /* 90 */
+	.textcls{
+        font-size: 14.2px;
+    }
+	.headingcls{
+		 font-size: 18.7px;
+		 font-weight: 600;
+	}
+	.subheadingcls{
+		font-size: 16.7px;
+		font-weight: 600;
+	}
+	.sectionheadercls{
+		font-size: 15.7px;
+		font-weight: 600;
+	}
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {/* 100 */
+	.textcls{
+        font-size: 13.3px;
+    }
+	
+	.headingcls{
+		 font-size: 17.5px;
+		 font-weight: 600;
+	}
+	.subheadingcls{
+		font-size: 15.7px;
+		font-weight: 600;
+	}
+	.sectionheadercls{
+		font-size: 14.7px;
+		font-weight: 600;
+	}
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {/* 110 */
+	 .textcls{
+        font-size: 12.8px;
+    }
+
+	.headingcls{
+		 font-size: 16.1px;
+		 font-weight: 600;
+	}
+	.subheadingcls{
+		font-size: 14.7px;
+		font-weight: 600;
+	}
+	.sectionheadercls{
+		font-size: 13.7px;
+		font-weight: 600;
+	}
+}
+
+@media (min-width: 769px) and (max-width: 1100px) { /* 125 && above*/
+	.textcls{
+        font-size: 11.4px;
+    }
+
+	.headingcls{
+		 font-size: 16px;
+		 font-weight: 600;
+	}
+	.subheadingcls{
+		font-size: 14px;
+		font-weight: 600;
+	}
+	.sectionheadercls{
+		font-size: 13px;
+		font-weight: 600;
+	}
+}
+@media (min-width: 1600px) {
+    .textcls{
+        font-size: 15.4px;
+    }
+
+	.headingcls{
+		 font-size: 21.5px;
+		 font-weight: 600;
+	}
+	.subheadingcls{
+		font-size: 19.7px;
+		font-weight: 600;
+	}
+	.sectionheadercls{
+		font-size: 18.5px;
+		font-weight: 600;
+	}
+}
+/* for safari browser starts here*/
+@supports (-webkit-touch-callout: none) {
+   
+}
+/* for safari browser ends here*/

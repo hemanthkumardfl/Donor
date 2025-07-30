@@ -1,0 +1,181 @@
+<template>
+    <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium">
+        <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+            <span class="headingcls">Fertility Clinic Details</span>
+            <span lang="en" class="textcls agencyDescriptionCls">
+                Please list the information for any fertility clinics you completed a donation with or are working on completing a donation with:
+            </span>
+            <div class="checkboxcls">
+                <lightning-input 
+                    type="checkbox" 
+                    onchange={handleNoClinicChange} 
+                    disabled={checkboxStatus}
+                    checked={noClinicChecked}
+                    class="checkboxPrimaryCls">
+                </lightning-input>
+                <span lang="en" class="textcls agencyDescriptionCls">Check here if you did not work with any clinics</span>
+            </div>
+        </lightning-layout-item>
+
+        <!-- Delete Confirmation Popup -->
+        <div if:true={showDeletePopup}>
+            <div class="modalBackdrop">
+                <div class="modalContainer slds-p-around_medium">
+                    <lightning-icon icon-name="utility:warning" variant="warning" size="small" class="slds-p-top_small"></lightning-icon>
+                    <span class="headingcls slds-p-top_medium">Confirm Deletion</span>
+                    <span class="textcls slds-p-top_small slds-p-bottom_small">Are you sure you want to delete Clinic #{deleteClinicNumber}?</span>
+                    <div class="confirmPopupCls slds-p-top_small" style="">
+                        <button class="popupNextBtn" label="Yes" onclick={handleDeleteYes}>Yes</button>
+                        <button class="popupBackBtn" label="No" onclick={handleDeleteNo}>No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <template if:true={clinics} for:each={clinics} for:item="clinic" for:index="index">
+            <lightning-layout-item size="12" key={clinic.id}>
+                <!-- Add line only if not the first section -->
+                <template if:true={index}>
+                    <div class="section-divider slds-p-bottom_medium"></div>
+                </template>
+                <div style="display:flex;justify-content:space-between;width:97%">
+                    <h3 class="headingcls slds-p-left_x-small">
+                        <template if:false={showNumberedHeadings}>
+                            <template if:false={index}>
+                                {clinic.clinicHeading}
+                            </template>
+                            <template if:true={index}>
+                                Clinic #{clinic.clinicNumber}
+                            </template>
+                        </template>
+                        <template if:true={showNumberedHeadings}>
+                            Clinic #{clinic.clinicNumber}
+                        </template>
+                    </h3>
+                    <template if:true={showNumberedHeadings}>
+                        <lightning-icon icon-name="action:delete" size="small" data-index={index}
+                            onclick={handleDeleteConfirm} class="delete-icon">
+                        </lightning-icon>
+                    </template>
+                    <template if:false={showNumberedHeadings}>
+                        <template if:true={index}>
+                            <lightning-icon icon-name="action:delete" size="small" data-index={index}
+                                onclick={handleDeleteConfirm} class="delete-icon">
+                            </lightning-icon>
+                        </template>
+                    </template>
+                </div>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={clinic.id} class="inputParentCls">
+                <span class="textcls agencyDescriptionCls inputscls">Clinic Name</span>
+                <lightning-input 
+                    type="text" 
+                    value={clinic.name} 
+                    maxlength="255"
+                    onchange={handleInputChange} 
+                    onblur={handleInputBlur} 
+                    name="name" 
+                    data-index={index}
+                    disabled={noClinicChecked}
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={clinic.id} class="inputParentCls">
+                <span class="textcls inputscls">Doctor's Name</span>
+                <lightning-input 
+                    type="text" 
+                    value={clinic.doctorName}
+                    onchange={handleInputChange} 
+                    onblur={handleInputBlur} 
+                    name="doctorName" 
+                    data-index={index}
+                    disabled={noClinicChecked}
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={clinic.id} class="inputParentCls">
+                <span class="textcls inputscls">Clinic Website</span>
+                <lightning-input 
+                    type="text" 
+                    value={clinic.website}
+                    onchange={handleInputChange} 
+                    onblur={handleInputBlur} 
+                    name="website" 
+                    data-index={index}
+                    disabled={noClinicChecked}
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={clinic.id} class="inputParentCls">
+                <span class="textcls inputscls">City/State of Clinic</span>
+                <lightning-input 
+                    type="text" 
+                    value={clinic.cityState}
+                    onchange={handleInputChange} 
+                    onblur={handleInputBlur} 
+                    name="cityState" 
+                    data-index={index}
+                    disabled={noClinicChecked}
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={clinic.id} class="inputParentCls">
+                <span class="textcls inputscls">Clinic Phone</span>
+                <lightning-input 
+                    type="tel" 
+                    value={clinic.phone}
+                    onchange={handleInputChange}
+                    onblur={handleInputBlur} 
+                    name="phone" 
+                    data-index={index}
+                    disabled={noClinicChecked}
+                    pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                    message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={clinic.id} class="inputParentCls">
+                <span class="textcls inputscls">Clinic Email</span>
+                <lightning-input 
+                    type="email" 
+                    value={clinic.email}
+                    onchange={handleInputChange} 
+                    onblur={handleInputBlur} 
+                    name="email" 
+                    data-index={index}
+                    disabled={noClinicChecked}
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={clinic.id} class="inputParentCls">
+                <span class="textcls inputscls">Coordinator/Nurse Name</span>
+                <lightning-input 
+                    type="text" 
+                    value={clinic.coordinator}
+                    onchange={handleInputChange} 
+                    onblur={handleInputBlur} 
+                    name="coordinator"
+                    data-index={index}
+                    disabled={noClinicChecked}
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+        </template>
+
+        <lightning-layout-item size="12" padding="around-small" cfbclass="addagencyParentcls">
+            <span class={disableAddAnotherClinic} onclick={handleAddAnotherClick}>+ Add Another Clinic</span>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
+            <div class="backbtn textcls" onclick={handleClinicInfoBack}>Back</div>
+            <div class="nextbtncls textcls" onclick={handleClinicInfoNext}>Next</div>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

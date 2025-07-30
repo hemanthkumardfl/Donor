@@ -1,0 +1,54 @@
+<template>
+  <lightning-layout multiple-rows class="donationbasicscls" style="background: white;">
+    <div class="slds-p-around_medium">
+      <p class="headingcls slds-text-heading_medium slds-m-bottom_medium">
+        Additional Donations - Donation Details
+      </p>
+      
+      <span class="textcls slds-p-top_medium">Aside from the embryo donation, have you ever been an egg donor in any other capacity whether through an egg bank, donor agency, clinic program, or to a family directly?</span>
+      <div class="radioinputs slds-p-bottom_large slds-p-top_small">
+        <lightning-input type="radio" variant="label-hidden" name="spermBank" value="Yes" onchange={handleSpermBankChange}></lightning-input>
+        <span class="radioinputchild slds-m-right_small">Yes</span>
+        <lightning-input type="radio" variant="label-hidden" name="spermBank" value="No" onchange={handleSpermBankChange}></lightning-input>
+        <span class="radioinputchild">No</span>
+      </div>
+
+      <lightning-layout-item size="12" class="textcls slds-m-bottom_medium">
+        <span class="slds-p-top_medium slds-p-bottom_medium">How many total donations have you completed as an egg donor (do not include any cycles you did for your own journeys)?</span>
+      </lightning-layout-item>
+
+      <lightning-layout-item size="12" padding="around-medium"
+        class="slds-box slds-box_x-small slds-theme_default slds-m-bottom_large slds-m-top_small"
+        style="display: flex; gap: 1em; align-items: center; width: fit-content; border-radius: 5px;">
+        <span class="textcls" onclick={handleRemove} style="cursor: pointer;"> - </span>
+        <span class="textcls" style="font-size: medium;">{liveBirths}</span>
+        <span class="textcls" onclick={handleAddNew} style="cursor: pointer;"> + </span>
+      </lightning-layout-item>
+
+       <p class="textcls" padding="around-medium" >Check all that apply for all of your donations excluding your embryo donation cycle:</p>
+      <lightning-layout-item size="12" class="slds-p-left_small slds-p-right_small slds-p-top_small">
+        <div class="checkboxcls">
+          <lightning-input type="checkbox" name="agencyDonation" onchange={handleNoAgencyChange}></lightning-input>
+          <span class="textcls checkboxspancls">I donated through a donor agency/egg bank</span>
+        </div>
+      </lightning-layout-item>
+      <lightning-layout-item size="12" class="slds-p-left_small slds-p-right_small slds-p-top_small">
+        <div class="checkboxcls">
+          <lightning-input type="checkbox" name="clinicDonation" onchange={handleNoAgencyChange}></lightning-input>
+          <span class="textcls checkboxspancls">I donated through a clinic's donor program</span>
+        </div>
+      </lightning-layout-item>
+      <lightning-layout-item size="12" class="slds-p-left_small slds-p-right_small slds-p-top_small">
+        <div class="checkboxcls">
+          <lightning-input type="checkbox" name="independentDonation" onchange={handleNoAgencyChange}></lightning-input>
+          <span class="textcls checkboxspancls">I donated to a family or families independently</span>
+        </div>
+      </lightning-layout-item>
+
+      <div class="buttonscls slds-m-top_large">
+        <div class="backbtn textcls" onclick={handleDonationBasicsBack}>Back</div>
+        <div class="nextbtncls textcls" onclick={handleDonationBasicsNext}>Next</div>
+      </div>
+    </div>
+  </lightning-layout>
+</template>

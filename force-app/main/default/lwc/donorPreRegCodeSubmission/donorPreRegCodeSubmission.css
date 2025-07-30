@@ -1,0 +1,259 @@
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #4a4a4a;
+}
+
+.delete-icon {
+    cursor: pointer;
+    --slds-c-icon-color-foreground-default: #ce1212;
+}
+
+label.slds-form-element__label {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.codeiconcls {
+    --slds-c-icon-color-foreground-default: #36670f;
+}
+
+.slds-card {
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.headercls {
+    font-family: Inter, sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* BUTTON CONTAINER - UPDATED */
+.buttons-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.ednInputCls,
+.pmcInputCls,
+.sdnInputCls,
+.recInputCls,
+.embInputCls {
+    width: 35px;
+    border-radius: 5px;
+    height: 32px;
+    border: 1px solid gray;
+    text-align: center;
+    margin-right: 0.25rem;
+}
+
+.slds-card {
+    padding: 1.5rem;
+}
+
+.marginClass {
+    margin-left: 8%;
+    margin-right: 8%;
+}
+
+.error-border {
+    border: 2px solid rgb(189, 57, 100);
+    border-radius: 0.25rem;
+}
+
+.code-input-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-top: 0.5rem;
+}
+
+.code-input-container lightning-input {
+    width: 35px !important;
+    min-width: 35px;
+}
+
+.add-code-link {
+    color: #006dcc;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+    display: inline-block;
+}
+
+.cursorClass {
+    cursor: pointer;
+}
+
+.buttonscls {
+    display: flex;
+    place-content: center;
+    gap: 2em;
+    justify-content: space-between;
+    /* box-shadow: 0 -1px 6px -2px rgba(7 6 6 / 50%); */
+}
+
+.backbtn {
+    border: 1px solid black;
+    background: white;
+    color: black;
+    text-align: center;
+    border-radius: 5px;
+    width: 18%;
+    min-height: 3em;
+    padding: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.nextbtncls {
+    border: 1px solid black;
+    background: black;
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    width: 18%;
+    min-height: 3em;
+    padding: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.fontSizeClass {
+    font-weight: 500 !important;
+    line-height: 16px !important;
+    /* 100% */
+}
+
+.agencyDescriptionCls {
+    color: color(display-p3 0.1216 0.1608 0.2157);
+    line-height: normal !important;
+}
+
+.skipDecriptioncls {
+    display: flex;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .code-input-container {
+        flex-wrap: wrap;
+    }
+
+    .code-input-container lightning-input {
+        width: 30px !important;
+        min-width: 30px;
+    }
+
+    .agencyDescriptionCls {
+        /* margin-left: 0.5rem;
+        margin-right: 0.5rem; */
+        hyphens: auto !important;
+        -webkit-hyphens: auto !important;
+        -ms-hyphens: auto !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        font-size: 12.1px;
+    }
+
+    .marginClass {
+        padding: 2%;
+        margin: 0;
+    }
+
+    .paddingcls {
+        padding: 2%;
+    }
+
+    .fontSizeClass,
+    .textcls {
+        font-size: 12.1px;
+    }
+
+    /* .backbtn, .nextbtncls {
+        padding: 0.75rem 1rem;
+        min-width: 100px;
+    } */
+
+    .buttonscls {
+        place-content: flex-start;
+        box-shadow: none;
+        align-items: center;
+    }
+
+    .backbtn,
+    .nextbtncls {
+        width: 50%;
+        min-height: 3em;
+        font-size: large;
+        font-weight: bold;
+        padding-top: 3%;
+    }
+
+    /* .headercls {
+        font-size: 1.25rem;
+        text-align: center;
+        padding: 0 0.5rem;
+    } */
+
+    .textcls {
+        font-size: 12.1px;
+    }
+
+    .headercls {
+        font-size: 18.7px;
+        font-weight: 600;
+    }
+
+    .ednInputCls,
+    .pmcInputCls,
+    .sdnInputCls,
+    .embInputCls,
+    .recInputCls {
+        width: 30px;
+        border-radius: 5px;
+        height: 32px;
+        border: 1px solid gray;
+        text-align: center;
+        margin-right: 0;
+    }
+
+    .slds-card {
+        padding: 0.7rem;
+    }
+
+    .checkboxPaddingCls {
+        padding-right: 0;
+    }
+}
+
+@supports (-webkit-touch-callout: none) {
+    .fontSizeClass {
+        font-size: 13px;
+        font-weight: 600 !important;
+    }
+
+    .agencyDescriptionCls {
+        font-size: 13px !important;
+    }
+}
+
+/* @media (max-width: 480px) {
+    .headercls {
+        font-size: 1.1rem;
+    }
+    
+    .backbtn, .nextbtncls {
+        font-size: 13px;
+    }
+} */

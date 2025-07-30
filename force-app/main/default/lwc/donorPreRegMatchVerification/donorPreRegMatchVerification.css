@@ -1,0 +1,267 @@
+.matchverifycls{
+	background: white;border-radius: 8px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.textcls{
+	font-family: Inter, sans-serif;
+}
+.headingcls{
+	font-family: Inter, sans-serif;
+	text-align: center;
+
+}
+.congratulationscls{
+	text-align: center;
+	font-weight: 600;
+}
+
+.videocls{
+	width: 100%; 
+	height: 300px;
+}
+
+.paddingcls{
+	padding-top: 1%;
+	padding-bottom: 3%;
+}
+
+.personalportalsectioncls{
+	background: #f5f5f5e6;
+}
+
+.dummycls{
+	min-width:15%
+}
+
+.personalportalsectioncls p{
+	text-align: center;
+	font-weight: 600;
+}
+
+.portalpointscls{
+	display: flex;
+	gap: 1em;
+	align-items: center;
+	place-content: flex-start;
+}
+
+.iconcls{
+	--slds-c-icon-color-foreground: #179b20;
+ 	--slds-c-icon-color-background: #f8f7f7;
+}
+
+.buttonscls{
+	display: flex;
+	place-content: center;
+	align-items: center;
+	gap: 1em;
+}
+
+.buttonscls div{
+	border: 1px solid black;
+	background: black;
+	color: white;
+	text-align: center;
+	border-radius: 5px;
+	width: 25%;
+	min-height: 3em;
+	padding : 10px;
+	cursor: pointer;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.msgcls{
+	letter-spacing:0.3px;
+	word-break: break-all;
+	hyphens: auto;
+	-webkit-hyphens: auto;
+	-ms-hyphens: auto;
+	word-break: break-word;
+	overflow-wrap: break-word;
+}
+
+/* For mobile devices - stack the navigation */
+@media (max-width: 768px) {
+
+	.buttonscls{
+		flex-direction: column;
+	}
+	
+	.buttonscls div{
+		width: 100%;
+        min-height: 3em;
+        /* font-size: large; */
+        font-weight: bold;
+        padding-top: 3%;
+	}
+	.textcls{
+        font-size: 12.2px;
+    }
+
+	.headingcls{
+		font-size: 18.7px;
+		font-weight: 600;
+		padding-right: 0;
+		padding-left: 0;
+		padding-bottom: 0;
+   }
+   .paddingcls, .personalportalsectioncls{
+		padding: 2.5%;
+		padding-left: 5%;
+		padding-right: 5%;
+   }
+	.dummycls{
+		min-width:5%
+	}
+	.videocls{
+		height: 200px;
+		padding-left: 5%;
+		padding-right: 5%;
+	}
+	.personalParentPortalcls{
+		padding-left: 5%;
+		padding-right: 5%;
+	}
+	.congratulationscls{
+		font-size: 14.1px !important;
+	}
+	.congratulationsScrollcls{
+		white-space: nowrap;
+		will-change: transform;
+		animation: scroll-right 15s linear infinite;
+		font-weight: 600;
+		color: green;
+	}
+	@keyframes scroll-right {
+		0% {
+			transform: translateX(-100%);
+		}
+		100% {
+			transform: translateX(100%);
+		}
+	}
+	
+
+}
+/* media queries to target gap between side bar and its top*/
+@media (min-width: 1400px) and (max-width: 1599px) { /* 90 */
+	.textcls{
+        font-size: 15.2px;
+    }
+	.congratulationscls{
+		font-size: 15.4px;
+	}
+	.headingcls{
+		 font-size: 26.7px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {/* 100 */
+	.textcls{
+        font-size: 14.3px;
+    }
+	.congratulationscls{
+		font-size: 14.5px;
+	}
+	
+	.headingcls{
+		 font-size: 25.5px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {/* 110 */
+	 .textcls{
+        font-size: 13.8px;
+    }
+	.congratulationscls{
+		font-size: 14px;
+	}
+	.headingcls{
+		 font-size: 24.1px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 769px) and (max-width: 1100px) { /* 125 && above*/
+	.textcls{
+        font-size: 12.4px;
+    }
+	.congratulationscls{
+		font-size: 12.6px;
+	}
+
+	.headingcls{
+		 font-size: 24px;
+		 font-weight: 600;
+	}
+}
+@media (min-width: 1600px) {
+    .textcls{
+        font-size: 16.4px;
+    }
+	.congratulationscls{
+		font-size: 16.6px;
+	}
+
+	.headingcls{
+		 font-size: 27.5px;
+		 font-weight: 600;
+	}
+}
+/* media queries to target gap between side bar and its top ends*/
+
+
+.donor-id-section {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 300px; /* Adjust as needed */
+}
+
+.donor-id-input {
+    width: 100%;
+    padding-right: 40px; /* Space for the copy icon */
+    height: 32px;
+    border: 1px solid #dddbda;
+    border-radius: 4px;
+    font-family: Inter, sans-serif;
+    font-size: 14px;
+    background: #f8f7f7;
+}
+
+.donor-id-input[readonly] {
+    background: #f3f2f2;
+    cursor: not-allowed;
+}
+
+.copy-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.copy-success-message {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #179b20;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.donor-info-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.donor-info-label {
+    font-weight: 600;
+    font-size: 16px;
+    font-family: Inter, sans-serif;
+}

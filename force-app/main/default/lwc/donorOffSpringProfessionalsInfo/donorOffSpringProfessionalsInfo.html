@@ -1,0 +1,82 @@
+<template>
+    <lightning-layout multiple-rows class="offspringcls slds-p-around_medium">
+        <lightning-layout-item size="12" padding="around-small" class="headerParentCls">
+            <span class="headingcls">Professionals Info</span>
+            <span class="descriptioncls textcls">
+                Enter any details you know about the clinic where the cycle took place or any fertility attorney
+                who worked wih your parents. Don’t worry if you don’t know any of the details below. 
+                You can leave it blank - just share with us what you do know.
+            </span>
+        </lightning-layout-item>
+        <!-- Clinics section -->
+        <lightning-layout-item size="12" padding="around-small" class="clinicContainerCls">
+        <span class="textcls inputcls">Clinics:</span>
+        <div>
+            <span class="textcls">Do you know the name of the clinic where the IVF cycle took place?</span>
+            <div class="radiogroup slds-p-top_small slds-p-bottm_small">
+                <lightning-input type="radio" label="Yes" class="textcls"></lightning-input>
+                <lightning-input type="radio" label="No" class="textcls"></lightning-input>
+            </div>
+        </div>
+        <div>
+            <span class="textcls">Name of Clinic:</span>
+            <lightning-input type="text" placeholder="Leave blank if unknown"></lightning-input>
+        </div>
+            <div>
+            <span class="textcls">Website  of Clinic:</span>
+            <lightning-input type="text" placeholder="Leave blank if unknown"></lightning-input>
+        </div>
+            <div>
+            <span class="textcls">Phone Number of Clinic (if known):</span>
+            <lightning-input type="tel" placeholder="Leave blank if unknown"></lightning-input>
+        </div>
+            <div>
+            <span class="textcls">Email of Clinic (if known):</span>
+            <lightning-input type="email" placeholder="Leave blank if unknown"></lightning-input>
+        </div>
+        </lightning-layout-item>
+        <!-- Fertility attorney section -->
+        <lightning-layout-item size="12" padding="around-small" class="clinicContainerCls">
+        <span class="textcls inputcls">Fertility attorney:</span>
+        <div>
+            <span class="textcls">Did you know if your parents were represented by a fertility attorney?</span>
+            <div class="radiogroup slds-p-top_small slds-p-bottm_small">
+                <lightning-input type="radio" label="Yes" class="textcls"></lightning-input>
+                <lightning-input type="radio" label="No" class="textcls"></lightning-input>
+            </div>
+        </div>
+        <div>
+            <span class="textcls">If yes, do you have their contact information?</span>
+            <div class="radiogroup slds-p-top_small slds-p-bottm_small">
+                <lightning-input type="radio" label="Yes" class="textcls"></lightning-input>
+                <lightning-input type="radio" label="No" class="textcls"></lightning-input>
+            </div>
+        </div>
+        <div>
+            <span class="textcls">Name of Attorney:</span>
+            <lightning-input type="text" placeholder="Leave blank if unknown"></lightning-input>
+        </div>
+        <div>
+            <span class="textcls">Law Firm:</span>
+            <lightning-input type="text" placeholder="Leave blank if unknown"></lightning-input>
+        </div>
+        <div>
+            <span class="textcls">Attorney Email:</span>
+            <lightning-input type="email" placeholder="Leave blank if unknown"></lightning-input>
+        </div>
+        <div>
+            <span class="textcls">Attorney Phone:</span>
+            <lightning-input type="tel" placeholder="Leave blank if unknown"></lightning-input>
+        </div>
+        <div class="textareacls">
+            <span class="textcls">Additional Details to Help:</span>
+            <lightning-textarea type="tel" placeholder="Leave blank if unknown"></lightning-textarea>
+        </div>
+        </lightning-layout-item>
+        <!-- buttons cls -->
+        <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+            <div class="backbtn textcls" >Back</div>
+            <div class="nextbtncls textcls">Next</div>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

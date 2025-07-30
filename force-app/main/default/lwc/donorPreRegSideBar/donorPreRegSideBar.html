@@ -1,0 +1,23 @@
+<template>
+    <lightning-layout multiple-rows>
+        <lightning-layout-item size="12" padding="around-small" class="eggdonorlayout" style="border-bottom: 1px solid #dbcfcf;">
+            <div style="padding-top:5%;">
+                <span class="parentregistrationcls">{registrationType}</span>
+            </div>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="eggdonorlayout divider-line">
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" padding="around-small" class="eggdonorlayout">
+            <template for:each={steps} for:item="step">
+                <div key={step.name} class={step.parentClass}>
+                    <div class={step.class}>
+                        <span class="spanIndex">{step.index}</span>
+                        <span class="spantext">{step.label}</span>
+                    </div>
+                </div>
+            </template>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

@@ -1,0 +1,22 @@
+<apex:page showHeader="false" sidebar="false" lightningStyleSheets="true">
+
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    </head>
+
+    <apex:slds />
+    <apex:includeLightning />
+
+    <body style="background:#E8E3DC;overflow-y:hidden"></body>
+    <div id="LwcId" />
+    <script>
+        $Lightning.use("c:donorPreregistration_App", function () {
+            $Lightning.createComponent("c:d21_PreRegHomeScreen",
+                {},
+                "LwcId",
+                function (cmp) {
+                    console.log('Calling the LWC Component');
+                });
+        });
+    </script>
+</apex:page>

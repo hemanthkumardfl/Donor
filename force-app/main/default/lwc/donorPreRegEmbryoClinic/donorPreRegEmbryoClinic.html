@@ -1,0 +1,187 @@
+<template>
+    <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium">
+        <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+            <span class="headingcls">Donation Details – Clinic Info</span>
+            <span class="agencyDescriptionCls textcls">
+               Please enter the details for all of the fertility clinics that you have worked with now or in the past for your donation cycles.
+            </span>
+        </lightning-layout-item>
+
+        <template if:true={donationOutcomes} for:each={donationOutcomes} for:item="outcome" for:index="index">
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="outcomesclass">
+                   <div style="display:flex;justify-content:space-between;width:97%">
+                <h3 class="headingcls slds-p-bottom_small">
+                    <template if:false={showNumberedHeadings}>
+                        <template if:false={index}>
+                            {outcome.clinicHeading}
+                        </template>
+                        <template if:true={index}>
+                            Clinic #{outcome.index}
+                        </template>
+                    </template>
+                    <template if:true={showNumberedHeadings}>
+                        Clinic #{outcome.index}
+                    </template>
+                </h3>
+                <template if:true={showNumberedHeadings}>
+                    <lightning-icon 
+                        icon-name="action:delete" 
+                        size="small" 
+                        data-index={outcome.index} 
+                        onclick={handleDeleteClick}
+                        class="delete-icon">
+                    </lightning-icon>
+                </template>
+                <template if:false={showNumberedHeadings}>
+                    <template if:true={index}>
+                        <lightning-icon 
+                            icon-name="action:delete" 
+                            size="small" 
+                            data-index={outcome.index} 
+                            onclick={handleDeleteClick}
+                            class="delete-icon">
+                        </lightning-icon>
+                    </template>
+                </template>
+                   </div>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                <lightning-input 
+                    type="text" 
+                    class="textcls" 
+                    value={outcome.ClinicName} 
+                    onchange={handleInputChange} 
+                    name="ClinicName" 
+                    data-index={outcome.index}
+                    disabled={noClinicChecked}
+                     placeholder="Clinic Name"
+                     variant="label-hidden">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                <lightning-input 
+                    type="text"  
+                    class="textcls" 
+                    value={outcome.DoctorName} 
+                    onchange={handleInputChange} 
+                    name="DoctorName" 
+                    data-index={outcome.index}
+                    disabled={noClinicChecked}
+                    placeholder="Doctor Name"
+                    variant="label-hidden">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                <lightning-input 
+                    type="text" 
+                    class="textcls" 
+                    value={outcome.Website} 
+                    onchange={handleInputChange} 
+                    name="Website" 
+                    data-index={outcome.index}
+                    disabled={noClinicChecked}
+                    placeholder="Clinic Website"
+                    variant="label-hidden">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                <lightning-input 
+                    type="tel" 
+                    class="textcls" 
+                    value={outcome.Phone} 
+                    onchange={handleInputChange} 
+                    name="Phone" 
+                    data-index={outcome.index}
+                    disabled={noClinicChecked}
+                    placeholder="Clinic Phone"
+                    variant="label-hidden"> Clinic Email
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                <lightning-input 
+                    type="email" 
+                    class="textcls" 
+                    value={outcome.Email} 
+                    onchange={handleInputChange} 
+                    name="Email" 
+                    data-index={outcome.index}
+                    disabled={noClinicChecked}
+                    placeholder="Clinic Email"
+                    variant="label-hidden">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                <lightning-input 
+                    type="text" 
+                    class="textcls" 
+                    value={outcome.CoordinatorName} 
+                    onchange={handleInputChange} 
+                    name="CoordinatorName" 
+                    data-index={outcome.index}
+                    disabled={noClinicChecked}
+                    placeholder="Clinic Nurse/Coordinator (leave blank if unknown)"
+                    variant="label-hidden">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                <lightning-input 
+                    type="email" 
+                    class="textcls" 
+                    value={outcome.Email} 
+                    onchange={handleInputChange} 
+                    name="Email" 
+                    data-index={outcome.index}
+                    disabled={noClinicChecked}
+                    placeholder="Email for nurse or coordinator (leave blank if unknown)"
+                    variant="label-hidden">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="cyclesDescriptioncls">
+                <span class="textcls">You mentioned that you completed {totalDonationsCount} donations. Please select all of the cycles that you did with this clinic.</span>
+            </lightning-layout-item>
+
+            <!-- cycles -->
+            <lightning-layout-item size="12" padding="around-small" class="cyclesCls" key={outcome.index}>
+                <template if:true={outcome.cycles} for:each={outcome.cycles} for:item="cycle">
+                    <div class="cycle slds-p-right_small slds-p-bottom_small" key={cycle.cycleName}>
+                        <lightning-input 
+                            type="checkbox" 
+                            class="textcls" 
+                            value={cycle.cycleId} 
+                            onchange={handleCycleChange} 
+                            data-index={outcome.index}
+                            disabled={noClinicChecked}>
+                        </lightning-input>
+                        <span class="textcls">{cycle.cycleName}</span>
+                    </div>
+                </template>
+            </lightning-layout-item>
+            <!-- cycles -->
+        </template>
+         <lightning-layout-item size="12" class="slds-p-left_small slds-p-right_small slds-p-top_small">
+        <div class="checkboxcls">
+          <lightning-input type="checkbox" name="independentDonation" onchange={handleNoAgencyChange}></lightning-input>
+          <span class="textcls checkboxspancls">Cycle in progress – not yet completed</span>
+        </div>
+      </lightning-layout-item>
+      
+        <lightning-layout-item size="12" padding="around-small" class="addagencyParentcls">
+            <span class="textcls addagencycls" onclick={handleAddAnotherClinic}>+ Add Another Clinic</span>
+        </lightning-layout-item>
+
+        <!-- buttons -->
+        <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
+            <div class="backbtn textcls" onclick={handleEggClinicWithoutEDNBack}>Back</div>
+            <div class="nextbtncls textcls" onclick={handleEggClinicWithoutEDNNext}>Next</div>
+        </lightning-layout-item>
+        <!-- buttons -->
+    </lightning-layout>
+</template>

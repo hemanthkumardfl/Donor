@@ -1,0 +1,29 @@
+<template>
+    <!--main component intro screen -->
+    <div class="mainscreencls" style={backgroundStyle}>
+        <!-- Header with logo and sign in -->
+        <lightning-layout multiple-rows="false" style="padding: 20px 30px;">
+            <lightning-layout-item size="6">
+                <div class="logo">DONOR 21</div>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" style="text-align:right">
+                <button class="signincls">Sign In</button>
+            </lightning-layout-item>
+        </lightning-layout>
+        
+        <!-- Welcome message -->
+        <div class="messagecls">
+            <h1>Welcome to<br/>Donor 21.</h1>
+        </div>
+        
+        <!-- footer -->
+        <div class="footercls">
+            <lightning-layout class="footerbuttons">
+                <button class="footerbtn" data-name="parent" onclick={handleDonorClick}>Parent</button>
+                 <button class="footerbtn" data-name="donor" onclick={handleDonorClick}>Donor</button>
+                 <button class="footerbtn">Offspring</button>
+                 <button class="footerbtn">Professional</button>
+            </lightning-layout>
+        </div>
+    </div>
+</template>

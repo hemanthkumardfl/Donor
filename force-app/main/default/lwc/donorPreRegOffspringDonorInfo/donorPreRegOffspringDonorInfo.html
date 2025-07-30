@@ -1,0 +1,182 @@
+<template>
+     <lightning-layout multiple-rows class="offspringcls slds-p-around_medium">
+        <lightning-layout-item size="12" padding="around-small" class="headerParentCls">
+            <span class="descriptioncls textcls">
+                Enter any details you know about your donor. Don't worry if you don't know any of the details below.
+                You can leave it blank - just share with us what you do know.
+            </span>
+        </lightning-layout-item>
+
+        <!-- egg donor section -->
+        <lightning-layout-item size="12" padding="around-small" class="headerParentCls">
+            <span class="headingcls">Egg Donor Details</span>
+        </lightning-layout-item>
+        
+        <!-- Aggency/Egg Bank Details section statrt here -->
+        <lightning-layout-item size="12" padding="around-small" class="">
+            <div class="bankDetailsContainerCls slds-p-around_small">
+                <span class="textcls slds-p-bottom_medium slds-p-top_small">Agency/Egg Bank Details</span>
+                <div>
+                    <span class="textcls">Name of Donor Agency/Egg Bank</span>
+                    <lightning-input type="text" class="textcls" placeholder="Leave blank if unknown"></lightning-input>
+                </div>
+                <div>
+                    <span class="textcls">Website of Donor Agency/Egg Bank</span>
+                    <lightning-input type="text" class="textcls" placeholder="Leave blank if unknown"></lightning-input>
+                </div>
+                <div>
+                    <span class="textcls">Phone Number of Donor Agency/Egg Bank</span>
+                    <lightning-input type="text" class="textcls" placeholder="Leave blank if unknown"></lightning-input>
+                </div>
+                <div>
+                    <span class="textcls">Email of Donor Agency/Egg Bank</span>
+                    <lightning-input type="text" class="textcls" placeholder="Leave blank if unknown"></lightning-input>
+                </div>
+                <div class="slds-p-bottom_medium">
+                    <span class="textcls">Name/Code For Your Donor Agency(Bank)</span>
+                    <lightning-input type="text" class="textcls" placeholder="Leave blank if unknown"></lightning-input>
+                </div>
+            </div>
+        </lightning-layout-item>
+        <!-- ends here-->
+
+        <!-- egg bank Donor Information section starts here -->
+        <lightning-layout-item size="12" padding="around-small" class="">
+
+             <div class="donorInformationContainerCls slds-p-around_small">
+
+                <lightning-layout-item size="12" padding="around-small" class="">
+                     <span class="textcls slds-p-bottom_medium slds-p-top_small">Donor Information</span>
+                </lightning-layout-item>
+
+                <!-- first name and last name section-->
+                <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div>
+                        <span class="textcls">First name of your egg donor</span>
+                        <lightning-input type="text" placeholder="Leave blank if unknown" class="textcls"></lightning-input>
+                    </div>
+                    <div>
+                        <span class="textcls">Last name of your egg donor</span>
+                        <lightning-input type="text" placeholder="Leave blank if unknown" class="textcls"></lightning-input>
+                    </div>
+                </lightning-layout-item>
+                
+                <!-- email and phone section -->
+               <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div>
+                        <span class="textcls">Email of your egg donor</span>
+                        <lightning-input type="email" placeholder="Leave blank if unknown" class="textcls"></lightning-input>
+                    </div>
+                    <div>
+                        <span class="textcls">Phone of your egg donor</span>
+                        <lightning-input type="tel" placeholder="Leave blank if unknown" class="textcls"></lightning-input>
+                    </div>
+                </lightning-layout-item>
+                <!-- upload a file  -->
+                <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div>
+                        <span class="textcls">Upload donor profile if you have it</span>
+                        <lightning-input type="file" class="textcls"></lightning-input>&shy; {fileName}
+                    </div>
+                </lightning-layout-item>
+                 <!-- ather details  -->
+                 <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div class="textareacls">
+                        <span class="textcls">Any other details you think could help us to identify/find your donor:</span>
+                        <lightning-textarea name="" label="" class=" textcls" placeholder="Leave blank if unknown"></lightning-textarea>
+                    </div>
+                </lightning-layout-item>
+            </div>
+        </lightning-layout-item>
+         <!-- Donor Information section ends here -->
+
+        <!-- sperm donor section starts -->
+          <lightning-layout-item size="12" padding="around-small" class="headerParentCls">
+            <span class="headingcls">Sperm Donor Details</span>
+        </lightning-layout-item>
+        
+        <!-- Sperm Bank Details section statrt here -->
+        <lightning-layout-item size="12" padding="around-small" class="">
+            <div class="bankDetailsContainerCls slds-p-around_small">
+                <span class="textcls slds-p-bottom_medium slds-p-top_small">Sperm Bank Details</span>
+                <div>
+                    <span class="textcls">Name of Sperm Bank</span>
+                    <lightning-input type="text" class="textcls" placeholder="Leave blank if unknown"></lightning-input>
+                </div>
+                <div>
+                    <span class="textcls">Website of Sperm Bank</span>
+                    <lightning-input type="text" class="textcls" placeholder="Leave blank if unknown"></lightning-input>
+                </div>
+                <div>
+                    <span class="textcls">Phone Number of Sperm Bank</span>
+                    <lightning-input type="text" class="textcls" placeholder="Leave blank if unknown"></lightning-input>
+                </div>
+                <div>
+                    <span class="textcls">Email of Sperm Bank</span>
+                    <lightning-input type="text" class="textcls" placeholder="Leave blank if unknown"></lightning-input>
+                </div>
+                <div class="slds-p-bottom_medium">
+                    <span class="textcls">Name/Code For Your Donor Agency(assigned by bank)</span>
+                    <lightning-input type="text" class="textcls textareacls" placeholder="Leave blank if unknown"></lightning-input>
+                </div>
+            </div>
+        </lightning-layout-item>
+        <!-- ends here-->
+
+        <!-- sperm bank Donor Information section starts here -->
+        <lightning-layout-item size="12" padding="around-small" class="">
+
+             <div class="donorInformationContainerCls slds-p-around_small">
+
+                <lightning-layout-item size="12" padding="around-small" class="">
+                     <span class="textcls slds-p-bottom_medium slds-p-top_small">Donor Information</span>
+                </lightning-layout-item>
+
+                <!-- first name and last name section-->
+                <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div>
+                        <span class="textcls">First name of your sperm donor</span>
+                        <lightning-input type="text" placeholder="Leave blank if unknown" class="textcls"></lightning-input>
+                    </div>
+                    <div>
+                        <span class="textcls">Last name of your sperm donor</span>
+                        <lightning-input type="text" placeholder="Leave blank if unknown" class="textcls"></lightning-input>
+                    </div>
+                </lightning-layout-item>
+                
+                <!-- email and phone section -->
+               <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div>
+                        <span class="textcls">Email of your sperm donor</span>
+                        <lightning-input type="email" placeholder="Leave blank if unknown" class="textcls"></lightning-input>
+                    </div>
+                    <div>
+                        <span class="textcls">Phone of your sperm donor</span>
+                        <lightning-input type="tel" placeholder="Leave blank if unknown" class="textcls"></lightning-input>
+                    </div>
+                </lightning-layout-item>
+                <!-- upload a file  -->
+                <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div>
+                        <span class="textcls">Upload donor profile if you have it</span>
+                        <lightning-input type="file" class="textcls"></lightning-input>&shy; {fileName}
+                    </div>
+                </lightning-layout-item>
+                 <!-- ather details  -->
+                <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div class="textareacls">
+                        <span class="textcls">Any other details you think could help us to identify/find your donor:</span>
+                        <lightning-textarea name="" label="" class="textcls" placeholder="Leave blank if unknown"></lightning-textarea>
+                    </div>
+                </lightning-layout-item>
+            </div>
+        </lightning-layout-item>
+         <!-- Donor Information section ends here -->
+         <!-- sperm donor section ends -->
+        <!-- buttons cls -->
+        <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+            <div class="backbtn textcls" >Back</div>
+            <div class="nextbtncls textcls">Next</div>
+        </lightning-layout-item>
+     </lightning-layout>
+</template>

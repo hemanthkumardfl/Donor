@@ -1,0 +1,130 @@
+<template>
+     <lightning-layout multiple-rows class="productSelectioncls" >
+        <lightning-layout-item size="12" padding="around-small">
+            <span class="headingcls">Choose Your Membership Plan</span>
+        </lightning-layout-item>
+         <lightning-layout-item size="12" padding="around-small">
+             <span class="textcls">All plans include a one-time registration fee of $1,500</span>
+        </lightning-layout-item>
+         <lightning-layout-item size="12" padding="around-small">
+            <span class="textcls">Additional donors(egg or sperm) will incur a fee of $250/year per donor for any plan type</span>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" padding="around-small" class="cardsCls">
+
+            <lightning-layout-item size="4" padding="around-small" class="card">
+                 <div class="cardPlanheader">
+                    <div class="subheadingcls">Silver</div>
+                    <div class="subheadingcls">$250/yr</div>
+                </div>
+                <div class="additionalCls">+$250/yr per additional donor</div>
+                <ul>
+                    <li>
+                        <span class="checkmark">✓</span>
+                        Initial health intake
+                    </li>
+                    <li>
+                        <span class="checkmark">✓</span>
+                         Bi-annual contact updates
+                    </li>
+                    <li>
+                        <span class="checkmark">✓</span>
+                        Additional health updates ($500)
+                    </li>
+                </ul>
+                <div class="planSelectionCls">
+                    <lightning-input type="radio" label="Select Silver Plan" 
+                        name="planSelection" value="gold" 
+                        onchange={handlePlanSelection}>
+                    </lightning-input>
+                </div>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="4" padding="around-small" class="card">
+                <div class="cardPlanheader">
+                    <div class="subheadingcls">Gold</div>
+                    <div class="subheadingcls">$500/yr</div>
+                </div>
+                <div class="additionalCls">+$250/yr per additional donor</div>
+                <ul>
+                    <li>
+                        <span class="checkmark">✓</span>
+                        Annual donor health updates
+                    </li>
+                    <li>
+                        <span class="checkmark">✓</span>
+                        Personal year review
+                    </li>
+                    <li>
+                        <span class="checkmark">✓</span>
+                        Bi-annual contact updates
+                    </li>
+                </ul>
+                <div class="planSelectionCls">
+                    <lightning-input type="radio" label="Select Gold Plan" 
+                        name="planSelection" value="gold" 
+                        onchange={handlePlanSelection}>
+                    </lightning-input>
+                </div>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="4" padding="around-small" class="card">
+                <div class="cardPlanheader">
+                    <div class="subheadingcls">Platinum</div>
+                    <div class="subheadingcls">$600/yr</div>
+                </div>
+                <div class="additionalCls">+$250/yr per additional donor</div>
+                <ul>
+                    <li>
+                        <span class="checkmark">✓</span>
+                         All Gold features
+                    </li>
+                    <li>
+                        <span class="checkmark">✓</span>
+                       Direct donor messaging
+                    </li>
+                    <li>
+                        <span class="checkmark">✓</span>
+                        Half-sibling notifications
+                    </li>
+                </ul>
+                <div class="planSelectionCls">
+                    <lightning-input type="radio" label="Select Platinum Plan" 
+                        name="planSelection" value="platinum" 
+                        onchange={handlePlanSelection}>
+                    </lightning-input>
+                </div>
+            </lightning-layout-item>
+
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="slds-p-around_small" style="min-height:2em;">
+        </lightning-layout-item>
+        
+        <lightning-layout-item size="12" class="slds-p-around_small couponClsParent">
+
+            <lightning-layout-item size="6" class="couponCls slds-p-top_small" >
+                <!-- <div class="subheadingParentCls">
+                    <span class="subheadingcls">Have a Promo Code?</span>
+                </div> -->
+
+                <div class="buttonscls slds-m-bottom_medium">
+                    <div class="subheadingParentCls">
+                        <span class="subheadingcls">Have a Promo Code?</span>
+                        <input type="text" class="couponInputCls textcls" >
+                    </div>
+                    
+                    <div class="nextbtncls textcls slds-m-right_medium" onclick={handleDonationBasicsNext}>Apply</div>
+                </div>
+
+            </lightning-layout-item>
+
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="slds-p-around_small slds-m-top_medium buttonscls2">
+             <div class="backbtn textcls" onclick={handleDonationBasicsBack}>Back</div>
+             <div class="nextbtncls2 textcls" onclick={handleDonationBasicsNext}>Next</div>
+        </lightning-layout-item>
+
+     </lightning-layout>
+</template>

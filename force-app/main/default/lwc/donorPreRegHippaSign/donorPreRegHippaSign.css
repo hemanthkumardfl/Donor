@@ -1,0 +1,246 @@
+.heading-cls {
+  color: rgb(31 41 55);
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: normal;
+}
+
+.second-heading-cls {
+  color: rgb(75 85 99);
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.signatureErrorClass{
+   color: red;
+}
+
+.form-container {
+  border: 2px solid black;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  border-radius: 10px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.patient-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.info-label {
+  font-weight: 600;
+  min-width: 80px;
+  margin-right: 0.5rem;
+}
+
+.authorization-subtitle {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.covered-entities-list {
+  list-style-type: disc;
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.covered-entities-list li {
+  margin-bottom: 0.25rem;
+}
+
+.signature-box-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 100%;
+}
+
+.signature-canvas {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: crosshair;
+  background: white;
+  width: 100%;
+  height: 200px;
+  display: block;
+}
+
+.refresh-icon-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+}
+
+.buttons-cls {
+  display: flex;
+  justify-content: space-between;
+  gap: 2em;
+}
+
+.back-btn {
+  border: 1px solid black;
+  background: white;
+  color: black;
+  text-align: center;
+  border-radius: 5px;
+  width: 18%;
+  min-height: 3em;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.next-btn-cls {
+  border: 1px solid black;
+  background: black;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  width: 18%;
+  min-height: 3em;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.patient-info-box {
+  background-color: #f7f7f7;
+}
+
+.span-details-cls {
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.confirmation-checkbox {
+  margin-top: 2px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+
+  .signature-canvas {
+    max-width: 100%;
+  }
+
+  .buttons-cls {
+    flex-direction: column;
+    gap: 0.7em !important;
+  }
+
+  .next-btn-cls,
+  .back-btn {
+    width: 100% !important;
+  }
+
+  .span-details-cls {
+    font-size: 12.7px;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .heading-cls {
+    font-size: 18.7px;
+  }
+
+  .second-heading-cls {
+    font-size: 13.5px;
+  }
+
+  .info-row {
+    flex-direction: column;
+  }
+
+  .info-label {
+    min-width: auto;
+    margin-right: 0;
+    margin-bottom: 0.25rem;
+  }
+}
+
+/* Tablet and larger screens */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .span-details-cls {
+    font-size: 12.6px;
+    font-weight: 600;
+  }
+
+  .heading-cls {
+    font-size: 16px;
+  }
+
+  .second-heading-cls {
+    font-size: 14.6px;
+  }
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {
+  .span-details-cls {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .heading-cls {
+    font-size: 16.1px;
+  }
+
+  .second-heading-cls {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {
+  .span-details-cls {
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  .heading-cls {
+    font-size: 17.5px;
+  }
+
+  .second-heading-cls {
+    font-size: 16.6px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .span-details-cls {
+    font-size: 15.5px;
+    font-weight: 600;
+  }
+
+  .heading-cls {
+    font-size: 18.7px;
+  }
+
+  .second-heading-cls {
+    font-size: 17.6px;
+  }
+}

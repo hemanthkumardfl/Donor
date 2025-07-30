@@ -1,0 +1,72 @@
+<template>
+    <div class="slds-card slds-p-around_medium">
+        <h2 class="slds-text-heading_small"><strong>
+             You stated that an egg donor helped you to create your embryos.
+            </strong>
+        </h2>
+
+        <!-- Embryo Donation Program -->
+        <br>
+        <label><strong>Did you find your egg donor through an egg bank or donor agency?</strong></label>
+        <div class="slds-grid">
+            <lightning-input type="radio" label="Yes"></lightning-input>
+            <lightning-input type="radio" label="No"></lightning-input>
+        </div>
+        <br>
+        <label><strong>Egg Bank/Agency Details</strong></label>
+        <lightning-input placeholder="Name of Bank/Agency"></lightning-input>
+        <lightning-input placeholder="Website of Bank/Agency"></lightning-input>
+        <lightning-input placeholder="Phone of Bank/Agency"></lightning-input>
+        <lightning-input placeholder="Email of Bank/Agency"></lightning-input>
+        <lightning-input placeholder="Coordinator at Bank/Agency"></lightning-input>
+        <lightning-input placeholder="Donor Code or Name assigned by Bank/Agency"></lightning-input>
+        <lightning-textarea placeholder="Any additional details that you think could help us to identify the donor:"></lightning-textarea>
+
+        <!-- Clinic Info -->
+        <br>
+        <label><strong>Do you have the name or contact information for your egg donor?</strong></label>
+        <lightning-input placeholder="Egg Donor Name"></lightning-input>
+        <lightning-input placeholder="Egg Donor Email"></lightning-input>
+        <lightning-input placeholder="Egg Donor Phone"></lightning-input>
+
+        <!-- Fertility Attorney -->
+        <br>
+        <label><strong> You stated that a sperm donor helped you to create your embryos.</strong></label>
+        <label><strong>Did you find your sperm donor through a sperm bank or donor agency?</strong></label>
+        <div class="slds-grid">
+            <lightning-input type="radio" label="Yes"></lightning-input>
+            <lightning-input type="radio" label="No"></lightning-input>
+        </div>
+        <br>
+        <lightning-input placeholder="Name of Bank/Agency"></lightning-input>
+        <lightning-input placeholder="Website of Bank/Agency"></lightning-input>
+        <lightning-input placeholder="Phone of Bank/Agency"></lightning-input>
+        <lightning-input placeholder="Email of Bank/Agency"></lightning-input>
+        <lightning-input placeholder="Coordinator at Bank/Agency"></lightning-input>
+        <lightning-input placeholder="Donor Code or Name assigned by Bank/Agency"></lightning-input>
+        <lightning-textarea placeholder="Any additional details that you think could help us to identify the donor:"></lightning-textarea>
+
+        <!-- Recipient Info -->
+        <br>
+        <label><strong>Do you have the name or contact information for your sperm donor?</strong></label>
+        <div class="slds-grid">
+            <lightning-input type="radio" label="Yes"></lightning-input>
+            <lightning-input type="radio" label="No"></lightning-input>
+        </div>
+        <br>
+        <label><strong>Donor Contact Details</strong></label>
+        <lightning-input placeholder="Sperm Donor Name"></lightning-input>
+        <lightning-input placeholder="Sperm Donor Email"></lightning-input>
+        <lightning-input placeholder="Sperm Donor Phone"></lightning-input> 
+
+        <!-- Buttons -->
+        <lightning-layout class="slds-p-top_small" horizontal-align="spread">
+            <lightning-layout-item size="6" medium-device-size="2" class="slds-p-right_xx-small">
+                <div class="backbtnCls" onclick={handleCodeSubmissionBack}>Back</div>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" medium-device-size="2" class="slds-p-left_xx-small">
+                <div class="nextbtnCls" onclick={handleCodeSubmissionNext}>Next</div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

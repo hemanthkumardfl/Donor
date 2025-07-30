@@ -1,0 +1,41 @@
+<template>
+    <lightning-layout multiple-rows class="offspringcls slds-p-around_medium">
+        <!-- header section -->
+        <lightning-layout-item size="12" padding="around-small" class="headerParentCls">
+            <span class="headingcls">
+                Congratulations!
+            </span>
+             <span class="textcls">
+                You took the first step in your journey to find connection
+            </span>
+            <img src={logoImage} class="imgCls slds-p-top_medium"/>
+        </lightning-layout-item>
+
+        <!-- inputs section-->
+        <lightning-layout-item size="12" padding="around-small">
+            <div class="inputsContainercls">
+                <span class="textcls">
+                    How would you prefer us to notify you when we do find your match or with updates on the search?
+                </span>
+                <div class="slds-p-around_small">
+                    <lightning-input type="radio"></lightning-input>
+                    <span class="textcls">Email</span>
+                </div>
+                <div class="slds-p-around_small">
+                    <lightning-input type="radio"></lightning-input>
+                    <span class="textcls">Text</span>
+                </div>
+                <div class="slds-p-around_small">
+                    <lightning-input type="radio"></lightning-input>
+                    <span class="textcls">I prefer to just log in and check the portal</span>
+                </div>
+            </div>
+        </lightning-layout-item>
+
+          <!-- buttons cls -->
+        <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+            <div class="backbtn textcls" >Back</div>
+            <div class="nextbtncls textcls">Next</div>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

@@ -1,0 +1,200 @@
+* {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.modalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 9999;
+}
+.spermbank {
+    width: 100%;
+}
+
+.modalContainer {
+    background-color: white;
+    border-radius: 1rem;
+    max-width: 35%;
+    width: 100%;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+	align-items: center;
+    max-height: 75vh; /* Limits modal to 90% of viewport height */
+}
+
+.modalheightdivcls {
+    overflow-y: auto; /* Enables scrolling when needed */
+    width: 100%;
+    padding: 2%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modalheightdivcls div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100% !important;
+    padding: 1rem 0; /* Add some vertical padding */
+}
+
+.modalpaddinglcs{
+	padding-bottom: 0;
+	padding-top: 0;
+}
+
+.agencycls{
+	width: 100%;
+}
+
+/* Optional: Add smooth scrolling for better UX */
+.modalheightdivcls {
+    scroll-behavior: smooth;
+}
+
+/* Better scrollbar styling (optional) */
+.modalheightdivcls::-webkit-scrollbar {
+    width: 8px;
+}
+.modalheightdivcls::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+.textcls, .headingcls {
+    font-family: 'Inter', sans-serif;
+}
+
+.fontSizeLarge {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.borderRadius {
+    border-radius: 10px;
+   /* width: 80%;*/
+}
+
+.radioinputs {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.buttonscls {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+    margin-top: 2rem;
+}
+
+.backbtn, .nextbtncls {
+    width: 18%;
+    min-height: 3em;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2),
+                0 6px 20px rgba(0, 0, 0, 0.19);
+    text-align: center;
+}
+
+.backbtn {
+    border: 1px solid black;
+    background: white;
+    color: black;
+}
+
+.nextbtncls {
+    border: 1px solid black;
+    background: black;
+    color: white;
+}
+
+.parentlayoutcls{
+    display: flex;
+    gap: 0.5em;
+}
+
+.popupBackBtn{
+	width: 18%;
+    padding: 1.5%;
+    background: white;
+    border-radius: 8px;
+}
+
+.popupNextBtn{
+	width: 18%;
+    padding: 1.5%;
+    background: black;
+	color: white;
+    border-radius: 8px;
+}
+
+.popupNextBtn:active {
+    background-color: #000;
+    box-shadow: 0 0 0 3px white, 0 0 0 6px black;
+    transform: translateY(0);
+}
+.popupBackBtn:active {
+    background-color: white;
+    box-shadow: 0 0 0 3px white, 0 0 0 6px black;
+    transform: translateY(0);
+}
+.confirmPopupCls{
+	display:flex;
+	gap:1em;
+	justify-content:center;
+	padding: 3%;
+	width: 100%;
+}
+
+/* For mobile devices - stack the navigation */
+@media (max-width: 768px) {
+
+      .popupBackBtn, .popupNextBtn{
+		width: 45%;
+		padding: 2.7%;
+	}
+
+    .buttonscls{
+		flex-direction: column;
+		gap: 0.7em !important;
+        box-shadow: none;
+	}
+	.backbtn, .nextbtncls{
+		width: 100% !important;
+        min-height: 3em;
+        font-size: medium;
+        font-weight: bold;
+		box-shadow: none;
+        padding-top: 3%;
+	}
+    .textcls{
+        font-size: 14.2px;
+        font-weight: 600;
+    }
+
+    
+}
+
+.delete-icon {
+    --slds-c-icon-color-foreground: #c61212; 
+	--slds-c-icon-color-background: white
+}

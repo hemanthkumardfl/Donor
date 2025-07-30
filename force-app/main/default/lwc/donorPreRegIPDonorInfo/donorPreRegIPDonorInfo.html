@@ -1,0 +1,11 @@
+<template>
+     <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium">
+        <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+            <span class="headingcls">Doner Information</span>
+         <c-donor-pre-reg-i-p-recipient-details if:true={showrecipient} onback={handleCoderecipientBack} onnext={handlerecipientNext}> </c-donor-pre-reg-i-p-recipient-details>
+         <c-donor-pre-reg-i-p-sperm-donor-no-code if:true={showsperm} onback={handleCodespermBack} onnext={handleCodespermNext} contact-obj={contactObj}></c-donor-pre-reg-i-p-sperm-donor-no-code>
+         <c-donor-pre-reg-i-p-embryo-donor if:true={showEmbroy} onback={handleCodeembryoBack} onnext={handleembryoNext} contact-obj={contactObj}></c-donor-pre-reg-i-p-embryo-donor>
+         <c-donor-pre-reg-i-p-egg-donor if:true={shoowEgg} onback={handleeggBack} onnext={handleeggNext} contact-obj={contactObj}> </c-donor-pre-reg-i-p-egg-donor>
+        </lightning-layout-item>
+     </lightning-layout>
+</template>

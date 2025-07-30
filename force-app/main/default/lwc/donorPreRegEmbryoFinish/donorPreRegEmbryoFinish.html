@@ -1,0 +1,109 @@
+<template>
+     <lightning-layout multiple-rows  class="matchverifycls">
+       <!-- <c-confetti-celebration></c-confetti-celebration>-->
+       
+
+         <lightning-layout-item size="12" style="letter-spacing:0.3px"  class="videocls slds-p-around_x-large paddingcls">
+
+            <img src={imageUrl} alt="Donor Community Banner" style="width: 100%; height: 100%; border-radius: 8px;" />
+
+        </lightning-layout-item>
+         <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px"  class="headingcls">
+          Success!
+        </lightning-layout-item>
+          <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px"  class="headingcls">
+         Your Account request has been received
+        </lightning-layout-item>
+
+
+        <lightning-layout-item size="12"   class="textcls slds-p-around_x-large paddingcls msgcls">
+          We just put the finishing touches on your personalized Donor 21 portal and it is ready for you to explore—
+        </lightning-layout-item>
+         <lightning-layout-item size="12"   class="textcls slds-p-around_x-large paddingcls msgcls">
+           We are already hard at work starting to find your donor and to connect him/her to your account. You will receive a message once we have successfully connected your account. In the meantime, we just put the finishing touches on your personalized portal and it’s ready for viewing. Here you can:
+        </lightning-layout-item>
+
+         <lightning-layout-item size="12" style="letter-spacing:0.3px"  class="textcls personalParentPortalcls slds-p-around_x-large paddingcls">
+            <div class="personalportalsectioncls">
+
+                <div class="portalpointscls slds-p-top_small">
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                    <p>Share your Year-in-Review</p>
+                </div>
+                <span style="padding-left: 1rem;"> meaningful milestones and updates to share with the doctor or embryo recipient.</span>
+
+                <div class="portalpointscls slds-p-top_x-small">
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                   <p> Add health information</p>
+                </div>
+                 <span class="textcls" style="padding-left: 1rem;">If you or your partner donated egg or sperm to the embryos, securely upload your medical details and create a report to share with the embryo recipient and your pediatrician.</span>
+
+                <div class="portalpointscls slds-p-top_x-small">
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                    <p class="textcls">Store important files</p>
+                </div>
+                <span  class="textcls" style="padding-left: 1rem;">Use your secure Storage Vault to upload and organize key documents and communications.</span>
+
+                <div class="portalpointscls slds-p-top_x-small">
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                    <p class="textcls">Discover the Memory Box</p>
+                </div>
+                  <span class="textcls" style="padding-left: 1rem;">Save letters, photos, and moments—your own private time capsule for the child’s future.</span> 
+
+                <div class="portalpointscls slds-p-top_x-small">
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                    <p class="textcls">Send and receive updates</p>
+                </div>
+                  <span class="textcls" style="padding-left: 1rem;">...and send and receive messages and updates to the embryo recipient</span>
+                  
+
+            </div>
+        </lightning-layout-item>
+
+
+          <lightning-layout-item size="12" style="letter-spacing:0.3px"  class="textcls personalParentPortalcls slds-p-around_x-large paddingcls">
+            <div class="personalportalsectioncls">
+
+                <div class="portalpointscls slds-p-top_small">
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                     <span style="padding-left: 1rem;">Create your year in review to share meaningful moments and milestones with the donor and embryo recipient.</span>
+                </div>
+               
+
+                <div class="portalpointscls slds-p-top_x-small">
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                    <span class="textcls" style="padding-left: 1rem;">Add you or your partner’s health information if you donated egg or sperm to the embryos</span>
+                </div>
+
+                <div class="portalpointscls slds-p-top_x-small">
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                    <span  class="textcls" style="padding-left: 1rem;">Have access to storage vault to store your important files and documents</span>
+                </div>
+                
+                <div class="portalpointscls slds-p-top_x-small">
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                     <span class="textcls" style="padding-left: 1rem;">Discover the magic of memory box – your own personal time capsule</span>
+                </div> 
+
+                <div class="portalpointscls slds-p-top_x-small">
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                   <span class="textcls" style="padding-left: 1rem;">and so much more...</span>
+                </div>
+            </div>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12"  style="letter-spacing:0.3px"  class="textcls congratulationscls paddingcls">
+            ...and so much more
+        </lightning-layout-item>
+         <lightning-layout-item size="12" style="letter-spacing:0.3px"  class="textcls congratulationscls paddingcls">
+           Your portal will grow with you.
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+            <div  class="textcls" onclick={handleMatchVerificationBack} >Back</div>
+              <div  onclick={handleMatchVerificationNext}>Enter Your Portal</div>
+        </lightning-layout-item>
+
+     </lightning-layout>
+
+</template>

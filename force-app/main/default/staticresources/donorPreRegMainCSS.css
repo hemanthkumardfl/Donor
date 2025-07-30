@@ -1,0 +1,161 @@
+.sidebarcomponentcls{
+	padding-top:0px;
+	/* border-right: 1px solid gray !important; */
+	/* height: 100%; */
+	/* width: 22%; */
+	/* flex-basis: 28%;
+    max-width: 17.1%; */
+}
+.maincomponentcls, .layoutcontainercls{
+	display: block;
+	/* max-height: 83vh;
+	overflow-y: hidden; */
+}
+
+
+
+
+
+
+.sidebarcomponentcls{
+	display: block;
+	background: white !important;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 10px 15px rgba(0, 0, 0, 0.1);
+	/* min-height: 125vh;
+	max-height: 200vh; */
+	height: 90vh;
+	overflow-y: auto;
+
+}
+.mobilefooterDisplaycls, .mobilemaincomponentcls{
+	display: none;
+}	
+.precls{
+	background-image: url({introLogo});
+}
+
+.gapcls{
+	min-height:5.6em;
+}
+
+.layoutcontainercls{
+	display: flex;
+	place-content: center;
+	max-height: 86vh;
+	overflow-y: auto;
+}
+
+/* scroll bar for layout*/
+.layoutcontainercls::-webkit-scrollbar {
+  width: 10px;
+  height: 12px; 
+}
+
+.layoutcontainercls::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 10px;
+}
+
+.layoutcontainercls::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 10px;
+}
+
+.layoutcontainercls::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+/* scrollbar ends*/
+
+/* scroll bar for sidebar*/
+.sidebarcomponentcls::-webkit-scrollbar {
+  width: 5px;
+  height: 12px; 
+}
+
+.sidebarcomponentcls::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 10px;
+}
+
+.sidebarcomponentcls::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 10px;
+}
+
+.sidebarcomponentcls::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+/* scrollbar ends*/
+.parentbarcls{
+	font-family: Inter, sans-serif;;
+}
+
+/* For mobile devices - stack the navigation */
+@media (max-width: 768px) {
+	.sidebarcomponentcls{
+		display: none;
+	}
+
+	.mobilemaincomponentcls{
+		display: block;
+		background: #E8E3DC;
+		/* min-height: 70vh ;
+		max-height: 70vh; */
+		/* height: clamp(70vh, calc(80vh - 72px), 80vh); */
+		/* height: calc(100vh - 198.7px); */
+		max-height: 85vh;
+		padding-bottom: 15%;
+    	overflow-y: auto;
+	}
+
+	.maincomponentcls, .layoutcontainercls{
+		display: none;
+	}
+
+	.maindivheight{
+		min-height: 20vh ;
+	}
+
+	.mobilefooterDisplaycls{
+		display: block;
+		background: white;
+		position: fixed;
+		bottom: 0;
+		padding-bottom: 0px;
+		box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 10px 15px rgba(0, 0, 0, 0.1);
+		width: -webkit-fill-available;
+	}
+	.mobilefootercls{
+		/* position: fixed;
+		bottom: 0;
+		min-height: 5em;
+		width: -webkit-fill-available; */
+	}
+}
+
+/* media queries to target gap between side bar and its top*/
+@media (min-width: 1400px) and (max-width: 1599px) { /* 90 */
+	.gapcls{
+		min-height: 5em;
+	}
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {/* 100 */
+	.gapcls{
+		min-height: 4.9em;
+	}
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {/* 110 */
+	.gapcls{
+		min-height: 4.6em;
+	}
+}
+
+@media (max-width: 1100px) { /* 125 && above*/
+	.gapcls{
+		min-height: 4.4em;
+	}
+}
+/* media queries to target gap between side bar and its top ends*/

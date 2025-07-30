@@ -1,0 +1,316 @@
+.getfirstnamecls, .getlastnamecls{
+	width: 50%;
+}
+.getnamescls{
+	display:flex;
+	gap:1em;
+}
+.textcls, .spandetailscls, .spanTextcls{
+	font-weight: 100 !important;
+}
+
+label{
+	display : block;
+	width : 10%;
+}
+
+.custom-radio .slds-form-element__label {
+    font-weight: bold;
+}
+
+.getscreenclls{
+	border:2px solid black;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	border-radius: 10px;
+}
+.termscls{
+	border-bottom: 2px solid;
+}
+.headingcls{
+	color: color(display-p3 0.1216 0.1608 0.2157);
+	font-family: Inter, sans-serif;
+	font-style: normal;
+	font-weight: 700;
+	line-height: normal;
+}
+/* WebKit-based browsers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 12px; 
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+/* scrollbar ends*/
+.buttonscls{
+	display: flex;
+	/* place-content: flex-end; */
+	justify-content: space-between;
+	gap: 2em;
+	/* box-shadow: 0px 8px 10px 5px rgb(7 6 6 / 50%); */
+	/* box-shadow: 0 -1px 6px -2px rgba(7 6 6 / 50%); */
+}
+
+.backbtn{
+	border: 1px solid black;
+	background: white;
+	color: black;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding: 10px;
+	cursor: pointer;
+}
+.nextbtncls2{
+	border: 1px solid black;
+	background: black;
+	color: white;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding: 10px;
+	cursor: pointer;
+}
+
+.textcls{
+	color: color(display-p3 0.2157 0.2549 0.3176);
+	font-style: normal;
+	font-weight: 500;
+	line-height: normal;
+	
+}
+
+.imgcls{
+	box-shadow: 3px 6px 6px 0px rgba(0, 0, 0, 0.5)
+}
+.secondHeadingCls{
+	color: color(display-p3 0.2941 0.3333 0.3882);
+	font-family: Inter, sans-serif;
+	font-style: normal;
+	font-weight: 400;
+	line-height: normal;
+}
+.spandetailscls{
+	color: color(display-p3 0.2941 0.3333 0.3882);
+	font-family: Inter, sans-serif;
+	font-style: normal;
+	font-weight: 400 !important;
+	line-height: 20px; /* 142.857% */
+}
+
+.spanTextcls{
+	color: color(display-p3 0.2157 0.2549 0.3176) !important;
+	font-style: normal !important;
+	font-weight: 500 !important;
+	line-height: normal !important;
+}
+
+.inputParentcls{
+	display: flex;
+	flex-direction: column;
+	gap: 0.5em;
+	width: 100%;
+}
+.checkboxParentcls{
+	display: flex;
+}
+.getfirstnamecls, .getlastnamecls{
+	width: 100%;
+}
+
+
+/* For mobile devices - stack the navigation */
+@media (max-width: 768px) {
+
+	.getscreenclls{
+		padding: 0;
+		
+	}
+	.getfirstnamecls, .getlastnamecls{
+	 	width: 100%;
+	}
+	.getnamescls{
+		display:flex;
+		flex-direction: column;
+		gap:1.4em;
+	}
+	.buttonscls{
+		flex-direction: column;
+		gap : 0.7em !important;
+	}
+	.nextbtncls2{
+		width: 100% !important;
+	}
+
+	.backbtn{
+		width: 100% !important;
+	}
+	.textcls, .spanTextcls{
+		font-family: Inter, sans-serif;
+		font-size: 12px;
+		transform: scale(1);
+	}
+	.spandetailscls{
+		font-size: 12.7px;
+		hyphens: auto;
+		-webkit-hyphens: auto;
+		-ms-hyphens: auto;
+		word-break: break-word;
+		overflow-wrap: break-word;
+	}
+	.headingcls{
+		font-size: 18.7px;
+   }
+   .secondHeadingCls{
+		 font-size: 13.5px;
+	}
+	
+}
+
+/* media queries to target gap between side bar and its top*/
+@media (min-width: 1400px) and (max-width: 1599px) { /* 90 */
+
+	.textcls, .spandetailscls, .spanTextcls{
+        font-size: 15.5px;
+		 font-weight: 600;
+    }
+	.checkboxtextcls{
+		position: relative;
+		right: 1.7em;
+	}
+	.headingcls{
+		 font-size: 18.7px;
+	}
+	.secondHeadingCls{
+		 font-size: 17.6px;
+	}
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {/* 100 */
+
+	.textcls, .spandetailscls, .spanTextcls{
+        font-size: 14.5px;
+		 font-weight: 600;
+    }
+	.checkboxtextcls{
+		position: relative;
+		right: 1.6em;
+	}
+	.headingcls{
+		 font-size: 17.5px;
+	}
+	.secondHeadingCls{
+		 font-size: 16.6px;
+	}
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {/* 110 */
+
+	label{
+		width : 14%;
+	}
+
+	 .textcls, .spandetailscls, spanTextcls{
+        font-size: 14px;
+		 font-weight: 600;
+    }
+	.checkboxtextcls{
+		position: relative;
+		right: 1.2em;
+	}
+	.headingcls{
+		 font-size: 16.1px;
+	}
+	.secondHeadingCls{
+		 font-size: 16px;
+	}
+}
+
+@media (min-width: 769px) and (max-width: 1100px) { /* 125 && above*/
+
+	label{
+		width : 15%;
+	}
+
+	.textcls, .spandetailscls, .spanTextcls{
+        font-size: 12.6px;
+		 font-weight: 600;
+    }
+	.checkboxtextcls{
+		position: relative;
+		right: 0.9em;
+	}
+	.headingcls{
+		 font-size: 16px;
+	}
+	.secondHeadingCls{
+		 font-size: 14.6px;
+	}
+	
+}
+@media (min-width: 1600px) {
+
+    .textcls, .spandetailscls, .spanTextcls{
+        font-size: 16.6px;
+		 /* font-weight: 600; */
+    }
+	.checkboxtextcls{
+		position: relative;
+		right: 2em;
+	}
+	.headingcls{
+		 font-size: 21.5px;
+	}
+	.secondHeadingCls{
+		 font-size: 18.6px;
+	}
+}
+/* media queries to target gap between side bar and its top ends*/
+@supports (-webkit-touch-callout: none) {
+
+	 .secondHeadingCls{
+		 font-size: 13.5px;
+		 font-weight: 600 !important;
+	}
+    .spanTextcls{
+        font-weight: 600 !important;
+    }
+	.inpucls{
+		font-size: 16px !important;
+	}
+}
+
+.modalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContainer {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 900px;
+    width: 90%;
+    text-align: center;
+}

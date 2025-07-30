@@ -1,0 +1,443 @@
+/**/
+.modalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 9999;
+}
+
+.modalContainer {
+    background-color: white;
+    border-radius: 1rem;
+    max-width: 35%;
+    width: 100%;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+	align-items: center;
+    max-height: 75vh; /* Limits modal to 90% of viewport height */
+}
+
+.modalheightdivcls {
+    overflow-y: auto; /* Enables scrolling when needed */
+    width: 100%;
+    padding: 2%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modalheightdivcls div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100% !important;
+    padding: 1rem 0; /* Add some vertical padding */
+}
+
+.modalpaddinglcs{
+	padding-bottom: 0;
+	padding-top: 0;
+}
+
+/* Optional: Add smooth scrolling for better UX */
+.modalheightdivcls {
+    scroll-behavior: smooth;
+}
+
+/* Better scrollbar styling (optional) */
+.modalheightdivcls::-webkit-scrollbar {
+    width: 8px;
+}
+.modalheightdivcls::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+/* .popupBackBtn, .popupNextBtn{
+	width: 14% !important;
+} */
+
+.popupBackBtn{
+	width: 18%;
+    padding: 1.5%;
+	background: black;
+    border-radius: 8px;
+	color: white;
+}
+
+.popupNextBtn{
+	width: 18%;
+    padding: 1.5%;
+    background: white;
+	color: black;
+    border-radius: 8px;
+}
+
+.popupBackBtn:active{
+    background-color: #000;
+    box-shadow: 0 0 0 3px white, 0 0 0 6px black;
+    transform: translateY(0);
+	
+}
+.popupNextBtn:active{
+    background-color: white;
+    box-shadow: 0 0 0 3px white, 0 0 0 6px black;
+    transform: translateY(0);
+}
+
+.popupBackBtnDisable{
+	background: #4d4a4a;
+	color: white;
+	width: 25%;
+    padding: 2.5%;
+	border-radius: 8px;
+	border: 1px #4d4a4a;
+	cursor: not-allowed;
+    pointer-events: none !important;
+}
+
+.popupNextBtnDisable{
+	background: #f0f0f0;
+	color: #4d4a4a;
+	width: 25%;
+	border-radius: 8px;
+    padding: 2.5%;
+	cursor: not-allowed;
+    pointer-events: none !important;
+	border: 1px #f0f0f0;
+}
+
+.popupBackBtnCls{
+	width: 25%;
+    padding: 2.5%;
+	background: black;
+    border-radius: 8px;
+	color: white;
+}
+
+.popupNextBtnCls{
+	width: 25%;
+    padding: 2.5%;
+    background: white;
+	color: black;
+    border-radius: 8px;
+}
+
+.popupbtnsparentCls{
+	display: flex !important;
+    justify-content: space-between;
+    flex-direction: row !important;
+    gap: 1em;
+    padding-top: 3% !important;
+}
+
+.imgWarningCls{
+	width: 12%;
+}
+
+.confirmPopupCls{
+	display:flex;
+	gap:1em;
+	justify-content:center;
+	padding: 3%;
+	width: 100%;
+}
+
+/*modal box styles*/
+/* disable addanother click */
+.disableAddAnotherClickCls {
+    color: #dddbda !important;
+    cursor: not-allowed;
+    text-decoration: none;
+    pointer-events: none !important;
+}
+.eggagencycls{
+	background: white;
+	border-radius: 5px;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.cycle{
+	display: flex;
+}
+.section-divider {
+	border-top: 1px solid #ddd;
+	margin-top: 10px;
+}
+
+.cyclesCls{
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	padding-top: 0;
+}
+.checkboxcls{
+	display: flex;
+}
+.headingSectionCls{
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+  .agencyDescriptionCls{
+		font-size: 12.1px;
+   }
+   .agencyDescriptionCls, .checkboxspancls{
+		hyphens: auto !important;
+		-webkit-hyphens: auto !important;
+		-ms-hyphens: auto !important;
+		word-break: break-word !important;
+		overflow-wrap: break-word !important;
+   }
+   
+.addagencycls{
+	cursor: pointer;
+}
+.textcls, .headingcls, secondHeadingCls{
+	font-family: Inter, sans-serif;
+	hyphens: auto;
+	-webkit-hyphens: auto;
+	-ms-hyphens: auto;
+	word-break: break-word;
+	overflow-wrap: break-word;
+}
+
+.buttonscls{
+	display: flex;
+	place-content: center;
+	gap: 2em;
+	/* box-shadow: 0 -1px 6px -2px rgba(7 6 6 / 50%); */
+}
+.backbtn{
+	border: 1px solid black;
+	background: white;
+	color: black;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding : 10px;
+	cursor: pointer;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.nextbtncls{
+	border: 1px solid black;
+	background: black;
+	color: white;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding : 10px;
+	cursor: pointer;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.agencyDescriptionCls{
+	color: color(display-p3 0.1216 0.1608 0.2157);
+	line-height: normal !important;
+}
+
+.inputParentCls{
+	display: flex;
+	flex-direction: column;
+	gap: 0.2em;
+	width: 100%;
+}
+
+.inputscls{
+	font-weight: 500 !important;
+	line-height: 16px !important; /* 100% */
+}
+.lapcls{
+	display: block;
+}
+.smallDevicecls{
+	display: none;
+}
+
+/* For mobile devices - stack the navigation */
+@media (max-width: 768px) {
+
+	.popupNextBtnCls, .popupBackBtnCls, .popupBackBtnDisable, .popupNextBtnDisable{
+		width: 95%;
+		padding: 3.5%;
+	}
+	.popupbtnsparentCls{
+		flex-direction: column !important;
+	}
+
+	.imgWarningCls{
+		width: 13%;
+	}
+
+	.modalContainer {
+		max-width: 90% !important;
+	}
+	.popupBackBtn, .popupNextBtn{
+		width: 45%;
+		padding: 2.7%;
+	}
+
+	.buttonscls{
+		place-content: flex-start;
+	}
+	.backbtn, .nextbtncls{
+		width: 50%;
+        min-height: 3em;
+        font-size: large;
+        font-weight: bold;
+        padding-top: 3%;
+	}
+	
+	.textcls{
+        font-size: 12.2px;
+    }
+
+	.headingcls{
+		font-size: 18.7px;
+		font-weight: 600;
+   }
+   .secondHeadingCls{
+		 font-size: 14.2px;
+		 font-weight: 600;
+	}
+	
+	.agencyDescriptionCls, .checkboxspan{
+		font-size: 12.7px;
+        hyphens: auto !important;
+        -webkit-hyphens: auto;
+        -ms-hyphens: auto;
+        word-break: break-word;
+        overflow-wrap: break-word;
+   }
+
+   .eggagencycls, .inputParentCls, .headingSectionCls, iconheadincls{
+		padding: 2%;
+   }
+   .addagencycls{
+		font-size: 14.1px;
+	}
+	.lapcls{
+		display: none;
+	}
+	.smallDevicecls{
+		display: block;
+	}
+	.cyclesCls{
+		padding-bottom: 0;
+	}
+	.agencyInputsParentCls, .addagencycls{
+		padding: 2%;
+		
+   }
+   .buttonscls{
+		padding-top: 1%;
+   }
+   
+}
+/* media queries to target gap between side bar and its top*/
+@media (min-width: 1400px) and (max-width: 1599px) { /* 90 */
+	.textcls{
+        font-size: 15px;
+    }
+	.headingcls{
+		 font-size: 18.7px;
+		 font-weight: 600;
+	}
+	.secondHeadingCls{
+		 font-size: 12.7px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {/* 100 */
+	.textcls{
+        font-size: 14.1px;
+    }
+	
+	.headingcls{
+		 font-size: 17.5px;
+		 font-weight: 600;
+	}
+	.secondHeadingCls{
+		 font-size: 11.5px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {/* 110 */
+	 .textcls{
+        font-size: 13.6px;
+    }
+
+	.headingcls{
+		 font-size: 16.1px;
+		 font-weight: 600;
+	}
+	.secondHeadingCls{
+		 font-size: 10.6px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 769px) and (max-width: 1100px) { /* 125 && above*/
+	.textcls{
+        font-size: 12.2px;
+    }
+
+	.headingcls{
+		 font-size: 16px;
+		 font-weight: 600;
+	}
+	.secondHeadingCls{
+		 font-size: 10.5px;
+		 font-weight: 600;
+	}
+}
+@media (min-width: 1600px) {
+    .textcls{
+        font-size: 16.2px;
+    }
+
+	.headingcls{
+		 font-size: 21.5px;
+		 font-weight: 600;
+	}
+	.secondHeadingCls{
+		 font-size: 16.5px;
+		 font-weight: 600;
+	}
+}
+.delete-icon {
+    --slds-c-icon-color-foreground: #c61212; 
+	--slds-c-icon-color-background: white;
+	cursor: pointer;
+}
+/* media queries to target gap between side bar and its top ends*/
+/* for safari browser starts here*/
+@supports (-webkit-touch-callout: none) {
+	 
+	.agencyDescriptionCls{
+		font-size: 14px;
+		padding-bottom: 0.5%;
+	}
+	.textcls{
+		font-size: 13px !important;
+	}
+	.inputscls{
+        font-size: 16px !important;
+		font-weight: 600;
+		padding-top: 0.5%;
+		padding-bottom: 0.5%;
+    }
+}

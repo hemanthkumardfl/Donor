@@ -1,0 +1,171 @@
+.sidebarcomponentcls{
+	padding-top:0px;
+}
+
+.maincomponentcls, .layoutcontainercls{
+	display: block;
+	/* max-height: 83vh;
+	overflow-y: hidden; */
+}
+
+.mainscreenlayoutcls{
+	
+}
+
+.sidebarcomponentcls{
+	display: block;
+	background: white !important;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 10px 15px rgba(0, 0, 0, 0.1);
+	/* min-height: 125vh;
+	max-height: 200vh; */
+	height: 90vh;
+	overflow-y: auto;
+}
+
+.mobilemaincomponentHeaderCls{
+	display: none;
+}	
+
+.precls{
+	background-image: url({introLogo});
+}
+
+.gapcls{
+	min-height:5.6em;
+}
+
+.layoutcontainercls{
+	display: flex;
+	place-content: center;
+	max-height: 83vh;
+	overflow-y: auto;
+}
+
+.layoutcontainercls::-webkit-scrollbar {
+  width: 10px;
+  height: 12px; 
+}
+
+.layoutcontainercls::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 10px;
+}
+
+.layoutcontainercls::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 10px;
+}
+
+.layoutcontainercls::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.sidebarcomponentcls::-webkit-scrollbar {
+  width: 5px;
+  height: 12px; 
+}
+
+.sidebarcomponentcls::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 10px;
+}
+
+.sidebarcomponentcls::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 10px;
+}
+
+.sidebarcomponentcls::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.parentbarcls{
+	font-family: Inter, sans-serif;;
+}
+
+.maincomponentparent{
+	display:flex;
+	flex-direction:column;
+}
+.mobileSidesCls, .maincomponentHeadercls{
+	display: block;
+}
+
+/* For mobile devices - stack the navigation */
+@media (max-width: 768px) {
+
+	.mobileMaincls{
+		padding-bottom: 0;
+	}
+	
+	.mobileMaincls{
+		background: #E8E3DC;
+		max-height: 65vh;
+    	overflow-y: auto;
+		padding: 0 0 60px 0;
+	}
+	
+
+	.sidebarcomponentcls, .maincomponentHeadercls{
+		display: none !important;
+	}
+
+	.mobileSidesCls{
+		display: none;
+	}
+	.maincomponentparent{
+		padding: 0;
+	}
+	
+	.mobilemaincomponentHeaderCls{
+		display: block;
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+
+	/* scroll bar styles for mobile*/
+	.mobileMaincls::-webkit-scrollbar {
+		width: 0.1px;
+	}
+	/* scroll bar styles for mobile ends*/
+	
+}
+
+/*@media (max-width: 1024px) and (orientation: landscape) { /*mobile landscape*/
+  	/* .maincomponentparent{
+		background: orange;
+	}
+} */
+
+/* media queries to target gap between side bar and its top*/
+@media (min-width: 1400px) and (max-width: 1599px) { /* 90 */
+	.layoutcontainercls{
+		max-height: 81.3vh !important;
+	}
+
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {/* 100 */
+	.layoutcontainercls{
+		max-height: 81.1vh !important;
+	}
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {/* 110 */
+	.layoutcontainercls{
+		max-height: 79.3vh !important;
+	}
+}
+
+@media (max-width: 1100px) { /* 125 && above*/
+	.layoutcontainercls{
+		max-height: 70vh !important;
+	}
+}
+
+/* for safari browser starts here*/
+@supports (-webkit-touch-callout: none) {
+   /* .mobileMaincls{
+		max-height: 60vh;
+   } */
+}

@@ -1,0 +1,251 @@
+<template>
+    <div class="slds-card">
+        <div class="slds-align_absolute-center headercls">
+            <lightning-icon icon-name='utility:success' size='small'
+                class="slds-p-right_small codeiconcls"></lightning-icon>
+            Your account has been verified!
+        </div>
+        <p
+            class="slds-text-body_regular slds-m-bottom_medium slds-m-left_medium marginClass slds-p-horizontal_small agencyDescriptionCls">
+            If you were provided with any registration codes for Donor 21, please enter them below.
+            This will help speed up the matching and verification process. If you don't have a code,
+            just check the box that says "I don't have any of these codes" to continue.
+        </p>
+
+        <div class="slds-m-bottom_medium slds-p-horizontal_small paddingcls">
+            <div class="slds-m-bottom_small fontSizeClass">Enter codes that start with PMC:</div>
+
+            <!-- PMC Code Input Group -->
+            <template iterator:it={pmcCodes}>
+                <div key={it.value} class="slds-m-top_small PMC">
+                    <div class="code-input-container">
+                        <span class="fontSizeClass">PMC - </span>
+                        <input maxlength="1" data-group="pmc" data-index="0" data-row={it.index} class="pmcInputCls"
+                            value={it.value.value.one} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="pmc" data-index="1" data-row={it.index} class="pmcInputCls"
+                            value={it.value.value.two} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="pmc" data-index="2" data-row={it.index} class="pmcInputCls"
+                            value={it.value.value.three} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="pmc" data-index="3" data-row={it.index} class="pmcInputCls"
+                            value={it.value.value.four} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="pmc" data-index="4" data-row={it.index} class="pmcInputCls"
+                            value={it.value.value.five} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="pmc" data-index="5" data-row={it.index} class="pmcInputCls"
+                            value={it.value.value.six} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <span onclick={HandleDelete} data-index={it.index} data-name="pmc"><lightning-icon
+                                icon-name="utility:delete" if:false={it.first} size="small"
+                                class="delete-icon"></lightning-icon></span>
+                    </div>
+                    <div class="slds-form-element slds-has-error slds-m-bottom_small slds-m-left_xx-large slds-hide">
+                        <span class="slds-form-element__help">Please fill this code.</span>
+                    </div>
+                </div>
+            </template>
+
+            <div onclick={handleAddCode} data-name="PMC" class="slds-m-top_medium cursorClass">
+                + Add another PMC code
+            </div>
+        </div>
+
+        <hr class="slds-m-top_medium slds-m-bottom_medium">
+
+        <div class="slds-m-bottom_medium slds-p-horizontal_small paddingcls">
+            <div class="slds-text-title slds-m-bottom_small fontSizeClass">Enter codes here that start with EDN (these
+                typically identify an
+                egg donor):</div>
+
+            <!-- EDN Code Input Group -->
+            <template iterator:it={ednCodes}>
+                <div key={it.value} class="slds-m-top_small EDN">
+                    <div class="code-input-container">
+                        <span class="fontSizeClass">EDN -</span>
+                        <input maxlength="1" data-group="edn" data-index="0" data-row={it.index} class="ednInputCls"
+                            value={it.value.value.one} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="edn" data-index="1" data-row={it.index} class="ednInputCls"
+                            value={it.value.value.two} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="edn" data-index="2" data-row={it.index} class="ednInputCls"
+                            value={it.value.value.three} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="edn" data-index="3" data-row={it.index} class="ednInputCls"
+                            value={it.value.value.four} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="edn" data-index="4" data-row={it.index} class="ednInputCls"
+                            value={it.value.value.five} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="edn" data-index="5" data-row={it.index} class="ednInputCls"
+                            value={it.value.value.six} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <span onclick={HandleDelete} data-index={it.index} data-name="edn"><lightning-icon
+                                icon-name="utility:delete" if:false={it.first} size="small"
+                                class="delete-icon"></lightning-icon></span>
+                    </div>
+                    <div class="slds-form-element slds-has-error slds-m-bottom_small slds-m-left_xx-large slds-hide">
+                        <span class="slds-form-element__help">Please fill this code.</span>
+                    </div>
+                </div>
+            </template>
+
+            <div onclick={handleAddCode} data-name="EDN" class="slds-m-top_medium cursorClass">
+                + Add another EDN code
+            </div>
+        </div>
+
+        <hr class="slds-m-top_medium slds-m-bottom_medium">
+
+        <div class="slds-m-bottom_medium slds-p-horizontal_small paddingcls">
+            <div class="slds-text-title slds-m-bottom_small fontSizeClass">Enter codes here that start with SDN (these
+                typically identify a
+                sperm donor):</div>
+
+            <!-- SDN Code Input Group -->
+            <template iterator:it={sdnCodes}>
+                <div key={it.value} class="slds-m-top_small SDN">
+                    <div class="code-input-container">
+                        <span class="fontSizeClass">SDN -</span>
+                        <input maxlength="1" data-group="sdn" data-index="0" data-row={it.index} class="sdnInputCls"
+                            value={it.value.value.one} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="sdn" data-index="1" data-row={it.index} class="sdnInputCls"
+                            value={it.value.value.two} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="sdn" data-index="2" data-row={it.index} class="sdnInputCls"
+                            value={it.value.value.three} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="sdn" data-index="3" data-row={it.index} class="sdnInputCls"
+                            value={it.value.value.four} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="sdn" data-index="4" data-row={it.index} class="sdnInputCls"
+                            value={it.value.value.five} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="sdn" data-index="5" data-row={it.index} class="sdnInputCls"
+                            value={it.value.value.six} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <span onclick={HandleDelete} data-index={it.index} data-name="sdn"><lightning-icon
+                                icon-name="utility:delete" if:false={it.first} size="small"
+                                class="delete-icon"></lightning-icon></span>
+                    </div>
+                    <div class="slds-form-element slds-has-error slds-m-bottom_small slds-m-left_xx-large slds-hide">
+                        <span class="slds-form-element__help">Please fill this code.</span>
+                    </div>
+                </div>
+            </template>
+
+            <div onclick={handleAddCode} data-name="SDN" class="slds-m-top_medium cursorClass">
+                + Add another SDN code
+            </div>
+        </div>
+
+        <hr class="slds-m-top_medium slds-m-bottom_medium">
+
+        <div class="slds-m-bottom_medium slds-p-horizontal_small paddingcls">
+            <div class="slds-text-title slds-m-bottom_small fontSizeClass">Enter codes here that start with EMB (these
+                typically identify an
+                embryo donor):</div>
+
+            <!-- EMB Code Input Group -->
+            <template iterator:it={embCodes}>
+                <div key={it.value} class="slds-m-top_small EMB">
+                    <div class="code-input-container">
+                        <span class="fontSizeClass">EMB -</span>
+                        <input maxlength="1" data-group="emb" data-index="0" data-row={it.index} class="embInputCls"
+                            value={it.value.value.one} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="emb" data-index="1" data-row={it.index} class="embInputCls"
+                            value={it.value.value.two} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="emb" data-index="2" data-row={it.index} class="embInputCls"
+                            value={it.value.value.three} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="emb" data-index="3" data-row={it.index} class="embInputCls"
+                            value={it.value.value.four} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="emb" data-index="4" data-row={it.index} class="embInputCls"
+                            value={it.value.value.five} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="emb" data-index="5" data-row={it.index} class="embInputCls"
+                            value={it.value.value.six} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <span onclick={HandleDelete} data-index={it.index} data-name="emb"><lightning-icon
+                                icon-name="utility:delete" if:false={it.first} size="small"
+                                class="delete-icon"></lightning-icon></span>
+                    </div>
+                    <div class="slds-form-element slds-has-error slds-m-bottom_small slds-m-left_xx-large slds-hide">
+                        <span class="slds-form-element__help">Please fill this code.</span>
+                    </div>
+                </div>
+            </template>
+
+            <div onclick={handleAddCode} data-name="EMB" class="slds-m-top_medium cursorClass">
+                + Add another EMB code
+            </div>
+        </div>
+
+        <!-- new changes forn hemanth -->
+        <hr class="slds-m-top_medium slds-m-bottom_medium">
+
+        <div class="slds-m-bottom_medium slds-p-horizontal_small paddingcls">
+            <div class="slds-text-title slds-m-bottom_small fontSizeClass">Enter codes here that start with REC (these
+                typically identify a recipient):</div>
+
+            <!-- REC Code Input Group -->
+            <template iterator:it={recCodes}>
+                <div key={it.value} class="slds-m-top_small REC">
+                    <div class="code-input-container">
+                        <span class="fontSizeClass">REC -</span>
+                        <input maxlength="1" data-group="rec" data-index="0" data-row={it.index} class="recInputCls"
+                            value={it.value.value.one} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="rec" data-index="1" data-row={it.index} class="recInputCls"
+                            value={it.value.value.two} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="rec" data-index="2" data-row={it.index} class="recInputCls"
+                            value={it.value.value.three} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="rec" data-index="3" data-row={it.index} class="recInputCls"
+                            value={it.value.value.four} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="rec" data-index="4" data-row={it.index} class="recInputCls"
+                            value={it.value.value.five} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <input maxlength="1" data-group="rec" data-index="5" data-row={it.index} class="recInputCls"
+                            value={it.value.value.six} disabled={isSkipped} oninput={handleInputChange}
+                            onkeydown={handleInputChange}></input>
+                        <span onclick={HandleDelete} data-index={it.index} data-name="rec"><lightning-icon
+                                icon-name="utility:delete" if:false={it.first} size="small"
+                                class="delete-icon"></lightning-icon></span>
+                    </div>
+                    <div class="slds-form-element slds-has-error slds-m-bottom_small slds-m-left_xx-large slds-hide">
+                        <span class="slds-form-element__help">Please fill this code.</span>
+                    </div>
+                </div>
+            </template>
+
+            <div onclick={handleAddCode} data-name="REC" class="slds-m-top_medium cursorClass">
+                + Add another REC code
+            </div>
+        </div>
+        <!-- new changes for hemanth-->
+
+        <hr class="slds-m-top_medium slds-m-bottom_medium">
+
+        <div class="slds-p-horizontal_small slds-m-bottom_medium paddingcls skipDecriptioncls">
+            <lightning-input type="checkbox" variant="label-hidden" checked={isSkipped}
+                onchange={handleSkip}></lightning-input>
+            <span style="margin-left:-1%;" class="agencyDescriptionCls">I don't have any of these codes. Skip this
+                step.</span>
+        </div>
+
+        <div class="buttonscls slds-p-top_small">
+            <div class="backbtn textcls" onclick={handleCodeSubmissionBack}>Back</div>
+            <div class="nextbtncls textcls" onclick={handleCodeSubmissionNext}>Next</div>
+        </div>
+    </div>
+</template>

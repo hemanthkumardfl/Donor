@@ -1,0 +1,129 @@
+<template>
+  <lightning-layout multiple-rows class="donationbasicscls" style="background: white;">
+    <div class="slds-p-around_medium">
+      <span class="headingcls">
+        Donation Basics
+      </span>
+      <p class="slds-m-bottom_medium slds-p-top_small textcls donorbasicsdescriptioncls">
+        At Donor 21, we love helping to create healthy families! Tell us a little more about how you completed your
+        donations. Please note that this information will only be used to verify that we have your account matched with
+        the correct recipient(s) and offspring.
+      </p>
+      <p if:true={showError} style="color:red">Please give inputs to all the fields..</p>
+
+      <template if:true={isEggDonation}>
+        <lightning-layout-item size="12" class="textcls slds-m-bottom_medium">
+          <span class="slds-p-top_medium slds-p-bottom_medium">How many total donations have you completed to
+            date?</span>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="slds-m-bottom_large" style="display:flex;width:100px;">
+          <lightning-input type="number" data-id="NumberInput" onkeydown={handleInputValidate}
+            onblur={handleInputChange} value={liveBirths} maxlength="2"></lightning-input>
+          <!-- <span class="textcls" data-name="remove" onclick={handleUpdateLiveBirths} style="cursor:pointer"> - </span>
+          <span class="textcls" style="font-size:medium;">{liveBirths}</span>
+          <span class="textcls" data-name="add" onclick={handleUpdateLiveBirths} style="cursor:pointer"> + </span> -->
+        </lightning-layout-item>
+
+        <span class="textcls slds-p-top_medium">Are you currently in cycle or planning to complete a future
+          donation?</span>
+        <div class="radioinputs slds-p-bottom_large slds-p-top_small">
+          <div>
+            <lightning-input type="radio" label="Yes" name="currentOrFutureDonation" onchange={handleRadioChange}
+              checked={currentOrFutureDonationYes}></lightning-input>
+          </div>
+          <div>
+            <lightning-input type="radio" label="No" name="currentOrFutureDonation" onchange={handleRadioChange}
+              checked={currentOrFutureDonationNo}></lightning-input>
+          </div>
+        </div>
+
+        <span class="textcls slds-p-top_medium">For your donations, did you ever work with an agency or egg bank at any
+          point? </span>
+        <div class="radioinputs slds-p-bottom_large slds-p-top_small">
+          <div>
+            <lightning-input type="radio" label="Yes" name="workWithAnyAgencyOrEggBank" onchange={handleRadioChange}
+              checked={workWithAnyAgencyOrEggBankYes}></lightning-input>
+          </div>
+          <div>
+            <lightning-input type="radio" label="No" name="workWithAnyAgencyOrEggBank" onchange={handleRadioChange}
+              checked={workWithAnyAgencyOrEggBankNo}></lightning-input>
+          </div>
+        </div>
+
+        <span class="textcls slds-p-top_medium">For your donations, did you ever work with a fertility attorney at any
+          point? </span>
+        <div class="radioinputs slds-p-bottom_large slds-p-top_small">
+          <div>
+            <lightning-input type="radio" label="Yes" name="workWithAttorney" onchange={handleRadioChange}
+              checked={workWithAttorneyYes}></lightning-input>
+          </div>
+          <div>
+            <lightning-input type="radio" label="No" name="workWithAttorney" onchange={handleRadioChange}
+              checked={workWithAttorneyNo}></lightning-input>
+          </div>
+        </div>
+
+        <span class="textcls slds-p-top_medium">Do you have the contact information (phone or email) for any of the
+          Intended Parents that you worked with? (for independent or known matches)
+        </span>
+        <div class="radioinputs slds-p-bottom_large slds-p-top_small">
+          <div>
+            <lightning-input type="radio" label="Yes" name="haveIntendedParentDetails" onchange={handleRadioChange}
+              checked={haveIntendedParentDetailsYes}></lightning-input>
+          </div>
+          <div>
+            <lightning-input type="radio" label="No" name="haveIntendedParentDetails" onchange={handleRadioChange}
+              checked={haveIntendedParentDetailsNo}></lightning-input>
+          </div>
+        </div>
+
+      </template>
+
+      <template if:true={isSpermDonation}>
+        <span class="textcls slds-p-top_medium">For your donations, did you work with a sperm bank at any point? </span>
+        <div class="radioinputs slds-p-bottom_large slds-p-top_small">
+          <div>
+            <lightning-input type="radio" label="Yes" name="workWithAnySpermBank" checked={workWithAnySpermBankYes}
+              onchange={handleRadioChange}></lightning-input>
+          </div>
+          <div>
+            <lightning-input type="radio" label="No" name="workWithAnySpermBank" checked={notworkWithAnySpermBankYes}
+              onchange={handleRadioChange}></lightning-input>
+          </div>
+        </div>
+
+        <span class="textcls slds-p-top_medium">For your donations, did you work with a fertility clinic at any point?
+        </span>
+        <div class="radioinputs slds-p-bottom_large slds-p-top_small">
+          <div>
+            <lightning-input type="radio" label="Yes" name="workWithAnyClinic" checked={workWithAnyClinic}
+              onchange={handleRadioChange}></lightning-input>
+          </div>
+          <div>
+            <lightning-input type="radio" label="No" name="workWithAnyClinic" checked={notworkWithAnyClinic}
+              onchange={handleRadioChange}></lightning-input>
+          </div>
+        </div>
+
+        <span class="textcls slds-p-top_medium">Have you completed a sperm donation for any recipient that you worked
+          with independently or through a known match where you would have contact information for the recipient?</span>
+        <div class="radioinputs slds-p-bottom_large slds-p-top_small">
+          <div>
+            <lightning-input type="radio" label="Yes" name="haveIntendedParentDetailsForSperm"
+              checked={haveIntendedParentDetailsForSperm} onchange={handleRadioChange}></lightning-input>
+          </div>
+          <div>
+            <lightning-input type="radio" label="No" name="haveIntendedParentDetailsForSperm"
+              checked={nothaveIntendedParentDetailsForSperm} onchange={handleRadioChange}></lightning-input>
+          </div>
+        </div>
+      </template>
+
+      <div class="buttonscls slds-m-top_large">
+        <div class="backbtn textcls" onclick={handleDonationBasicsBack}>Back</div>
+        <div class="nextbtncls textcls" onclick={handleDonationBasicsNext}>Next</div>
+      </div>
+    </div>
+  </lightning-layout>
+</template>

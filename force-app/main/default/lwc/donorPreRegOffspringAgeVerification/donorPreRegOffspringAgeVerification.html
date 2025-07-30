@@ -1,0 +1,35 @@
+<template>
+    <lightning-layout multiple-rows class="offspringcls">
+        <lightning-layout-item size="12" padding="around-small" class="headerParentCls">
+            <span class="headercls">Age Verification</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" padding="around-small" class="offspringImageParentCls">
+            <img src={offSpringLogo} class="offspringImageCls"/>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" padding="around-small" class="offspringdescriptioncls">
+            <span>
+                Please enter your date of birth below. We ask for your age so we can tailor the next steps to your situation.
+            </span>
+            <span>
+                It's extremely important that this information is accurate as we use your date of birth to help identify 
+                the correct donor match with the clinic and donor program.If the information provided does not match official
+                records, we will not be able to verify the match or find your donor.
+            </span>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" padding="around-small" class="dateOfBirthParentCls">
+            <span>Date Of Birth</span>
+            <div>
+                <lightning-input type="number" placeholder="MM" class="monthcls"></lightning-input>
+                <span class="slds-p-top_small"> / </span>
+                <lightning-input type="text" placeholder="DD" class="daycls"></lightning-input>
+                <span class="slds-p-top_small"> / </span>
+                <lightning-input type="text" placeholder="YYYY" class="yearcls"></lightning-input>
+            </div>
+        </lightning-layout-item>
+         <!-- buttons-->
+         <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+            <div  class="nextbtncls">Continue</div>
+        </lightning-layout-item>
+        <!-- Inputs ends here-->
+    </lightning-layout>
+</template>

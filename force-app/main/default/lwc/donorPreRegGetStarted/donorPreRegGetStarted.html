@@ -1,0 +1,167 @@
+<template>
+    <div class="slds-card getscreenclls slds-p-around_medium">
+        <lightning-layout multiple-rows>
+
+            <!-- Heading -->
+            <lightning-layout-item size="12" padding="around-small" style="display:flex;flex-direction:column;gap:1em;">
+                <span class="headingcls">Get Started</span>
+                <div class="secondHeadingCls">
+                    It's a pleasure to meet you. Let's set up your account.
+                </div>
+            </lightning-layout-item>
+
+            <!-- Logo -->
+            <lightning-layout-item padding="around-small" size="12">
+                <img src={parentLogo} style="border-radius:5px;width:-webkit-fill-available;" />
+            </lightning-layout-item>
+
+            <!-- Name Inputs -->
+            <lightning-layout-item size="12" padding="around-small" class="getnamescls textcls inpucls">
+                <div class="inputParentcls">
+                    <span class="spanTextcls">First Name</span>
+                    <lightning-input type="text" variant="label-hidden" class="getfirstnamecls textcls inpucls"
+                        maxlength="40" name="firstName" onchange={handleInputChange} value={contactObj.firstName}
+                        onblur={validateInput}></lightning-input>
+                </div>
+                <div class="inputParentcls">
+                    <span class="spanTextcls">Last Name</span>
+                    <lightning-input type="text" variant="label-hidden" class="getlastnamecls textcls inpucls"
+                        maxlength="80" name="lastName" onchange={handleInputChange} value={contactObj.lastName}
+                        onblur={validateInput}></lightning-input>
+                </div>
+            </lightning-layout-item>
+
+            <!-- Email -->
+            <lightning-layout-item size="12" padding="around-small" class="inputParentcls">
+                <span class="spanTextcls">Email</span>
+                <lightning-input type="email" class="textcls inpucls" data-id="email" variant="label-hidden"
+                    style="width:100%" name="email" onchange={handleInputChange} value={contactObj.email}
+                    onblur={validateInput}></lightning-input>
+            </lightning-layout-item>
+
+            <!-- Phone -->
+            <lightning-layout-item size="12" padding="around-small" class="inputParentcls">
+                <span class="spanTextcls">Phone</span>
+                <lightning-input type="tel" class="textcls inpucls" variant="label-hidden" data-id="phone"
+                    style="width:100%" name="phone" onchange={handleInputChange} value={contactObj.phone}
+                    pattern="^\+\d{1,3}(?=\d{10}$)\d{10}$"
+                    message-when-pattern-mismatch="Enter a valid phone number with country code, e.g: +911234567890."></lightning-input>
+            </lightning-layout-item>
+
+            <!-- Preferred Username -->
+            <lightning-layout-item size="12" padding="around-small" class="inputParentcls">
+                <div class="slds-grid slds-grid_vertical-align-center">
+                    <span class="spanTextcls">Preferred Username</span><lightning-icon icon-name="utility:info"
+                        class="slds-m-left_xx-small" alternative-text="Help" size="x-small"
+                        title="Username must be in the format of an email address (e.g., yourname@example.com) and can contain only letters, numbers, dots, underscores, or hyphens before the @ symbol.">
+                    </lightning-icon>
+                </div>
+                <lightning-input type="text" class="textcls inpucls" variant="label-hidden" style="width:100%"
+                    value={contactObj.preferredUserName} maxlength="80" name="preferredUserName"
+                    onchange={handleInputChange} onblur={validateInput}></lightning-input>
+            </lightning-layout-item>
+
+            <!-- Preferred Password -->
+            <lightning-layout-item size="12" padding="around-small" class="inputParentcls">
+                <div class="slds-grid slds-grid_vertical-align-center">
+                    <span class="spanTextcls">Preferred Password</span><lightning-icon icon-name="utility:info"
+                        class="slds-m-left_xx-small" alternative-text="Help" size="x-small" title="Password must be at least 8 characters long and include:
+            • At least one letter
+            • At least one number
+            • At least one special character (e.g., @, #, $)">
+                    </lightning-icon>
+                </div>
+                <lightning-input type="password" class="textcls inpucls" minlength="8" maxlength="100"
+                    variant="label-hidden" style="width:100%" value={contactObj.preferredPassword}
+                    name="preferredPassword" onchange={handleInputChange} onblur={validateInput}></lightning-input>
+            </lightning-layout-item>
+
+            <!-- Radio Group -->
+            <lightning-layout-item size="12" padding="around-small">
+                <span class="spanTextcls">
+                    Would you like the confirmation code sent to you:
+                </span>
+
+                <label class="spanTextcls slds-p-top_small slds-p-bottom_small">
+                    <input type="radio" value="Email" name="radioGroup" onchange={handleRadioChange}
+                        checked={emailRadioButton} class="slds-m-bottom_xx-small" /> Email
+                </label>
+
+                <label class="spanTextcls slds-p-bottom_small">
+                    <input type="radio" value="Phone" name="radioGroup" onchange={handleRadioChange}
+                        checked={phoneRadioButton} class="slds-m-bottom_xx-small" /> Phone
+                </label>
+
+                <label class="spanTextcls">
+                    <input type="radio" value="Both" name="radioGroup" onchange={handleRadioChange}
+                        checked={bothRadioButton} class="slds-m-bottom_xx-small" /> Both
+                </label>
+                <template if:true={showRadioError}>
+                    <div class="slds-form-element slds-has-error"><span class="slds-form-element__help">Select one of
+                            these options</span></div>
+                </template>
+            </lightning-layout-item>
+
+        </lightning-layout>
+
+        <!-- Checkbox Agreement -->
+        <div class="slds-p-top_small slds-p-bottom_small">
+            <div class="slds-grid">
+                <lightning-input onchange={handleInputChange} type="checkbox" name="terms"
+                    class="slds-m-left_small slds-m-right_small" checked={contactObj.terms}> </lightning-input>
+                <div>
+                    <span class="spandetailscls">
+                        By checking this box, I acknowledge that I agree to &shy;
+                        <strong>Donor 21's <span class="termscls" onclick={handleTermsClick}>terms of
+                                use</span></strong> &shy; and understand that
+                        an
+                        email and text will be sent to the email and phone number that I provided above in order to
+                        securely
+                        verify my account.
+                    </span>
+                </div>
+            </div>
+            <template if:true={showCheckboxError}>
+                <div class="slds-form-element slds-has-error slds-m-bottom_small slds-m-left_small"><span
+                        class="slds-form-element__help">Please check this box if you want to proceed</span></div>
+            </template>
+        </div>
+
+        <!-- Buttons -->
+        <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+            <div class="backbtn" onclick={handleGetStartedCancel}>Cancel</div>
+            <div class="nextbtncls2" onclick={handleGetStartedContinue}>Continue</div>
+        </lightning-layout-item>
+
+        <template if:true={showTermsPopup}>
+            <div class="modalBackdrop">
+                <div class="modalContainer">
+
+                    <lightning-icon icon-name="utility:warning" variant="warning" size="small"></lightning-icon>
+                    </br>
+                    <span class="headingcls">Donor 21</span>
+                    </br>
+                    <span class="textcls">
+                        <b>Key aspects of terms and conditions agreements:</b> </br>
+                        <strong>User Behavior:</strong> They define acceptable and prohibited actions for users, often
+                        including lists of prohibited activities.<br>
+                        <strong>Content Usage:</strong> They specify how users can interact with the service's content,
+                        including intellectual property rights.<br>
+                        <strong>Account Management:</strong> They outline the process for account creation, termination,
+                        suspension, and other related matters.<br>
+                        <strong>Liability and Disclaimers:</strong> They limit the service provider's liability in
+                        certain situations and may include disclaimers about the service's functionality or
+                        availability.<br>
+                        <strong>Governing Law:</strong> They specify which jurisdiction's laws will govern the
+                        agreement.<br>
+                        <strong>Payment and Refunds:</strong> They may outline payment terms, refund policies, and other
+                        financial aspects of the service.
+                    </span>
+                    <div class="slds-p-around_large" style="display:flex;gap:1em;justify-content:center">
+                        <div class="nextbtncls2" onclick={handleOk}>OK</div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

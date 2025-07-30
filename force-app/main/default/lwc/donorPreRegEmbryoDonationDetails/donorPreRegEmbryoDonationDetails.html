@@ -1,0 +1,101 @@
+<template>
+  <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium">
+    <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+        <span class="textcls slds-p-top_medium">Additional Donations – Donation Details</span>
+      <span class="textcls slds-p-top_medium">Aside from the embryo donation, have you ever donated sperm to a sperm bank to help other families conceive?</span>
+      <div class="radioinputs slds-p-bottom_large slds-p-top_small">
+        <lightning-input type="radio" variant="label-hidden" name="spermBank" value="Yes" onchange={handleSpermBankChange}></lightning-input>
+        <span class="radioinputchild slds-m-right_small">Yes</span>
+        <lightning-input type="radio" variant="label-hidden" name="spermBank" value="No" onchange={handleSpermBankChange}></lightning-input>
+        <span class="radioinputchild">No</span>
+      </div>
+      <span class="textcls slds-p-top_medium">Thank you for your generosity in helping others to grow their families. Please provide the contact details for any sperm banks that you’ve worked with. This will allow us to match your account with any sperm bank recipients as well as the embryo recipient.</span>
+    </lightning-layout-item>
+
+    <template if:true={spermBankOutcomes} for:each={spermBankOutcomes} for:item="outcome">
+      <lightning-layout-item size="12" padding="around-small" key={outcome.id} class="outcomesclass">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 97%">
+          <h3 class="headingcls secondheadingcls slds-p-bottom_small">
+            <template if:true={showNumberedHeadings}>
+              Sperm Bank #{outcome.index}
+            </template>
+            <template if:false={showNumberedHeadings}>
+              Sperm Bank Info
+            </template>
+          </h3>
+          <template if:true={showNumberedHeadings}>
+            <lightning-icon icon-name="action:delete" size="small" data-index={outcome.index} onclick={handleDeleteClick} class="delete-icon"></lightning-icon>
+          </template>
+        </div>
+      </lightning-layout-item>
+      <lightning-layout-item size="12" padding="around-small" key={outcome.id} class="inputparentcls">
+        <lightning-input type="text" placeholder="Bank Name" variant="label-hidden" class="textcls" value={outcome.bankName} onchange={handleInputChange} data-index={outcome.index} data-field="bankName"></lightning-input>
+      </lightning-layout-item>
+      <lightning-layout-item size="12" padding="around-small" key={outcome.id} class="inputparentcls">
+        <lightning-input type="text" placeholder="Bank Website" variant="label-hidden" class="textcls" value={outcome.bankWebsite} onchange={handleInputChange} data-index={outcome.index} data-field="bankWebsite"></lightning-input>
+      </lightning-layout-item>
+      <lightning-layout-item size="12" padding="around-small" key={outcome.id} class="inputparentcls">
+        <lightning-input type="text" placeholder="Bank Phone" variant="label-hidden" class="textcls" value={outcome.bankPhone} onchange={handleInputChange} data-index={outcome.index} data-field="bankPhone"></lightning-input>
+      </lightning-layout-item>
+      <lightning-layout-item size="12" padding="around-small" key={outcome.id} class="inputparentcls">
+        <lightning-input type="text" placeholder="Bank Email" variant="label-hidden" class="textcls" value={outcome.bankEmail} onchange={handleInputChange} data-index={outcome.index} data-field="bankEmail"></lightning-input>
+      </lightning-layout-item>
+      <lightning-layout-item size="12" padding="around-small" key={outcome.id} class="inputparentcls">
+        <lightning-input type="text" placeholder="Name of Coordinator (if known)" variant="label-hidden" class="textcls" value={outcome.coordinatorName} onchange={handleInputChange} data-index={outcome.index} data-field="coordinatorName"></lightning-input>
+      </lightning-layout-item>
+    </template>
+
+    <lightning-layout-item size="12" padding="around-small">
+      <span class="textcls addagencycls" onclick={handleAddAnotherSpermBank}>+ Add Another Sperm Bank</span>
+    </lightning-layout-item>
+
+    <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+      <span class="textcls slds-p-top_medium">Aside from the embryo donation and donating to any sperm banks, have you donated sperm independently to any other parties?</span>
+      <div class="radioinputs slds-p-bottom_large slds-p-top_small">
+        <lightning-input type="radio" variant="label-hidden" name="independentDonation" value="Yes" onchange={handleIndependentDonationChange}></lightning-input>
+        <span class="radioinputchild slds-m-right_small">Yes</span>
+        <lightning-input type="radio" variant="label-hidden" name="independentDonation" value="No" onchange={handleIndependentDonationChange}></lightning-input>
+        <span class="radioinputchild">No</span>
+      </div>
+    </lightning-layout-item>
+
+    <template if:true={independentOutcomes} for:each={independentOutcomes} for:item="outcome">
+      <lightning-layout-item size="12" padding="around-small" key={outcome.id} class="outcomesclass">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 97%">
+          <h3 class="headingcls secondheadingcls slds-p-bottom_small">
+            <template if:true={showNumberedHeadings}>
+              Recipient #{outcome.index}
+            </template>
+            <template if:false={showNumberedHeadings}>
+              Recipient Info
+            </template>
+          </h3>
+          <template if:true={showNumberedHeadings}>
+            <lightning-icon icon-name="action:delete" size="small" data-index={outcome.index} onclick={handleDeleteClick} class="delete-icon"></lightning-icon>
+          </template>
+        </div>
+      </lightning-layout-item>
+      <lightning-layout-item size="12" padding="around-small" key={outcome.id} class="inputparentcls">
+        <lightning-input type="text" placeholder="Recipient First Name" variant="label-hidden" class="textcls" value={outcome.firstName} onchange={handleInputChange} data-index={outcome.index} data-field="firstName"></lightning-input>
+      </lightning-layout-item>
+      <lightning-layout-item size="12" padding="around-small" key={outcome.id} class="inputparentcls">
+        <lightning-input type="text" placeholder="Recipient Last Name" variant="label-hidden" class="textcls" value={outcome.lastName} onchange={handleInputChange} data-index={outcome.index} data-field="lastName"></lightning-input>
+      </lightning-layout-item>
+      <lightning-layout-item size="12" padding="around-small" key={outcome.id} class="inputparentcls">
+        <lightning-input type="text" placeholder="Recipient Email" variant="label-hidden" class="textcls" value={outcome.email} onchange={handleInputChange} data-index={outcome.index} data-field="email"></lightning-input>
+      </lightning-layout-item>
+      <lightning-layout-item size="12" padding="around-small" key={outcome.id} class="inputparentcls">
+        <lightning-input type="text" placeholder="Recipient Phone" variant="label-hidden" class="textcls" value={outcome.phone} onchange={handleInputChange} data-index={outcome.index} data-field="phone"></lightning-input>
+      </lightning-layout-item>
+    </template>
+
+    <lightning-layout-item size="12" padding="around-small">
+      <span class="textcls addagencycls" onclick={handleAddAnotherRecipient}>+ Add Another Recipient</span>
+    </lightning-layout-item>
+
+    <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
+      <lightning-button variant="neutral" label="Back" onclick={handleBack}></lightning-button>
+      <lightning-button variant="brand" label="Next" onclick={handleNext}></lightning-button>
+    </lightning-layout-item>
+  </lightning-layout>
+</template>

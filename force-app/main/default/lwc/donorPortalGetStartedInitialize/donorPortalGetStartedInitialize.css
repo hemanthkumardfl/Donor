@@ -1,0 +1,74 @@
+.container {
+    padding: 1rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.subtext {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 1rem;
+}
+
+.video-box {
+    background: #f4f4f4;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.video-placeholder {
+    background: #2f3640;
+    height: 30rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.step-card {
+    display: flex;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    background-color : #eeeeee;
+}
+
+.step-number {
+    font-size: 1.25rem;
+    /* font-weight: bold; */
+    width: 30px;
+    /* margin-right: 1rem; */
+}
+
+.step-details {
+    flex-grow: 1;
+}
+
+.step-title {
+    /* font-weight: 600; */
+    font-size : medium;
+    margin: 0;
+}
+
+.step-info {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+h1{
+    font-size : x-large;
+}
+
+/* Button Styles */
+.custom-button {
+    --sds-c-button-destructive-color-background: black !important;
+    --sds-c-button-destructive-color-border: black !important;
+    --sds-c-button-destructive-text-color: white !important;
+}
+.custom-button:hover,
+.custom-button:focus {
+    --sds-c-button-destructive-color-background: black !important;
+    --sds-c-button-destructive-color-border: black !important;
+}

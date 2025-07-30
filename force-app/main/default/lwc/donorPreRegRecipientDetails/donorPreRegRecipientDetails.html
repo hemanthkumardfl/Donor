@@ -1,0 +1,155 @@
+<template>
+    <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium">
+        <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+            <span class="headingcls">Recipient Details</span>
+            <span lang="en" class="textcls agencyDescriptionCls">
+                Please list the information for any recipients that you completed a donation with or are working on completing a donation with:
+            </span>
+            <div class="checkboxcls">
+                <lightning-input 
+                    type="checkbox" 
+                    onchange={handleNoRecipientChange} 
+                    disabled={checkboxStatus}
+                    checked={noRecipientChecked}
+                    class="checkboxPrimaryCls">
+                </lightning-input>
+                <span lang="en" class="textcls agencyDescriptionCls">Check here if you did not work with any recipients independently or do not know any recipient details</span>
+            </div>
+        </lightning-layout-item>
+
+        <!-- Delete Confirmation Popup -->
+        <div if:true={showDeletePopup}>
+            <div class="modalBackdrop">
+                <div class="modalContainer slds-p-around_medium">
+                    <lightning-icon icon-name="utility:warning" variant="warning" size="small" class="slds-p-top_small"></lightning-icon>
+                    <span class="headingcls slds-p-top_medium">Confirm Deletion</span>
+                    <span class="textcls slds-p-top_small slds-p-bottom_small">Are you sure you want to delete Recipient Detail #{deleteRecipientNumber}?</span>
+                    <div class="confirmPopupCls slds-p-top_small">
+                        <button class="popupNextBtn" label="Yes" onclick={handleDeleteYes}>Yes</button>
+                        <button class="popupBackBtn" label="No" onclick={handleDeleteNo}>No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <template if:true={recipients} for:each={recipients} for:item="recipient" for:index="index">
+            <lightning-layout-item size="12" key={recipient.id}>
+                <!-- Add line only if not the first section -->
+                <template if:true={index}>
+                    <div class="section-divider slds-p-bottom_medium"></div>
+                </template>
+                <div style="display:flex;justify-content:space-between;width:97%">
+                    <h3 class="headingcls slds-p-left_x-small">
+                        <template if:false={showNumberedHeadings}>
+                            <template if:false={index}>
+                                {recipient.clinicHeading}
+                            </template>
+                            <template if:true={index}>
+                                Recipient Detail #{recipient.RecipientNumber}
+                            </template>
+                        </template>
+                        <template if:true={showNumberedHeadings}>
+                            Recipient Detail #{recipient.RecipientNumber}
+                        </template>
+                    </h3>
+                    <template if:true={showNumberedHeadings}>
+                        <lightning-icon icon-name="action:delete" size="small" data-index={index}
+                            onclick={handleDeleteConfirm} class="delete-icon">
+                        </lightning-icon>
+                    </template>
+                    <template if:false={showNumberedHeadings}>
+                        <template if:true={index}>
+                            <lightning-icon icon-name="action:delete" size="small" data-index={index}
+                                onclick={handleDeleteConfirm} class="delete-icon">
+                            </lightning-icon>
+                        </template>
+                    </template>
+                </div>
+            </lightning-layout-item>
+
+            <lightning-layout multiple-rows="true" class="parentlayoutcls slds-p-around_small test5" key={recipient.id}>
+                <lightning-layout-item class="recipientinputcls1" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                    <span class="textcls inputscls">Recipient First Name</span>
+                    <lightning-input 
+                        type="text" 
+                        value={recipient.recipient2FirstName}
+                        maxlength="255"
+                        onchange={handleInputChange} 
+                        onblur={handleInputBlur} 
+                        name="recipient2FirstName" 
+                        data-index={index}
+                        disabled={noRecipientChecked}
+                        class="textcls">
+                    </lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item class="recipientinputcls2" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                    <span class="textcls inputscls">Recipient Last Name</span>
+                    <lightning-input 
+                        type="text" 
+                        value={recipient.recipient2LastName}
+                        maxlength="255"
+                        onchange={handleInputChange} 
+                        onblur={handleInputBlur} 
+                        name="recipient2LastName" 
+                        data-index={index}
+                        disabled={noRecipientChecked}
+                        class="textcls">
+                    </lightning-input>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <lightning-layout-item size="12" padding="around-small" key={recipient.id} class="inputParentCls">
+                <span class="textcls inputscls">Recipient Email</span>
+                <lightning-input 
+                    type="email" 
+                    value={recipient.email}
+                    onchange={handleInputChange} 
+                    onblur={handleInputBlur} 
+                    name="email" 
+                    data-index={index}
+                    disabled={noRecipientChecked}
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={recipient.id} class="inputParentCls">
+                <span class="textcls inputscls">Recipient Phone</span>
+                <lightning-input 
+                    type="tel" 
+                    value={recipient.phone}
+                    onchange={handleInputChange}
+                    onblur={handleInputBlur} 
+                    name="phone" 
+                    data-index={index}
+                    disabled={noRecipientChecked}
+                    pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                    message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                    class="textcls">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={recipient.id} class="inputParentCls">
+                <span class="textcls inputscls">Additional Information</span>
+                <lightning-textarea
+                    value={recipient.additionalInfo}
+                    onchange={handleInputChange}
+                    onblur={handleInputBlur}
+                    name="additionalInfo"
+                    data-index={index}
+                    disabled={noRecipientChecked}
+                    placeholder="Tell us anything additional you know about this recipient that might assist us in verifying the match."
+                    class="textcls">
+                </lightning-textarea>
+            </lightning-layout-item>
+        </template>
+
+        <lightning-layout-item size="12" padding="around-small" class="addagencyParentcls">
+            <span class={disableAddAnotherRecipient} onclick={handleAddAnotherClick}>+ Add Another Recipient</span>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
+            <div class="backbtn textcls" onclick={handleRecipientDetailsBack}>Back</div>
+            <div class="nextbtncls textcls" onclick={handleRecipientDetailsNext}>Next</div>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

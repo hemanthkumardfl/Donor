@@ -1,0 +1,171 @@
+<template>
+    <lightning-layout multiple-rows style="background:white;" class="form-container slds-p-around_medium">
+        <!-- Header Section -->
+        <lightning-layout-item size="12" padding="around-small" style="display:flex;flex-direction:column;gap:1em;">
+            <span class="heading-cls">HIPAA Release Form</span>
+            <div class="second-heading-cls">
+                We have generated a HIPAA release form to facilitate secure communication with the
+                professional partners you've previously worked with. This release is essential for us to
+                safely locate and link the families you've supported, ensuring they receive important
+                health updates.
+            </div>
+        </lightning-layout-item>
+
+        <!-- Patient Information -->
+        <lightning-layout-item size="12" padding="around-small" style="display:flex;flex-direction:column;gap:1em;">
+            <div class="slds-box patient-info-box">
+                <h2 class="slds-text-heading_small slds-m-bottom_medium">Patient Information</h2>
+                <div class="patient-info">
+                    <div class="info-row">
+                        <span class="slds-text-body_small info-label">Name:</span>
+                        <span class="slds-text-body_small">{formData.name}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="slds-text-body_small info-label">DOB:</span>
+                        <span class="slds-text-body_small">{formData.dob}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="slds-text-body_small info-label">Address:</span>
+                        <span class="slds-text-body_small">{formData.address}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="slds-text-body_small info-label">Phone:</span>
+                        <span class="slds-text-body_small">{formData.phone}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="slds-text-body_small info-label">Email:</span>
+                        <span class="slds-text-body_small">{formData.email}</span>
+                    </div>
+                </div>
+            </div>
+        </lightning-layout-item>
+
+        <!-- Authorization Section -->
+        <lightning-layout-item size="12" padding="around-small" style="display:flex;flex-direction:column;gap:1em;">
+            <div class="slds-box patient-info-box">
+                <h2 class="slds-text-heading_small slds-m-bottom_medium">
+                    Authorization for Release of Protected Health Information
+                </h2>
+                <p class="slds-text-body_small slds-m-bottom_medium">
+                    I, {formData.name}, authorize the release of my protected health information as described below:
+                </p>
+                
+                <div class="slds-m-bottom_medium">
+                    <h3 class="slds-text-body_small authorization-subtitle">
+                        1. Covered Entities Authorized to Release Information:
+                    </h3>
+                    <ul class="covered-entities-list">
+                        <template if:true={formData.showAgenciesSection}>
+                            <h4 class="slds-text-body_small slds-m-top_small">Agencies</h4>
+                            <template for:each={formData.agencies} for:item="agency">
+                                <li key={agency.id} class="slds-text-body_small">{agency.index}. {agency.agencyName}</li>
+                            </template>
+                            <template if:true={formData.noAgencyChecked}>
+                                <li class="slds-text-body_small">No agencies provided.</li>
+                            </template>
+                        </template>
+                        <template if:true={formData.showSpermBanksSection}>
+                            <h4 class="slds-text-body_small slds-m-top_small">Sperm Banks</h4>
+                            <template for:each={formData.spermBank} for:item="spermBank">
+                                <li key={spermBank.id} class="slds-text-body_small">{spermBank.index}. {spermBank.spermBankName}</li>
+                            </template>
+                            <template if:true={formData.noSpermChecked}>
+                                <li class="slds-text-body_small">No sperm banks provided.</li>
+                            </template>
+                        </template>
+                        <h4 class="slds-text-body_small slds-m-top_small">Clinics</h4>
+                        <template for:each={formData.clinics} for:item="clinic">
+                            <li key={clinic.id} class="slds-text-body_small">{clinic.index}. {clinic.clinicName}</li>
+                        </template>
+                        <template if:true={formData.noClinicChecked}>
+                            <li class="slds-text-body_small">No clinics provided.</li>
+                        </template>
+                        <template if:true={formData.showAttorneySection}>
+                            <h4 class="slds-text-body_small slds-m-top_small">Attorneys</h4>
+                            <template for:each={formData.attorneys} for:item="attorney">
+                                <li key={attorney.id} class="slds-text-body_small">{attorney.index}. {attorney.attorneyName}</li>
+                            </template>
+                            <template if:true={formData.noAttorneyChecked}>
+                                <li class="slds-text-body_small">No attorneys provided.</li>
+                            </template>
+                        </template>
+                        <template if:true={formData.showRecipientsection}>
+                            <h4 class="slds-text-body_small slds-m-top_small">Recipients</h4>
+                            <template for:each={formData.recipients} for:item="recipient">
+                                <li key={recipient.id} class="slds-text-body_small">{recipient.index}.{recipient.Name}</li>
+                            </template>
+                            <template if:true={formData.noRecipientChecked}>
+                                <li class="slds-text-body_small">No recipients provided.</li>
+                            </template>
+                        </template>
+                    </ul>
+                </div>
+
+                <div class="slds-m-bottom_medium">
+                    <h3 class="slds-text-body_small authorization-subtitle">
+                        2. Information to be Released:
+                    </h3>
+                    <p class="slds-text-body_small">
+                        All medical records, reports, and information related to my donation process,
+                        including but not limited to medical history, laboratory results, genetic screening
+                        results, and any other relevant information.
+                    </p>
+                </div>
+            </div>
+        </lightning-layout-item>
+
+        <!-- Confirmation Checkbox -->
+        <lightning-layout-item size="12" padding="around-small">
+            <div style="display:flex;align-items:flex-start;gap:0.5rem;">
+                <lightning-input 
+                    type="checkbox"
+                    name="confirmation"
+                    checked={isConfirmed} 
+                    onchange={handleConfirmationChange}
+                    class="confirmation-checkbox">
+                </lightning-input>
+            </div>
+             <span class="span-details-cls">I have read and agree to the terms of the HIPAA Release Form.</span>
+        </lightning-layout-item>
+
+        <!-- Signature Section -->
+        <lightning-layout-item size="12" padding="around-small" style="display:flex;flex-direction:column;gap:1em;">
+            <h3 class="slds-text-body_small slds-m-bottom_medium second-heading-cls">
+                Please sign the HIPAA Release Form:
+            </h3>
+            <div class="signature-box-wrapper">
+                <canvas 
+                    class="signature-canvas" 
+                    width="800" 
+                    height="200"
+                    onmousedown={handleMouseDown}
+                    onmousemove={handleMouseMove}
+                    onmouseup={handleMouseUp}
+                    onmouseleave={handleMouseLeave}
+                    ontouchstart={handleTouchStart}
+                    ontouchmove={handleTouchMove}
+                    ontouchend={handleTouchEnd}>
+                </canvas>
+                <lightning-button-icon 
+                    icon-name="utility:refresh" 
+                    variant="bare" 
+                    onclick={clearSignature}
+                    class="refresh-icon-button"
+                    title="Clear Signature">
+                </lightning-button-icon>
+            </div>
+            <p  if:true={signerror} class={signatureErrorClass} style="color: red;">Please provide your signature before proceeding.</p>
+        </lightning-layout-item>
+
+        <!-- Navigation Buttons -->
+        <lightning-layout-item size="12" padding="around-small" class="buttons-cls">
+            <div class="back-btn" onclick={handleBack}>Back</div>
+            <div class="next-btn-cls" onclick={handleNext}>Next</div>
+        </lightning-layout-item>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Processing..." size="medium"></lightning-spinner>
+        </template>
+    </lightning-layout>
+</template>

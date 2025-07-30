@@ -1,0 +1,85 @@
+<template>
+    <div class="test">
+        <lightning-layout multiple-rows class="twofactorparentdiv">
+             <span class="errorspan"></span>
+
+            <lightning-layout-item size="12" class="securityIconParentCls">
+                <img src={Security_LOGO} class="largeDeviceSecurityIconCls" if:false={isValidationError}/>
+                <img src={securityErrorLogo} class="largeDeviceSecurityIconCls errorIconcls" if:true={isValidationError}/>
+                 <!-- <lightning-icon icon-name='action:new_custom91' size='large' class="largeDeviceSecurityIconCls slds-p-top_medium"></lightning-icon> -->
+                <img src={SecurityMobileIcon} class="mobileIconCls"/>
+            </lightning-layout-item>
+            
+            <lightning-layout-item size="12" class="securityParentCls">
+                <!--Two factor header -->
+                <lightning-layout-item size="12" padding="around-small">
+                    <div class="securityverificationcls headingcls slds-p-left_medium" style="color:black;">
+                        {securityverification}
+                    </div>
+                </lightning-layout-item>
+                <!--Two factor header -->
+
+                <!--Two factor message-->
+                <lightning-layout-item size="12" padding="around-small" class="securitydescriptionParentcls">
+                    <div class="slds-p-left_medium ">
+                        <p class="messagecls securitydescriptioncls">{securitydescription}</p>
+                    </div>
+                </lightning-layout-item>
+            </lightning-layout-item>
+
+            <!-- <div class="slds-p-around_x-small"></div> -->
+
+            <lightning-layout-item size="12" padding="around-small" class={otpMsgClass}>
+                 {otpValidation}
+            </lightning-layout-item>
+            
+        <!--Two factor message ends -->
+
+            <!-- otp screen starts-->
+            <lightning-layout-item size="12" padding="around-small">
+                <div class="otpcls">
+                    <input type="number" required  class="otpinputcls" contenteditable="true" data-id = "0" data-objkey="one" maxlength="1" min="0" max="9" 
+                            onkeydown={handleUserInput} oninput={handleUserInput} onpaste={handleOTPpaste} value={inputEntry.one}/>
+                    <input type="number" required  class="otpinputcls" contenteditable="true" data-objkey="two" data-id = "1" maxlength="1" min="0" max="9" 
+                            onkeydown={handleUserInput} oninput={handleUserInput} value={inputEntry.two}/>
+                    <input type="number" required class="otpinputcls" contenteditable="true" data-objkey="three" data-id = "2"  maxlength="1" min="0" max="9" 
+                            onkeydown={handleUserInput} oninput={handleUserInput} value={inputEntry.three}/>
+                    <input type="number" required  class="otpinputcls" contenteditable="true" data-objkey="four" data-id = "3" maxlength="1" min="0" max="9"
+                            onkeydown={handleUserInput} oninput={handleUserInput} value={inputEntry.four}/>
+                    <input type="number" required  class="otpinputcls" contenteditable="true" data-objkey="five" data-id = "4" maxlength="1" min="0" max="9" 
+                            onkeydown={handleUserInput} oninput={handleUserInput} value={inputEntry.five}/>
+                    <input type="number" required  class="otpinputcls" contenteditable="true" data-objkey="six" data-id = "5" maxlength="1" min="0" max="9" 
+                            onkeydown={handleUserInput} oninput={handleUserInput} value={inputEntry.six}/>
+                </div>
+            </lightning-layout-item>
+            <!--  otp screen ends-->
+
+            <!--  verify  starts-->
+            <lightning-layout-item size="1" padding="around-small"></lightning-layout-item>
+            <lightning-layout-item size="10" padding="around-small" style="display:flex;place-content:center;">
+                <div class={verifyButtonClass} onclick={handleVerifyclick}>
+                        <span class="securitydescriptioncls Verifycls">Verify</span>
+                </div>      
+            </lightning-layout-item>
+            <lightning-layout-item size="1" padding="around-small"></lightning-layout-item>
+            <!--  verify ends-->
+            
+            <!-- spacing div-->
+            <lightning-layout-item size="12" padding="around-small" class="aligndivparentcls">
+                <div class="aligndivcls"></div>
+            </lightning-layout-item>
+            <!-- spacing div ends-->
+
+            <!-- resend messag starts-->
+            <lightning-layout-item size="12" padding="around-small" class="resendParentCls">
+                <div class=" resendparentdiv slds-p-around_x-small slds-text-align_center">
+                        <span class={resendButtonClass} onclick={handleResendCodeClick}>Resend the code</span>
+                        <div class="securityIconParentCls">
+                            <img src={havingTroubleIcon}/>
+                            <span class="resendcls messagecls havingtroubleClass">Having trouble? Get Support</span>
+                        </div>  
+                </div>      
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

@@ -1,0 +1,45 @@
+<template>
+     <lightning-layout multiple-rows class="donationoutcomecls">
+        <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px"  class="textcls headingcls">
+            Donation Outcome
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="textcls" padding="around-small">
+            We’d love to hear about the outcomes of your donations. 
+            Please take a moment to answer the following questions. Please answer the following questions:
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" padding="around-small" style="display:flex;flex-direction:column;gap:1em;">
+            <span class="textcls" >Have you been notified if any of your donations have resulted in live births?</span>
+            <lightning-radio-group
+              label=""
+              options={yesNoOptions}
+              value={value}
+              type="radio"
+              onchange={handleDonationOutcomeChange}
+              class="slds-m-bottom_medium">
+          </lightning-radio-group>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="textcls" padding="around-small">
+            <span>If yes, how many live births have you been notified about from your donations?</span>
+        </lightning-layout-item>
+
+         <lightning-layout-item size="12" class = {liveBirthDisableCls} padding="around-small">
+            <!-- <span class="textcls"  onclick={handleRemove} style="cursor:pointer"> - </span>
+            <span style="font-size:medium;" class="textcls"> {liveBirths} </span>
+            <span class="textcls" onclick={handleAddNew} style="cursor:pointer"> + </span> -->
+             <lightning-input type="number" onkeydown = {handleInputValidate} onblur={handleInputChange}  value={liveBirths}></lightning-input>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" class="textcls" padding="around-small" style="min-height:1em">
+        </lightning-layout-item>
+         <!-- buttons -->
+        <lightning-layout-item size="12"  class="buttonscls" padding="around-medium">
+            <div  class="backbtn textcls" onclick={handleDonationOutcomeBack}>Back</div>
+            <div  class="nextbtncls textcls" onclick={handleDonationOutcomeNext}>Next</div>
+        </lightning-layout-item>
+        <!-- buttons -->
+
+
+     </lightning-layout>
+</template>

@@ -1,0 +1,114 @@
+<template>
+    <div class="slds-card slds-p-around_medium borderRadius">
+        <div class="slds-p-horizontal_medium borderRadius">
+            <h3 class="headingcls slds-p-top_small slds-p-bottom_small">Donation Outcomes</h3>
+            <span class="textcls agencyDescriptionCls">
+                We know that each donation cycle is unique and different programs have different policies for sharing
+                outcome information. Therefore, we know that some donors are not provided with the outcome of their
+                donations. Please complete the following information to the best of your knowledge. Leave blank anything
+                you don't know.
+            </span>
+
+            <template for:each={cycles} for:item="cycle" for:index="index">
+                <div
+                    key={cycle.id}
+                    class="slds-box slds-theme_shade slds-m-top_medium donationbasicsParentcls"
+                    style="background-color: #E8E3DC;"
+                >
+                    <h3>
+                        <span class="headingcls">Cycle #{cycle.number}</span>
+                    </h3>
+                    <lightning-layout multiple-rows class="donationbasicscls">
+                        <lightning-layout-item size="12" class="inputsLayout">
+                            <span class="textcls inputscls">Number of Eggs retrieved</span>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" class="slds-p-bottom_small">
+                            <lightning-input
+                                type="number"
+                                label="Number of Eggs retrieved:"
+                                variant="label-hidden"
+                                value={cycle.eggs}
+                                data-field="eggs"
+                                data-index={index}
+                                class="boxRadius"
+                                name="Eggs"
+                                onchange={handleChange}
+                                onblur ={handleInputBlur}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" class="inputsLayout">
+                            <span class="textcls inputscls">Number of Embryos created</span>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12">
+                            <lightning-input
+                                type="number"
+                                label="Number of Embryos created:"
+                                variant="label-hidden"
+                                value={cycle.embryos}
+                                data-field="embryos"
+                                data-index={index}
+                                class="boxRadius"
+                                name="Embryos"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" class="inputsLayout">
+                            <span class="textcls inputscls">If PGD was done, number of embryos after testing:</span>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12">
+                            <lightning-input
+                                type="number"
+                                label="If PGD was done, number of embryos after testing:"
+                                variant="label-hidden"
+                                value={cycle.pgd}
+                                data-field="pgd"
+                                data-index={index}
+                                class="boxRadius"
+                                name="PGD"
+                                onchange={handleChange}
+                            ></lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+
+                    <div class="slds-grid slds-wrap slds-m-top_medium radioinputparentcls">
+                        <div class="slds-col slds-size_1-of-2 ">
+                            <span class="inputscls textcls">Pregnancy:</span>
+                            <div class="radioinputs">
+                                <lightning-input type="radio" label="No" value="No" name={cycle.pregnancyGroup}
+                                    class="" data-field="pregnancy" data-index={index} onchange={handleRadioChange}></lightning-input>
+                                <lightning-input type="radio" label="Yes" value="Yes" name={cycle.pregnancyGroup}
+                                    class="" data-field="pregnancy" data-index={index} onchange={handleRadioChange}></lightning-input>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <span class="inputscls textcls">Live Birth:</span>
+                            <div class="radioinputs">
+                                <lightning-input type="radio" label="No" value="No" name={cycle.liveBirthGroup}
+                                    class="" data-field="liveBirth" data-index={index} onchange={handleRadioChange}></lightning-input>
+                                <lightning-input type="radio" label="Yes" value="Yes" name={cycle.liveBirthGroup}
+                                    class="" data-field="liveBirth" data-index={index} onchange={handleRadioChange}></lightning-input>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-p-top_medium">
+                        <span class="textcls">If children resulted and you know the gender list here:</span>
+                    </div>
+                    <lightning-input
+                        class="slds-m-top_medium textcls"
+                        value={cycle.genderInfo}
+                        data-field="genderInfo"
+                        data-index={index}
+                        onchange={handleChange}
+                        name="children"
+                        variant="label-hidden"
+                    ></lightning-input>
+                </div>
+            </template>
+        </div>
+        <div class="buttonscls">
+            <div class="backbtn textcls" onclick={handleEggCycleOutcomeBack}>Back</div>
+            <div class="nextbtncls textcls" onclick={handleEggCycleOutcomeNext}>Next</div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,298 @@
+<template>
+    <div class="slds-card slds-p-around_medium borderRadius">
+        <div class="slds-p-horizontal_medium">
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <lightning-layout-item size="12" padding="around-small" style="text-align: center;">
+                    <lightning-spinner alternative-text="Processing..." size="medium"></lightning-spinner>
+                    <div class="slds-m-top_small">Processing request...</div>
+                </lightning-layout-item>
+            </template>
+
+            <!-- Main Content (hidden when loading) -->
+            <template if:false={isLoading}>
+                <h3 class="headingcls">Sperm Donor Information (No Code)</h3>
+                <p class="slds-m-top_medium textcls">
+                    We think it’s incredible that you grew your family with a sperm donor’s help. Please answer the following questions so we have the necessary details to match your account with your selected donor.
+                </p>
+
+                <div class="slds-m-top_medium">
+                    <lightning-layout multiple-rows class="donationbasicscls">
+                        <lightning-layout-item size="12" class="slds-m-top_medium">
+                            <label class="textcls">How did you find your sperm donor?</label>
+                            <lightning-combobox
+                                name="donorSource"
+                                label=""
+                                placeholder="Select an option"
+                                value={donor.selectedOption}
+                                options={options}
+                                onchange={handleChange}
+                                required
+                            ></lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+
+                    <!-- Clinic Details (Shown if Clinic is selected) -->
+                    <template if:true={donor.isClinicSelected}>
+                        <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC; border-color: black; border-width: 2.2px;">
+                            <h3 class="headingcls">Clinic Details</h3>
+                            <lightning-layout multiple-rows class="donationbasicscls">
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                                    <label class="textcls">Clinic Name</label>
+                                    <lightning-input
+                                        variant="label-hidden"
+                                        value={donor.embryoProgram.name}
+                                        data-field="name"
+                                        data-section="embryoProgram"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                        required
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                                    <label class="textcls">Doctor Name</label>
+                                    <lightning-input
+                                        variant="label-hidden"
+                                        value={donor.embryoProgram.doctorName}
+                                        data-field="doctorName"
+                                        data-section="embryoProgram"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                                    <label class="textcls">Clinic Website</label>
+                                    <lightning-input
+                                        type="url"
+                                        variant="label-hidden"
+                                        value={donor.embryoProgram.website}
+                                        data-field="website"
+                                        data-section="embryoProgram"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                                    <label class="textcls">Clinic Phone Number</label>
+                                    <lightning-input
+                                        type="tel"
+                                        variant="label-hidden"
+                                        value={donor.embryoProgram.phone}
+                                        data-field="phone"
+                                        data-section="embryoProgram"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                                    <label class="textcls">Clinic City/State</label>
+                                    <lightning-input
+                                        variant="label-hidden"
+                                        value={donor.embryoProgram.cityState}
+                                        data-field="cityState"
+                                        data-section="embryoProgram"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                                    <label class="textcls">Name of Office Coordinator</label>
+                                    <lightning-input
+                                        variant="label-hidden"
+                                        value={donor.embryoProgram.coordinatorName}
+                                        data-field="coordinatorName"
+                                        data-section="embryoProgram"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                                    <label class="textcls">Email of Clinic Coordinator</label>
+                                    <lightning-input
+                                        type="email"
+                                        variant="label-hidden"
+                                        value={donor.embryoProgram.coordinatorEmail}
+                                        data-field="coordinatorEmail"
+                                        data-section="embryoProgram"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </div>
+                    </template>
+
+                    <!-- Sperm Bank Information (Shown if Sperm Bank is selected) -->
+                    <template if:true={donor.isSpermBankSelected}>
+                        <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC; border-color: black; border-width: 2.2px;">
+                            <h3 class="headingcls">Sperm Bank Information</h3>
+                            <p class="slds-m-top_medium slds-text-body_small slds-text-color_weak">If applicable, otherwise leave blank</p>
+                            <lightning-layout multiple-rows class="donationbasicscls">
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                                    <label class="textcls">Name of Sperm Bank</label>
+                                    <lightning-input
+                                        variant="label-hidden"
+                                        value={donor.clinic.name}
+                                        data-field="name"
+                                        data-section="clinic"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                        required
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                                    <label class="textcls">Sperm Bank Website</label>
+                                    <lightning-input
+                                        type="url"
+                                        variant="label-hidden"
+                                        value={donor.clinic.website}
+                                        data-field="website"
+                                        data-section="clinic"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                                    <label class="textcls">Sperm Bank Phone</label>
+                                    <lightning-input
+                                        type="tel"
+                                        variant="label-hidden"
+                                        value={donor.clinic.phone}
+                                        data-field="phone"
+                                        data-section="clinic"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                                    <label class="textcls">Sperm Bank City/State</label>
+                                    <lightning-input
+                                        variant="label-hidden"
+                                        value={donor.clinic.cityState}
+                                        data-field="cityState"
+                                        data-section="clinic"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                                    <label class="textcls">Name of Coordinator</label>
+                                    <lightning-input
+                                        variant="label-hidden"
+                                        value={donor.clinic.coordinatorName}
+                                        data-field="coordinatorName"
+                                        data-section="clinic"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                                    <label class="textcls">Email of Coordinator</label>
+                                    <lightning-input
+                                        type="email"
+                                        variant="label-hidden"
+                                        value={donor.clinic.coordinatorEmail}
+                                        data-field="coordinatorEmail"
+                                        data-section="clinic"
+                                        class="boxRadius"
+                                        onchange={handleChange}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </div>
+                    </template>
+
+                    <!-- Donor Details (Always Shown) -->
+                    <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC; border-color: black; border-width: 2.2px;">
+                        <h3 class="headingcls">Do you know the name, phone, or email of your sperm donor?</h3>
+                        <lightning-layout multiple-rows class="donationbasicscls">
+                            <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                                <label class="textcls">First Name (if known)</label>
+                                <lightning-input
+                                    variant="label-hidden"
+                                    value={donor.family.firstName}
+                                    data-field="firstName"
+                                    data-section="family"
+                                    class="boxRadius"
+                                    onchange={handleChange}
+                                ></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                                <label class="textcls">Last Name (if known)</label>
+                                <lightning-input
+                                    variant="label-hidden"
+                                    value={donor.family.lastName}
+                                    data-field="lastName"
+                                    data-section="family"
+                                    class="boxRadius"
+                                    onchange={handleChange}
+                                ></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls1">
+                                <label class="textcls">Email (if known)</label>
+                                <lightning-input
+                                    type="email"
+                                    variant="label-hidden"
+                                    value={donor.family.email}
+                                    data-field="email"
+                                    data-section="family"
+                                    class="boxRadius"
+                                    onchange={handleChange}
+                                ></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" class="slds-m-top_medium recipientinputcls2">
+                                <label class="textcls">Phone # (if known)</label>
+                                <lightning-input
+                                    type="tel"
+                                    variant="label-hidden"
+                                    value={donor.family.phone}
+                                    data-field="phone"
+                                    data-section="family"
+                                    class="boxRadius"
+                                    onchange={handleChange}
+                                ></lightning-input>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </div>
+
+                    <lightning-layout multiple-rows class="donationbasicscls">
+                        <lightning-layout-item size="12" class="slds-m-top_medium">
+                            <label class="textcls">Upload the donor’s profile (if available)</label>
+                            <lightning-input
+                                type="file"
+                                label=""
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                onchange={handleProfileUpload}
+                            ></lightning-input>
+                            <p class="slds-text-body_small slds-text-color_weak">Don't worry if not available</p>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" class="slds-m-top_medium">
+                            <label class="textcls">Upload a photo of the donor (if available)</label>
+                            <lightning-input
+                                type="file"
+                                label=""
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                onchange={handlePhotoUpload}
+                            ></lightning-input>
+                            <p class="slds-text-body_small slds-text-color_weak">Don't worry if not available</p>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" class="slds-m-top_medium">
+                            <label class="textcls">Additional Information</label>
+                            <lightning-textarea
+                                placeholder="Is there any other information you want to provide that you think could help us to locate and verify your donor?"
+                                value={donor.family.additionalInfo}
+                                onchange={handleAdditionalInfoChange}
+                            ></lightning-textarea>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="buttonscls">
+                    <div class="backbtn textcls" onclick={handleBackClick}>Back</div>
+                    <div class="nextbtncls textcls" onclick={handleNextClick}>Next</div>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,66 @@
+<template>
+    <div if:true={isHeaderScreen} >
+    <lightning-layout multiple-rows class="donorheaderbox" style="display:flex;align-items:center">
+            <!-- Donor header-->
+            <lightning-layout-item size="7" 
+                padding="around-small" class="dnrheadercls">
+                <div class="titlecls donortitlecls">
+                   Donor 21
+                </div>
+            </lightning-layout-item>
+            <!-- Donor header ends-->
+
+            <!-- title options nav bar starts here-->
+            <lightning-layout-item size="5" padding="around-small" class="dnrheadercls titleoptionssection" >
+                <div class="titleoptions">
+                    <span onclick={handleHomeClick}>Home</span>
+                    <span>About</span>
+                    <span>Services</span>
+                    <span>Contact</span>
+                    <div  class="nextbtncls" >Login</div>
+                </div>
+            </lightning-layout-item>
+            <!-- title options nav bar ends here-->
+
+            <!-- title options mobile nav bar button starts here-->
+             <lightning-layout-item size="5" padding="around-small" class="dnrheadercls mobilenavbar">
+                    <div class="mobileNavbartitles">
+                        <div class="mobileNavbartitlesFirstChild"></div>
+                        <div if:false={isCancel} class="sidebarIconsparent" onclick={handleMobileNavbar}>
+                            <span class="sidebarIcon"></span>
+                            <span class="sidebarIcon"></span>
+                            <span class="sidebarIcon"></span>
+                        </div>
+                        <div if:true={isCancel}>
+                            <lightning-icon icon-name='utility:close'  size='medium' class="iconcls" onclick={handleMobileNavbarCancel}></lightning-icon>
+                        </div>
+                    </div>
+             </lightning-layout-item>
+             <!-- title options mobile nav bar button ends here-->
+             
+    </lightning-layout>
+
+    <!-- sidebar starts here -->
+     <aside class="sidebar">
+        <div class="sidebarheader">
+            
+        </div>
+        <div class="sidebar_content sidebar_body">
+            <span class="sidebarspan" onclick={handleHomeClick}>Home</span>
+            <span class="sidebarspan">About</span>
+            <span class="sidebarspan">Services</span>
+            <span class="sidebarspan">Contact</span>
+            <span class="sidebarspan">LogIn</span>
+        </div>
+        <div class="sidebarfooter">
+            
+        </div>
+    </aside>
+    </div>
+    <!-- sidebar ends here -->
+
+     <template if:true={isShowDonorIntro}>
+        <c-d21_-pre-reg-home-screen onhome={handleHomeButtonClick} ></c-d21_-pre-reg-home-screen>
+    </template>
+ 
+</template>

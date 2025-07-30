@@ -1,0 +1,27 @@
+<template>
+    <lightning-layout multiple-rows class="maindivheight">
+        <!-- Donor Info -->
+        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" class="slds-grid slds-grid_align-center slds-grid_vertical-align-center slds-p-around_medium layout-item-center">
+            <div class="fontcls title-text">You are magic!</div>
+            <div class="fontcls subtitle-text">You helped someone deserving to become a parent!</div>
+            <div class="fontcls info-text">Tell us what kind of donor you were:</div>
+
+            <div class="donor-label-container">
+                <div class="donorLabelCls" onclick={handleEggDonorClick}>Egg Donor</div>
+                <div class="donorLabelCls" onclick={handleSpermDonorClick}>Sperm Donor</div>
+                <div class="donorLabelCls" onclick={handleEmbryoDonorClick}>Embryo Donor</div>
+            </div>
+            <br/>
+            <div class="btncls" onclick={handleNextClick}>
+                Next
+            </div>
+        </lightning-layout-item>
+
+        <!-- Image Section -->
+        <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" class="slds-p-around_none">
+            <div class="image-container">
+                <img src={donorLogo} class="imgcls"/>
+            </div>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

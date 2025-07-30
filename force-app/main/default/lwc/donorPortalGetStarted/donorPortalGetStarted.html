@@ -1,0 +1,68 @@
+<template>
+    <!-- Welcome Message -->
+    <h1 class="slds-text-heading_medium welcome-heading">Welcome Back, Sarah</h1>
+    <p class="slds-text-body_small welcome-subtitle">
+        Securely access your important information and updates in one secure place.
+    </p>
+
+    <!-- Reminders Section -->
+    <div class="slds-card slds-box section-card">
+        <h2 class="slds-text-heading_small section-heading">Reminders</h2>
+        <div class="slds-m-vertical_small">
+            <template iterator:it={reminders}>
+                <div key={it.value.id} class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                    <div>
+                        <div class="reminder-title">{it.value.label}</div>
+                        <div class="reminder-due-date">Due: {it.value.dueDate}</div>
+                        <div class="reminder-description">{it.value.description}</div>
+                    </div>
+                    <div class="reminder-action">
+                        <lightning-icon icon-name="utility:notification" size="x-small"
+                            class="reminder-bell-icon"></lightning-icon>
+                        <lightning-button variant="base" class="custom-button"
+                            label="Set Reminder"></lightning-button>
+                    </div>
+                </div>
+                <hr if:false={it.last} key={it.value.id}>
+            </template>
+        </div>
+    </div>
+
+    <!-- Latest Donor Updates -->
+    <div class="slds-card slds-box section-card">
+        <h2 class="slds-text-heading_small section-heading">Latest Donor Updates</h2>
+        <div class="slds-m-vertical_small reminder-due-date">
+            <div>Last Update: {lastUpdate}</div>
+            <div>Next Update Due: {nextUpdate}</div>
+        </div>
+        <div class="slds-m-vertical_x-small reminder-due-date">
+            <lightning-icon icon-name="utility:notification" size="x-small"></lightning-icon>&nbsp;<b>View Latest
+                Report</b>
+        </div>
+    </div>
+
+    <!-- Messages Section -->
+    <div class="slds-card slds-box section-card">
+        <div class="section-header">
+            <h2 class="slds-text-heading_small section-heading">Messages</h2>
+            <span class="message-badge">3 New</span>
+        </div>
+        <div class="reminder-due-date">
+            <lightning-icon icon-name="utility:notification" size="x-small"></lightning-icon>&nbsp;<b>View Messages</b>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <h1 class="slds-text-heading_medium quick-actions-heading">Quick Actions</h1>
+    <div class="slds-grid slds-wrap slds-gutters">
+        <template for:each={quickActions} for:item="action">
+            <div key={action.label} class="slds-col slds-size_1-of-3 slds-p-around_x-small">
+                <div class="slds-box slds-card quick-action-card">
+                    <div><lightning-icon icon-name="utility:notification" size="x-small"></lightning-icon></div>
+                    <div class="quick-action-label">{action.label}</div>
+                    <div class="quick-action-desc">{action.description}</div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

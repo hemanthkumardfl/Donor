@@ -1,0 +1,114 @@
+<template>
+    <div class="slds-card slds-p-around_large">
+
+        <h2 class="slds-text-heading_medium">
+            <b>Donor Information</b>
+        </h2>
+
+
+
+
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="6">
+                <p class="slds-m-vertical_small"><strong>We have matched the following egg donor to your embryo
+                        ID:</strong></p>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                <p class="slds-m-vertical_small"><strong>EDN - 716278</strong></p>
+            </lightning-layout-item>
+        </lightning-layout>
+
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="6">
+                Egg Donor Agency:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                West Coast Egg Donation
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Website:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                www.caembryobank.com
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Phone:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                (555) 123-4567
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Email:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                contact@caembryobank.com
+            </lightning-layout-item>
+        </lightning-layout>
+        <div class="slds-grid">
+            <input type="checkbox" class="slds-m-right_xx-small"></input>&nbsp;
+            <div>Check here to confirm that the information displayed above properly identifies the egg donor program
+                that you worked with</div>
+        </div>
+        <div class="slds-grid">
+            <input type="checkbox" class="slds-m-right_xx-small"></input>&nbsp;
+            <div>Check here if this is not the program you worked with</div>
+        </div>
+
+        <br>
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="6">
+                <p class="slds-m-vertical_small"><strong>We have matched the following sperm donor to your embryo
+                        ID:</strong></p>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                <p class="slds-m-vertical_small"><strong>EDN - 716278</strong></p>
+            </lightning-layout-item>
+        </lightning-layout>
+        
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="6">
+                Sperm Donor Agency:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                California Cryobank
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Website:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                www.caembryobank.com
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Phone:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                (555) 123-4567
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Email:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                info@pacificfertility.com
+            </lightning-layout-item>
+        </lightning-layout>
+        <div class="slds-grid">
+            <input type="checkbox" class="slds-m-right_xx-small"></input>&nbsp;
+            <div> Check here to confirm that the information displayed above properly identifies the sperm donor program
+                that you worked with</div>
+        </div>
+        <div class="slds-grid">
+            <input type="checkbox" class="slds-m-right_xx-small"></input>&nbsp;
+            <div>Check here if this is not the program you worked with</div>
+        </div>
+
+        <!-- Buttons -->
+        <lightning-layout class="slds-p-top_small" horizontal-align="spread">
+            <lightning-layout-item size="6" medium-device-size="2" class="slds-p-right_xx-small">
+                <div class="backbtnCls" onclick={handleCodeSubmissionBack}>Back</div>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" medium-device-size="2" class="slds-p-left_xx-small">
+                <div class="nextbtnCls" onclick={handleCodeSubmissionNext}>Next</div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

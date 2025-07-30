@@ -1,0 +1,167 @@
+<template>
+    <div class="slds-card slds-p-around_large">
+
+        <h2 class="slds-text-heading_medium slds-grid">
+            <lightning-icon icon-name='utility:success' size='small'
+                class="slds-p-right_small codeiconcls"></lightning-icon>
+            <div><b>Great News! We found the embryo ID you entered in our system.</b></div>
+        </h2>
+
+        <p class="slds-m-vertical_small">Please confirm the following details associated with the EMB code:</p>
+
+        <!-- Recipient Information -->
+        <h3 class="slds-text-title_bold">Recipient Information</h3>
+        <br>
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="6">
+                Recipient who is donating embryos:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                REC-D-716289
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Recipient who is receiving embryos:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                REC-R-918278
+            </lightning-layout-item>
+        </lightning-layout>
+
+        <!-- Embryo Donation Program Details -->
+        <h3 class="slds-text-title_bold slds-m-top_medium">Embryo Donation Program Details</h3>
+        <br>
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="6">
+                Name of Agency:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                California Embryo Bank
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Website:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                www.caembryobank.com
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Phone:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                (555) 123-4567
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Email:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                contact@caembryobank.com
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Coordinator Name:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                Sarah Johnson
+            </lightning-layout-item>
+        </lightning-layout>
+        <div class="slds-grid">
+            <input type="checkbox" class="slds-m-right_xx-small"></input>&nbsp;
+            <div>Check here to confirm that the information displayed above properly identifies the embryo donation
+                program that you worked with</div>
+        </div>
+        <div class="slds-grid">
+            <input type="checkbox" class="slds-m-right_xx-small"></input>&nbsp;
+            <div>Check here if this is not the program you worked with</div>
+        </div>
+
+        <br>
+        <h3 class="slds-text-title_bold slds-m-top_medium">Clinic Details</h3>
+        <br>
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="6">
+                Clinic Name:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                Pacific Fertility Center
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Clinic Email:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                info@pacificfertility.com
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Clinic Phone:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                (555) 123-4567
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Clinic Coordinator:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                Michael Chen
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                City/State:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                San Francisco, CA
+            </lightning-layout-item>
+        </lightning-layout>
+        <div class="slds-grid">
+            <input type="checkbox" class="slds-m-right_xx-small"></input>&nbsp;
+            <div>Check here to confirm that you worked with this clinic</div>
+        </div>
+        <div class="slds-grid">
+            <input type="checkbox" class="slds-m-right_xx-small"></input>&nbsp;
+            <div>Check here if this is not the program you worked with or the clinic where embryos are stored</div>
+        </div>
+
+        <br>
+        <h3 class="slds-text-title_bold slds-m-top_medium">Fertility Attorney Details</h3>
+        <br>
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="6">
+                Name of fertility attorney:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                Jennifer Thompson
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Legal Firm Name:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                Thompson & Associates
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Clinic Phone:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                (555) 123-4567
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                Email:
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="txtCls">
+                jthompson@talegal.com
+            </lightning-layout-item>
+        </lightning-layout>
+        <div class="slds-grid">
+            <input type="checkbox" class="slds-m-right_xx-small"></input>&nbsp;
+            <span>Check here to confirm that you worked with this attorney</span>
+        </div>
+        <div class="slds-grid">
+            <input type="checkbox" class="slds-m-right_xx-small"></input>&nbsp;
+            <span>Check here if this is not the attorney you worked with</span>
+        </div>
+
+        <!-- Buttons -->
+        <lightning-layout class="slds-p-top_small" horizontal-align="spread">
+            <lightning-layout-item size="6" medium-device-size="2" class="slds-p-right_xx-small">
+                <div class="backbtnCls" onclick={handleCodeSubmissionBack}>Back</div>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" medium-device-size="2" class="slds-p-left_xx-small">
+                <div class="nextbtnCls" onclick={handleCodeSubmissionNext}>Next</div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

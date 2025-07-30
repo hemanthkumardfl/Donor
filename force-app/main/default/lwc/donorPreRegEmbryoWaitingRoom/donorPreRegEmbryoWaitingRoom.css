@@ -1,0 +1,130 @@
+* {
+    font-family: 'Inter', sans-serif;
+   
+}
+
+p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #4a4a4a;
+}
+.textcls{
+	font-family: Inter, sans-serif;
+}
+
+.headingcls{
+	font-family: Inter, sans-serif;
+	text-align: center;
+
+}
+
+.paddingcls{
+	padding-top: 1%;
+}
+
+.msgcls{
+	letter-spacing:0.3px;
+	word-break: break-all;
+	hyphens: auto;
+	-webkit-hyphens: auto;
+	-ms-hyphens: auto;
+	word-break: break-word;
+	overflow-wrap: break-word;
+}
+
+.fontSizeClass {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.codeiconcls {
+    --slds-c-icon-color-foreground-default: red;
+}
+
+.slds-card{
+    border-radius: 10px;
+}
+
+.error-box {
+    border-color: #ec4040;
+    background-color: #fff1f1;
+}
+
+.error-icon {
+    padding-top: 3px;
+}
+
+.red-text {
+    color: #bb3939;
+}
+
+.pmc-prefix {
+    margin-top: 5px;
+    margin-right: 0.5rem;
+}
+
+.code-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.input-box {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 5px;
+    border: 1px solid gray;
+    text-align: center;
+    margin: 0 0.25rem;
+}
+
+.buttonscls {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+}
+
+.backbtn, .nextbtncls, .nextbtncls2 {
+    border: 1px solid black;
+    border-radius: 5px;
+    min-height: 3em;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 6px 20px rgba(0,0,0,0.19);
+}
+
+.backbtn {
+    background: white;
+    color: black;
+    width: 18%;
+}
+
+.nextbtncls, .nextbtncls2 {
+    background: black;
+    color: white;
+    width: 18%;
+}.checkboxParentcls{
+    display: flex;
+}
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .borderRadius{
+        padding: 4%;
+    }
+    .errorPaddingCls{
+        padding: 1%;
+    }
+}
+/* Responsive */
+@media only screen and (max-width: 480px) {
+    .input-box {
+        width: 2rem;
+        height: 2rem;
+        font-size: 1rem;
+        margin: 0 0.1rem;
+    }
+
+    .nextbtncls, .backbtn {
+        width: 100%;
+    }
+}

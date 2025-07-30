@@ -1,0 +1,108 @@
+.eggdonorsidebarcls{
+	min-height : 3.5em;
+	text-align:justify;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: row;
+	gap: 1.3em;
+	align-items: center;
+}
+
+.eggdonorlayout{
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+.spanIndex{
+	border-radius: 50%;
+    border: 1px solid #eeeeee;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    color: black;
+    background: #eeeeee;
+    font-size: 15px;
+    font-weight: bold;
+	min-width: 25px;
+}
+.active-step .spanIndex{
+	 border: 1px solid black;
+	 background: black;
+	 color: white;
+}
+
+.active-parent{
+	/* background-color: #f3f4f6; */
+	/* background-color: #E8E3DC; */
+	/* background-color: white;
+	box-shadow: 1px 3px 6px 0px rgba(0, 0, 0, 0.5); */
+	background-color: #d8e2f4;
+	border-radius: 5px;
+}
+
+
+.spantext{
+	/* font-size: 15px; */
+	font-family: Inter, sans-serif;
+	position: relative;
+	left: -0.5em;
+}
+
+.parentregistrationcls{
+	min-height : 2em;
+	/* font-size: 17px; */
+	font-family: Inter, sans-serif;
+	font-weight: 500;
+}
+
+/* media queries to target gap between side bar and its top*/
+@media (min-width: 1400px) and (max-width: 1599px) { /* 90 */
+	.spantext {
+        font-size: 15.5px;
+    }
+	.parentregistrationcls{
+		font-size: 18.3px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {/* 100 */
+	.spantext {
+        font-size: 14.5px;
+    }
+	.parentregistrationcls{
+		  font-size: 16.6px;
+		 font-weight: 600;
+	}
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {/* 110 */
+	 .spantext {
+        font-size: 14px;
+    }
+	.parentregistrationcls{
+		 font-size: 15.5px;
+		 font-weight: 600;
+	}
+}
+
+@media (max-width: 1100px) { /* 125 && above*/
+	.spantext{
+        font-size: 12.6px;
+    }
+	.parentregistrationcls{
+		  font-size: 15.4px;
+		 font-weight: 600;
+	}
+}
+@media (min-width: 1600px) {
+    .spantext{
+        font-size: 16.6px;
+    }
+	.parentregistrationcls{
+		 font-size: 20.9px;
+		 font-weight: 600;
+	}
+}
+/* media queries to target gap between side bar and its top ends*/

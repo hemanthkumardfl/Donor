@@ -1,0 +1,189 @@
+<template>
+    <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium">
+        <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+            <span class="headingcls">Agency/Egg Bank Info</span>
+            <span lang="en" class="textcls agencyDescriptionCls">
+                Please list the information for any egg banks/agencies you completed a donation with or are working on
+                completing a donation with:
+            </span>
+            <div class="checkboxcls">
+                <lightning-input type="checkbox" onchange={handleNoAgencyChange} checked={noAgencyChecked}
+                    class="checkboxPrimaryCls">
+                </lightning-input>
+                <span lang="en" class="textcls agencyDescriptionCls">Check here if you did not work with any
+                    agencies/egg banks</span>
+            </div>
+            <span style="color:red;" class="textcls" if:true={showInformation}>Please de-select all the cycles and
+                re-confirm to proceed...</span>
+        </lightning-layout-item>
+
+        <!-- Unselected Cycles Popup -->
+        <div if:true={showMissedCycles}>
+            <div class="modalBackdrop">
+                <div class="modalContainer slds-p-around_small">
+                    <!-- <lightning-icon icon-name="utility:warning" variant="warning" size="small"></lightning-icon> -->
+                    <img src={warningIcon} class="imgWarningCls" />
+                    <span class="headingcls slds-p-top_xx-small">Missing Agency Information</span>
+                    <div class="slds-p-around_small modalheightdivcls">
+                        <template for:each={unselectedCycles} for:item="cycle" for:index="index">
+                            <div key={cycle} if:false={cycle.confirmedNo} class="slds-p-around_small modalpaddinglcs">
+                                <span class="textcls">You didn't identify an agency/egg bank for {cycle.label}. &shy;
+                                    Did you work with an agency/egg bank for this cycle?</span>
+                                <!-- <span class="textcls">Did you work with an agency/egg bank for this cycle?</span> -->
+                                <div class="slds-p-around_large"
+                                    style="display:flex;gap:1em;place-content:center;flex-direction: row;padding-bottom: 1%;">
+                                    <button label="Yes" class="popupBackBtn" data-cycle={cycle.cycledId}
+                                        data-cyclename={cycle.label} onclick={handleMissedCycleYesClick}>
+                                        Yes
+                                    </button>
+                                    <button label="No" class="popupNextBtn" data-cycle={cycle.cycledId}
+                                        data-cyclename={cycle.label} onclick={handleMissedCycleNoClick}>
+                                        No
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                        <span class="textcls slds-p-bottom_small" if:true={showMissedPopupBackButton}>Thank you for the
+                            information, please go back and add the details for the agency for this cycle</span>
+                        <!-- <span class="textcls"  if:true={showNextFromMissedPopupButton}>Thank you for the information</span> -->
+                        <div class="slds-p-around_large popupbtnsparentCls">
+                            <button class={disablePopupBackBtn} label="Back" onclick={handleBackFromMissedPopup}>
+                                Back
+                            </button>
+                            <button label="Next" class={disablePopupNextBtn} onclick={handleNextFromMissedPopup}>
+                                Next
+                            </button>
+                            <!-- for disableing buttons -->
+                            <!-- for disableing buttons ends-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Popup -->
+        <div if:true={showDeletePopup}>
+            <div class="modalBackdrop">
+                <div class="modalContainer slds-p-around_medium">
+                    <lightning-icon icon-name="utility:warning" variant="warning" size="small"
+                        class="slds-p-top_small"></lightning-icon>
+                    <span class="headingcls slds-p-top_medium">Confirm Deletion</span>
+                    <span class="textcls slds-p-top_small slds-p-bottom_small">Are you sure you want to delete
+                        Agency/Egg Bank #{deleteAgencyNumber}?</span>
+                    <div class="confirmPopupCls slds-p-top_small" style="">
+                        <button class="popupNextBtn" label="Yes" onclick={handleDeleteYes}>Yes
+                        </button>
+                        <button class="popupBackBtn" label="No" onclick={handleDeleteNo}>No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <template if:true={donationOutcomes} for:each={donationOutcomes} for:item="outcome" for:index="index">
+            <lightning-layout-item size="12" key={outcome.index}>
+                <!-- Add line only if not the first section -->
+                <template if:true={index}>
+                    <div class="section-divider slds-p-bottom_medium"></div>
+                </template>
+                <div style="display:flex;justify-content:space-between;width:97%">
+                    <h3 class="headingcls slds-p-left_x-small">
+                        <template if:false={showNumberedHeadings}>
+                            <template if:false={index}>
+                                <!-- {outcome.agencyHeading} -->
+                            </template>
+                            <template if:true={index}>
+                                Agency/Egg Bank #{outcome.headingIndex}
+                            </template>
+                        </template>
+                        <template if:true={showNumberedHeadings}>
+                            Agency/Egg Bank #{outcome.headingIndex}
+                        </template>
+                    </h3>
+                    <template if:true={showNumberedHeadings}>
+                        <lightning-icon icon-name="action:delete" size="small" data-index={outcome.index}
+                            onclick={handleDeleteConfirm} class="delete-icon">
+                        </lightning-icon>
+                    </template>
+                    <template if:false={showNumberedHeadings}>
+                        <template if:true={index}>
+                            <lightning-icon icon-name="action:delete" size="small" data-index={outcome.index}
+                                onclick={handleDeleteConfirm} class="delete-icon">
+                            </lightning-icon>
+                        </template>
+                    </template>
+                </div>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputParentCls">
+                <span class="textcls agencyDescriptionCls inputscls">Agency/Egg Bank Name</span>
+                <lightning-input type="text" label="" class="textcls" value={outcome.AgencyName} maxlength="255"
+                    onchange={handleInputChange} onblur={handleInputBlur} name="AgencyName" data-index={outcome.index}
+                    disabled={noAgencyChecked}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputParentCls">
+                <span class="textcls inputscls">Agency/Egg Bank Website</span>
+                <lightning-input type="url" label="" class="textcls" value={outcome.Website}
+                    placeholder="http://www.youtube.com" onchange={handleInputChange} onblur={handleInputBlur}
+                    name="Website" data-index={outcome.index} disabled={noAgencyChecked}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputParentCls">
+                <span class="textcls inputscls">Agency/Egg Bank Phone</span>
+                <lightning-input type="tel" label="" class="textcls" value={outcome.Phone} onchange={handleInputChange}
+                    onblur={handleInputBlur} name="Phone" data-index={outcome.index} disabled={noAgencyChecked}
+                    pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                    message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890.">
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputParentCls">
+                <span class="textcls inputscls">Agency/Egg Bank Email</span>
+                <lightning-input type="email" label="" class="textcls" value={outcome.Email}
+                    onchange={handleInputChange} onblur={handleInputBlur} name="Email" data-index={outcome.index}
+                    disabled={noAgencyChecked}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputParentCls">
+                <span class="textcls inputscls">Coordinator Name</span>
+                <lightning-input type="text" label="" class="textcls" value={outcome.CoordinatorName}
+                    onchange={handleInputChange} onblur={handleInputBlur} name="CoordinatorName"
+                    data-index={outcome.index} disabled={noAgencyChecked}>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index}>
+                <span class="textcls">You said you did {totalDonationsCount} cycles, which cycles did you work with this
+                    agency?</span>
+            </lightning-layout-item>
+
+            <!-- cycles -->
+            <lightning-layout-item size="12" padding="around-small" class="cyclesCls" key={outcome.index}>
+                <template if:true={outcome.cycles} for:each={outcome.cycles} for:item="cycle">
+                    <div class="cycle slds-p-right_small slds-p-bottom_small" key={cycle.cycleName}>
+                        <lightning-input type="checkbox" class="textcls cycleCheckboxcls" value={cycle.cycleId}
+                            checked={cycle.checked} disabled={cycle.disabled} onchange={handleCycleChange}
+                            data-outcomeindex={outcome.index} data-cycleindex={cycle.index}>
+                        </lightning-input>
+                        <span class="textcls">{cycle.cycleName}</span>
+                    </div>
+                </template>
+            </lightning-layout-item>
+            <!-- cycles -->
+        </template>
+        <lightning-layout-item size="12" padding="around-small" class="addagencyParentcls" if:true={showAddAnother}>
+            <span class={disableAddAnotherClinic} onclick={handleAddAnotherClinic}>+ Add Another Agency</span>
+        </lightning-layout-item>
+
+        <!-- buttons -->
+        <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
+            <div class="backbtn textcls" onclick={handleEggAgencyOrBankWithoutEDNBack}>Back</div>
+            <div class="nextbtncls textcls" onclick={handleEggAgencyOrBankWithoutEDNNext}>Next</div>
+        </lightning-layout-item>
+        <!-- buttons -->
+    </lightning-layout>
+</template>

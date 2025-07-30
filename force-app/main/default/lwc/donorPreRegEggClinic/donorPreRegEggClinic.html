@@ -1,0 +1,254 @@
+<template>
+    <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium">
+        <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+            <span class="headingcls">Fertility Clinic Info</span>
+            <span class="agencyDescriptionCls textcls">
+                Please list the information for any fertility clinics you completed a donation with or are working on
+                completing a donation with:
+            </span>
+            <div class="checkboxcls">
+                <lightning-input type="checkbox" checked={noClinicChecked} onchange={handleNoClinicChange}
+                    class="checkboxPrimaryCls" variant="label-hidden">
+                </lightning-input>
+                <span class="textcls">Check here if you did not work with any fertility clinics</span>
+            </div>
+            <span style="color:red;" class="textcls" if:true={showInformation}>Please de-select all the cycles and
+                re-confirm to proceed...</span>
+        </lightning-layout-item>
+
+
+        <!-- Delete Confirmation Popup -->
+        <div if:true={showDeletePopup}>
+            <div class="modalBackdrop">
+                <div class="modalContainer slds-p-around_medium">
+                    <lightning-icon icon-name="utility:warning" variant="warning" size="small"
+                        class="slds-p-top_small"></lightning-icon>
+                    <span class="headingcls slds-p-top_medium">Confirm Deletion</span>
+                    <span class="textcls slds-p-top_small slds-p-bottom_small">Are you sure you want to delete Clinic
+                        #{deleteAgencyNumber}?</span>
+                    <div class="confirmPopupCls slds-p-top_small">
+                        <button class="popupNextBtn" label="Yes" onclick={handleDeleteYes}>Yes
+                        </button>
+                        <button class="popupBackBtn" label="No" onclick={handleDeleteNo}>No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unselected Cycles Popup -->
+        <!-- <div if:true={showMissedCycles}>
+            <div class="modalBackdrop">
+                <div class="modalContainer">
+                    <lightning-icon icon-name="utility:warning" variant="warning" size="small"></lightning-icon>
+                    <span class="headingcls">Missing Clinic Information</span>
+                    <template for:each={unselectedCycles} for:item="cycle" for:index="index">
+                        <div key={cycle} if:false={cycle.confirmedNo}>
+                            <span class="textcls">You didn't identify an Clinic for {cycle.label}.</span>
+                            <span class="textcls">Did you work with an Clinic for this cycle?</span>
+                            <div class="slds-p-around_large" style="display:flex;gap:1em;place-content:center">
+                                <lightning-button 
+                                    variant="brand" 
+                                    label="Yes" 
+                                    data-cycle={cycle.cycledId} 
+                                    data-cyclename = {cycle.label} 
+                                    onclick={handleMissedCycleYesClick}>
+                                </lightning-button>
+                                <lightning-button 
+                                    variant="brand-outline" 
+                                    label="No" 
+                                    data-cycle={cycle.cycledId}
+                                    data-cyclename = {cycle.label} 
+                                    onclick={handleMissedCycleNoClick}>
+                                </lightning-button>
+                            </div>
+                            <div style="min-height:1em" class="slds-p-top_medium"></div>
+                        </div>
+                    </template>
+                    <div class="slds-p-around_large" style="display:flex;justify-content:center;gap:1em">
+                        <lightning-button 
+                            if:true={showMissedPopupBackButton}
+                            variant="neutral" 
+                            label="Back" 
+                            onclick={handleBackFromMissedPopup}>
+                        </lightning-button>
+                        <lightning-button 
+                            variant="neutral" 
+                            label="Next" 
+                            onclick={handleNextFromMissedPopup}
+                            if:true={showNextFromMissedPopupButton}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <!-- Unselected Cycles Popup -->
+        <div if:true={showMissedCycles}>
+            <div class="modalBackdrop">
+                <div class="modalContainer slds-p-around_small">
+                    <!-- <lightning-icon icon-name="utility:warning" variant="warning" size="small"></lightning-icon> -->
+                    <img src={warningIcon} class="imgWarningCls" />
+                    <span class="headingcls slds-p-top_large">Missing Clinic Information</span>
+                    <div class="slds-p-around_small modalheightdivcls">
+                        <template for:each={unselectedCycles} for:item="cycle" for:index="index">
+                            <div key={cycle} if:false={cycle.confirmedNo} class="slds-p-around_small modalpaddinglcs">
+                                <span class="textcls">You didn't identify an Clinic for {cycle.label}. &shy; Did you
+                                    work with an clinic for this cycle?</span>
+                                <!-- <span class="textcls">Did you work with an agency/egg bank for this cycle?</span> -->
+                                <div class="slds-p-around_large"
+                                    style="display:flex;gap:1em;place-content:center;flex-direction: row;padding-bottom:1%">
+                                    <button label="Yes" class="popupBackBtn" data-cycle={cycle.cycledId}
+                                        data-cyclename={cycle.label} onclick={handleMissedCycleYesClick}>
+                                        Yes
+                                    </button>
+                                    <button label="No" class="popupNextBtn" data-cycle={cycle.cycledId}
+                                        data-cyclename={cycle.label} onclick={handleMissedCycleNoClick}>
+                                        No
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                        <span class="textcls" if:true={showMissedPopupBackButton}>Thank you for the information, please
+                            go back and add the details for the clinic for this cycle</span>
+                        <!-- <span class="textcls"  if:true={showNextFromMissedPopupButton}>Thank you for the information</span> -->
+                        <div class="slds-p-around_large popupbtnsparentCls">
+                            <button class={disablePopupBackBtn} label="Back" onclick={handleBackFromMissedPopup}>
+                                Back
+                            </button>
+                            <button label="Next" class={disablePopupNextBtn} onclick={handleNextFromMissedPopup}>
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <template if:true={donationOutcomes} for:each={donationOutcomes} for:item="outcome" for:index="index">
+            <div key={outcome.index} class="clinic cliniccls">
+                <lightning-layout-item size="12" key={outcome.index}>
+                    <!-- Add line only if not the first section -->
+                    <template if:true={index}>
+                        <div class="section-divider slds-p-bottom_medium"></div>
+                    </template>
+                    <div style="display:flex;justify-content:space-between;width:97%">
+                        <h3 class="headingcls slds-p-left_x-small">
+                            <template if:false={showNumberedHeadings}>
+                                <!--<template if:false={index}>
+                                    {outcome.clinicHeading}
+                                </template>-->
+                                <template if:true={index}>
+                                    Clinic #{outcome.headingIndex}
+                                </template>
+                            </template>
+                            <template if:true={showNumberedHeadings}>
+                                Clinic #{outcome.headingIndex}
+                            </template>
+                        </h3>
+                        <template if:true={showNumberedHeadings}>
+                            <lightning-icon icon-name="action:delete" size="small" data-index={outcome.index}
+                                onclick={handleDeleteConfirm} class="delete-icon">
+                            </lightning-icon>
+                        </template>
+                        <template if:false={showNumberedHeadings}>
+                            <template if:true={index}>
+                                <lightning-icon icon-name="action:delete" size="small" data-index={outcome.index}
+                                    onclick={handleDeleteConfirm} class="delete-icon">
+                                </lightning-icon>
+                            </template>
+                        </template>
+                    </div>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">Clinic Name :</span>
+                    <lightning-input type="text" label="" class="textcls" value={outcome.ClinicName}
+                        onchange={handleInputChange} onblur={handleInputBlur} name="ClinicName"
+                        data-index={outcome.index} disabled={noClinicChecked}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">Doctor's Name :</span>
+                    <lightning-input type="text" label="" class="textcls" value={outcome.DoctorName}
+                        onchange={handleInputChange} onblur={handleInputBlur} name="DoctorName"
+                        data-index={outcome.index} disabled={noClinicChecked}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">Clinic Website :</span>
+                    <lightning-input type="url" label="" class="textcls" value={outcome.Website}
+                        onchange={handleInputChange} onblur={handleInputBlur} name="Website" data-index={outcome.index}
+                        placeholder="http://www.youtube.com" disabled={noClinicChecked}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">City/State of Clinic :</span>
+                    <lightning-input type="text" label="" class="textcls" value={outcome.CityStateOfClinic}
+                        onchange={handleInputChange} onblur={handleInputBlur} name="CityStateOfClinic"
+                        data-index={outcome.index} disabled={noClinicChecked}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">Clinic Phone :</span>
+                    <lightning-input type="tel" label="" class="textcls" value={outcome.Phone}
+                        onchange={handleInputChange} onblur={handleInputBlur} name="Phone"
+                        pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                        message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                        data-index={outcome.index} disabled={noClinicChecked}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">Clinic Email :</span>
+                    <lightning-input type="email" label="" class="textcls" value={outcome.Email}
+                        onchange={handleInputChange} onblur={handleInputBlur} name="Email" data-index={outcome.index}
+                        disabled={noClinicChecked}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">Coordinator/Nurse Name :</span>
+                    <lightning-input type="text" label="" class="textcls" value={outcome.CoordinatorName}
+                        onchange={handleInputChange} onblur={handleInputBlur} name="CoordinatorName"
+                        data-index={outcome.index} disabled={noClinicChecked}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={outcome.index}
+                    class="cyclesDescriptioncls">
+                    <span class="textcls">You said you did {totalDonationsCount} cycles, which cycles did you work with
+                        this clinic?</span>
+                </lightning-layout-item>
+
+                <!-- cycles -->
+                <lightning-layout-item size="12" padding="around-small" class="cyclesCls" key={outcome.index}>
+                    <template if:true={outcome.cycles} for:each={outcome.cycles} for:item="cycle">
+                        <div class="cycle slds-p-right_small slds-p-bottom_small" key={cycle.cycleName}>
+                            <lightning-input type="checkbox" class="textcls cycleCheckboxcls" value={cycle.cycleId}
+                                checked={cycle.checked} disabled={cycle.disabled} onchange={handleCycleChange}
+                                data-outcomeindex={outcome.index} name={cycle.cycleName} data-cycleindex={cycle.index}>
+                            </lightning-input>
+                            <span class="textcls">{cycle.cycleName}</span>
+                        </div>
+                    </template>
+                </lightning-layout-item>
+                <!-- cycles -->
+            </div>
+        </template>
+        <lightning-layout-item size="12" padding="around-small" class="addagencyParentcls" if:true={showAddAnother}>
+            <span class={disableAddAnotherClinic} onclick={handleAddAnotherClinic}>+ Add Another Clinic</span>
+        </lightning-layout-item>
+
+        <!-- buttons -->
+        <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
+            <div class="backbtn textcls" onclick={handleEggClinicWithoutEDNBack}>Back</div>
+            <div class="nextbtncls textcls" onclick={handleEggClinicWithoutEDNNext}>Next</div>
+        </lightning-layout-item>
+        <!-- buttons -->
+    </lightning-layout>
+
+</template>

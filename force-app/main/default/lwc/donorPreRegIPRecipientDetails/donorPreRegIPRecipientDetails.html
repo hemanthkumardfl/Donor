@@ -1,0 +1,157 @@
+<template>
+    <lightning-layout multiple-rows style="background: white;" class="recipientcontainer">
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <lightning-layout-item size="12" padding="around-small" style="text-align: center;">
+                <lightning-spinner alternative-text="Processing..." size="medium"></lightning-spinner>
+                <div class="slds-m-top_small">Processing request...</div>
+            </lightning-layout-item>
+        </template>
+
+        <!-- Main Content (hidden when loading) -->
+        <template if:false={isLoading}>
+            <!-- Recipient details header-->
+            <lightning-layout-item size="12" padding="around-small" style="" class="msgcls2">
+                Recipient details
+            </lightning-layout-item>
+
+            <!--Description -->
+            <lightning-layout-item size="12" padding="around-small">
+                <span class="msgcls">Did you contribute or plan to contribute any of your genetic material (such as eggs or sperm) to create your embryos or children?</span>
+            </lightning-layout-item>
+
+            <!--Picklist -->
+            <lightning-layout-item size="12" padding="around-small">
+                <lightning-combobox
+                    name="status"
+                    label=""
+                    placeholder="Choose Option"
+                    value={intendedParent.contribute}
+                    onchange={handleIntendedParentChange}
+                    options={materialOptions}
+                    required>
+                </lightning-combobox>
+            </lightning-layout-item>
+
+            <!--additional recipient Description -->
+            <lightning-layout-item size="12" padding="around-small">
+                <span class="msgcls">Was there another intended parent or additional recipient involved in your journey(e.g., partner, someone you are or plan to co-parent with)?</span>
+            </lightning-layout-item>
+
+            <!--additional recipient options -->
+            <lightning-layout-item size="12" padding="around-small" style="display:flex;gap:1em">
+                <lightning-input type="radio" class="yesaddparentcheckbox msgcls" label="Yes" onchange={handleAdditionalYesCheckBoxChange}></lightning-input>
+                <lightning-input type="radio" class="noaddparentcheckbox msgcls" label="No" onchange={handleAdditionalNoCheckBoxChange} checked></lightning-input>
+            </lightning-layout-item>
+
+            <!--additional recipient input -->
+            <template if:true={additionalparent}>
+                <lightning-layout-item size="1" padding="around-small">
+                </lightning-layout-item>
+                <lightning-layout-item size="10" padding="around-small" style="border:1px solid grey;border-radius:5px;">
+                    <template for:each={recipientsList} for:item="obj">
+                        <!-- Recipient Header with Delete Button -->
+                        <lightning-layout-item key={obj.index} size="12" padding="around-small" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="msgcls">Recipient #{obj.index}</span>
+                            <template if:true={showDeleteButton}>
+                                <lightning-button-icon 
+                                    icon-name="utility:delete" 
+                                    variant="destructive" 
+                                    alternative-text="Delete Recipient"
+                                    title="Delete Recipient"
+                                    size="small"
+                                    data-index={obj.index}
+                                    onclick={handleDeleteRecipient}
+                                    disabled={deletingRecipientIndex}>
+                                </lightning-button-icon>
+                            </template>
+                        </lightning-layout-item>
+
+                        <!-- Show deleting spinner for specific recipient -->
+                        <template if:true={deletingRecipientIndex}>
+                            <template if:true={obj.index}>
+                                <lightning-layout-item key={obj.index} size="12" padding="around-small" style="text-align: center;">
+                                    <template if:true={deletingRecipientIndex}>
+                                        <div if:true={deletingRecipientIndex} class="slds-is-relative">
+                                            <lightning-spinner size="small" alternative-text="Deleting..."></lightning-spinner>
+                                            <span class="slds-m-left_small">Deleting recipient...</span>
+                                        </div>
+                                    </template>
+                                </lightning-layout-item>
+                            </template>
+                        </template>
+
+                        <lightning-layout-item key={obj.index} size="12" padding="around-small" class="recipientcls">
+                            <lightning-layout-item size="6" class="recipentinputcls">
+                                <lightning-input type="text" label="First name" value={obj.firstName} data-name="firstName" data-index={obj.index} onblur={handleRecipientInputChange} required></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="6" class="recipentinputcls">
+                                <lightning-input type="text" label="Last name" value={obj.lastName} data-name="lastName" data-index={obj.index} onchange={handleRecipientInputChange}></lightning-input>
+                            </lightning-layout-item>
+                        </lightning-layout-item>
+                        
+                        <lightning-layout-item key={obj.index} size="12" padding="around-small" class="recipentrelationshipclsparent">
+                            <lightning-input type="text" class="slds-p-left_small recipentrelationshipcls" label="Relationship to the process" value={obj.relation} data-name="relation" data-index={obj.index} onchange={handleRecipientInputChange}></lightning-input>
+                        </lightning-layout-item>
+                        
+                        <lightning-layout-item key={obj.index} size="12" padding="around-small" class="recipientcls recipientclspaddingcls">
+                            <lightning-layout-item size="6" class="recipentinputcls">
+                                <lightning-input type="email" label="Email" value={obj.email} data-name="email" data-index={obj.index} onchange={handleRecipientInputChange} required></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="6" class="recipentinputcls">
+                                <lightning-input type="phone" label="Phone" value={obj.phone} data-name="phone" data-index={obj.index} onchange={handleRecipientInputChange}></lightning-input>
+                            </lightning-layout-item>
+                        </lightning-layout-item>
+                        
+                        <lightning-layout-item key={obj.index} size="12" padding="around-small">
+                            <span style="text-align:left;display: -webkit-inline-box;" class="msgcls3">Has this recipient, or do they plan to, contribute genetic material (such as eggs or sperm) to the process?</span>
+                        </lightning-layout-item>
+                        
+                        <lightning-layout-item key={obj.index} size="12" padding="around-small">
+                            <lightning-combobox
+                                name="status"
+                                label=""
+                                placeholder="Select An Option"
+                                value={obj.hasRecipient}
+                                data-name="hasRecipient" 
+                                data-index={obj.index}
+                                onchange={handleRecipientInputChange}
+                                options={materialOptions}
+                                class="slds-p-left_small recipentrelationshipcls">
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                        
+                        <lightning-layout-item key={obj.index} size="12" padding="around-small" style="padding-left: 0px">
+                            <span class="slds-p-top_small msgcls3" style="text-align:left;display: -webkit-inline-box;">Do you want to link this person to your account and offer them access to updates?</span>
+                        </lightning-layout-item>
+                        
+                        <lightning-layout-item key={obj.index} size="12" padding="around-small" style="display:flex;gap:1em">
+                            <lightning-input type="radio" class="doYouWantToLinkYes" label="Yes" data-name="doYouWantToLinkYes" data-index={obj.index} onchange={handleRecipientInputChange}></lightning-input>
+                            <lightning-input type="radio" class="doYouWantToLinkNo" label="No" data-name="doYouWantToLinkNo" data-index={obj.index} onchange={handleRecipientInputChange}></lightning-input>
+                        </lightning-layout-item>
+                        
+                        <lightning-layout-item key={obj.index} size="12">
+                            <div style="min-height:2em;" class="slds-m-top_small"></div>
+                        </lightning-layout-item>
+                    </template>
+                </lightning-layout-item>
+                
+                <lightning-layout-item size="1" padding="around-small">
+                </lightning-layout-item>
+                <lightning-layout-item size="1" padding="around-small">
+                </lightning-layout-item>
+                <lightning-layout-item size="10" class="slds-p-around_x-small slds-m-top_small slds-m-bottom_small msgcls" style="border:1px solid #d1caca;border-radius:5px; text-align:center;cursor: pointer;" onclick={handleClick}>
+                    + Add another additional recipient
+                </lightning-layout-item>
+                <lightning-layout-item size="1" padding="around-small">
+                </lightning-layout-item>
+            </template>
+
+            <!-- buttons -->
+            <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+                <div class="backbtn" onclick={handleBackClick}>Back</div>
+                <div class="nextbtncls" onclick={handleNextClick}>Next</div>
+            </lightning-layout-item>
+        </template>
+    </lightning-layout>
+</template>

@@ -1,0 +1,39 @@
+<template>
+    <div class=" slds-card container">
+        <h1 class="slds-m-bottom_medium"><b>Welcome to Donor 21</b></h1>
+        <p class="subtext">
+            To get started, we’ll guide you through setting up your account. This process will take around 60–75 minutes
+            — we know it can feel like a lot but don’t worry—our system saves your progress as you go, so you can pause
+            and return anytime.<br><br>
+            Once your account is set up, updates will be a breeze, and you’ll be ready to explore everything our
+            platform has to offer. As a thank-you for your time and effort, you’ll earn credits in your Happy Jar for
+            each step accomplished!<br><br>
+            These can be redeemed each year for a gift card for yourself or a friend—or used to make a donation to a
+            charity close to your heart. Please note that you must complete the set up to redeem your credits.
+            <br><br>
+            Let’s begin this meaningful journey together! 🌟
+        </p>
+
+        <!-- Welcome Video -->
+        <div class="video-box">
+            <p class="step-title">Welcome Video</p>
+            <div class="video-placeholder">
+                <lightning-icon icon-name="utility:play" alternative-text="Play" size="large"></lightning-icon>
+            </div>
+        </div>
+
+        <!-- Steps -->
+        <template for:each={steps} for:item="step" for:index="index">
+            <div key={step.id} class="step-card">
+                <div class="step-number">{step.index}</div>
+                <div class="step-details">
+                    <p class="step-title">{step.title}</p>
+                    <p class="step-info"><lightning-icon icon-name='utility:clock' alternative-text='clock' size='xx-small' title='clock'></lightning-icon> &nbsp;Approx. {step.duration} - {step.credits} Happy Jar Credits</p>
+                </div>
+                <lightning-button label={step.buttonLabel} variant="destructive" disabled={step.disabled}
+                    onclick={handleStepClick} data-id={step.id} class="custom-button">
+                </lightning-button>
+            </div>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,62 @@
+<template>
+    <lightning-layout multiple-rows style="background: #E8E3DC;" class="mainscreenlayoutcls">
+
+        <lightning-layout-item size="3" medium-device-size="3" large-device-size="2" class="sidebarcomponentcls"
+            if:true={showSideBar}>
+            <c-donor-pre-reg-side-bar optionname={currentStepName} donor-type={donorType}
+                registration-type={getRegistrationType}></c-donor-pre-reg-side-bar>
+        </lightning-layout-item>
+
+        <!-- header -->
+        <lightning-layout-item size="12" padding="around-small" class="mobilemaincomponentHeaderCls">
+            <div style="background:white;display:flex;flex-direction:column;gap:1em;border-radius:5px"
+                class="slds-p-around_small">
+                <div style="display:flex;justify-content:space-between">
+                    <span style="font-size:Large;font-weight:bold;" class="parentbarcls">{getRegistrationType}</span>
+                    <span style="font-size:small;" class="parentbarcls"> Step {stepnumber} / 10</span>
+                </div>
+                <div style="font-size:medium;font-weight:bold;">{currentMobileStepName}</div>
+                <lightning-progress-bar value={progressValue} size="medium" variant="circular"
+                    style="--slds-g-color-brand-base-50 : black;"></lightning-progress-bar>
+            </div>
+            <div class="slds-p-bottom_medium" style="background : #E8E3DC;"></div>
+        </lightning-layout-item>
+        <!-- header ends-->
+
+        <lightning-layout-item size="12" small-device-size="12" medium-device-size="9" large-device-size="10"
+            class="maincomponentparent">
+
+            <lightning-layout-item size="12" class="maincomponentcls slds-p-top_small maincomponentHeadercls"
+                style="display:flex">
+                <lightning-layout-item size="1"></lightning-layout-item>
+                <lightning-layout-item size="10" padding="around-small">
+                    <lightning-progress-bar value={progressValue} size="medium" variant="circular"
+                        style="--slds-g-color-brand-base-50 : black;padding-top:1%"></lightning-progress-bar>
+                </lightning-layout-item>
+                <lightning-layout-item size="1"></lightning-layout-item>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" class="layoutcontainercls ">
+
+                <lightning-layout-item size="2" medium-device-size="1" large-device-size="2" class="mobileSidesCls"
+                    padding="around-small">
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="10" large-device-size="8"
+                    padding="around-small" class="mobileMaincls">
+
+                <c-donor-pre-reg-get-started if:true={showGetStarted} oncancel={handleGetStartedCancel}
+                        donor-type={donorType} contact-obj={contactObj}
+                        oncontinue={handleGetStartedContinue}></c-donor-pre-reg-get-started>
+                </lightning-layout-item>
+                <lightning-layout-item size="2" medium-device-size="1" large-device-size="2" class="mobileSidesCls"
+                    padding="around-small">
+                </lightning-layout-item>
+
+            </lightning-layout-item>
+
+        </lightning-layout-item>
+
+    </lightning-layout>
+     <c-parent-pre-reg-videos  oncontinue={handleContinueVideoScreen}></c-parent-pre-reg-videos>
+</template>

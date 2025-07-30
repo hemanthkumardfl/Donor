@@ -1,0 +1,137 @@
+.paymentDetailsCls{
+	background: white;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.inputCls{
+	display: flex;
+	flex-direction: column;
+}
+.inputPaddingCls{
+	padding-top: 0;
+}
+.sidebysideInputCls{
+	display: flex;
+	gap: 0.7em;
+}
+.sidebysideWidthCls{
+	width: 50%;
+}
+.checkboxParentCls{
+	display: flex;
+	align-items: center;
+	gap: 0.3em;
+}
+
+.buttonscls{
+	display: flex;
+	place-content: center;
+	gap: 2em;
+	/* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
+}
+.backbtn{
+	border: 1px solid black;
+	background: white;
+	color: black;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding : 10px;
+	cursor: pointer;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.nextbtncls{
+	border: 1px solid black;
+	background: black;
+	color: white;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding : 10px;
+	cursor: pointer;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+/* For mobile devices - stack the navigation */
+@media (max-width: 768px) {
+	.headingcls{
+		 font-size: 17.7px;
+		 font-weight: 500;
+	}
+	.textcls{
+        font-size: 14.5px;
+    }
+	.sidebysideWidthCls{
+		width: 100%;
+	}
+	.sidebysideInputCls{
+		flex-direction: column;
+		gap: 1em;
+	}
+		.buttonscls{
+		/* place-content: flex-start; */
+		flex-direction: column;
+		gap: 0.7em;
+	}
+	.backbtn, .nextbtncls{
+		/* width: 50%; */
+		width: 100%;
+        min-height: 3em;
+        font-size: large;
+        font-weight: bold;
+        /* padding-top: 2%; */
+		box-shadow: none
+	}
+}
+/* media queries to target gap between side bar and its top*/
+@media (min-width: 1400px) and (max-width: 1599px) { /* 90 */
+	.textcls{
+        font-size: 15.2px;
+    }
+	.headingcls{
+		 font-size: 18.7px;
+		 font-weight: 500;
+	}
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {/* 100 */
+	.textcls{
+        font-size: 14.3px;
+    }
+	.headingcls{
+		 font-size: 17px;
+		 font-weight: 500;
+	}
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {/* 110 */
+	 .textcls{
+        font-size: 13.8px;
+    }
+	.headingcls{
+		 font-size: 15.9px;
+		 font-weight: 500;
+	}
+}
+
+@media (min-width: 769px) and (max-width: 1100px) { /* 125 && above*/
+	.textcls{
+        font-size: 12.4px;
+    }
+	.headingcls{
+		  font-size: 15.8px;
+		 font-weight: 500;
+	}
+}
+@media (min-width: 1600px) {
+    .textcls{
+        font-size: 16.4px;
+    }
+	.headingcls{
+		 font-size: 21.2px;
+		 font-weight: 500;
+	}
+}
+/* media queries to target gap between side bar and its top ends*/

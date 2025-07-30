@@ -1,0 +1,88 @@
+<template>
+    <div class="slds-card slds-p-around_medium">
+        <h2 class="slds-text-heading_small"><strong>
+                It seems that you have not yet been assigned a Donor 21 embryo identification number. Can you please
+                kindly
+                share with us the information for the professional partners that you worked with for your embryo
+                donation?
+            </strong>
+        </h2>
+
+        <!-- Embryo Donation Program -->
+        <br>
+        <label><strong>Did you work with an embryo donation program to find and arrange your match?</strong></label>
+        <div class="slds-grid">
+            <lightning-input type="radio" label="Yes"></lightning-input>
+            <lightning-input type="radio" label="No"></lightning-input>
+        </div>
+
+
+        <lightning-input placeholder="Name of Embryo Donation Program"></lightning-input>
+        <lightning-input placeholder="Website"></lightning-input>
+        <lightning-input placeholder="Phone"></lightning-input>
+        <lightning-input placeholder="Email"></lightning-input>
+
+        <!-- Clinic Info -->
+        <br>
+        <label><strong>Name of clinic where you did your cycle or where the embryos are currently
+                stored</strong></label>
+        <lightning-input placeholder="Name of Clinic"></lightning-input>
+        <lightning-input placeholder="Website"></lightning-input>
+        <lightning-input placeholder="Phone"></lightning-input>
+        <lightning-input placeholder="Email"></lightning-input>
+
+        <!-- Fertility Attorney -->
+        <br>
+        <label><strong>Did you or are you currently working with a fertility attorney for your
+                donation?</strong></label>
+        <div class="slds-grid">
+            <lightning-input type="radio" label="Yes"></lightning-input>
+            <lightning-input type="radio" label="No"></lightning-input>
+        </div>
+
+        <lightning-input placeholder="Fertility Attorney Name"></lightning-input>
+        <lightning-input placeholder="Name of Firm (if applicable)"></lightning-input>
+        <lightning-input placeholder="Phone"></lightning-input>
+        <lightning-input placeholder="Email"></lightning-input>
+
+        <!-- Recipient Info -->
+        <br>
+        <label><strong>Do you have the name and information for the recipient party that you are donating the embryos
+                to?</strong></label>
+        <div class="slds-grid">
+            <lightning-input type="radio" label="Yes"></lightning-input>
+            <lightning-input type="radio" label="No"></lightning-input>
+        </div>
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <lightning-input placeholder="Recipient 1 First Name"></lightning-input>
+            </div>
+            <div class="slds-col">
+                <lightning-input placeholder="Recipient 1 Last Name"></lightning-input>
+            </div>
+        </div>
+        <lightning-input placeholder="Phone"></lightning-input>
+        <lightning-input placeholder="Email"></lightning-input>
+
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <lightning-input placeholder="Recipient 2 First Name"></lightning-input>
+            </div>
+            <div class="slds-col">
+                <lightning-input placeholder="Recipient 2 Last Name"></lightning-input>
+            </div>
+        </div>
+        <lightning-input placeholder="Phone"></lightning-input>
+        <lightning-input placeholder="Email"></lightning-input>
+
+        <!-- Buttons -->
+        <lightning-layout class="slds-p-top_small" horizontal-align="spread">
+            <lightning-layout-item size="6" medium-device-size="2" class="slds-p-right_xx-small">
+                <div class="backbtnCls" onclick={handleCodeSubmissionBack}>Back</div>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" medium-device-size="2" class="slds-p-left_xx-small">
+                <div class="nextbtnCls" onclick={handleCodeSubmissionNext}>Next</div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

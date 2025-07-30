@@ -1,0 +1,118 @@
+* {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+}
+
+p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #4a4a4a;
+}
+
+.fontSizeClass {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.container {
+    margin: auto;
+}
+
+.borderRadius {
+    border-radius: 10px;
+}
+
+.codeiconcls {
+    --slds-c-icon-color-foreground-default: #bb3939;
+}
+
+.divSelected {
+    border-color: black;
+    background-color: rgb(242, 242, 242);
+}
+
+.buttonscls {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+    font-size : 16.6px;
+}
+
+.backbtn,
+.nextbtncls {
+    border: 1px solid black;
+    border-radius: 5px;
+    min-height: 3em;
+    width: 18%;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 6px 20px rgba(0,0,0,0.19);
+}
+
+.backbtn {
+    background: white;
+    color: black;
+}
+
+.nextbtncls {
+    background: black;
+    color: white;
+}
+
+.textcls {
+    font-weight: 600;
+}
+
+.error-box {
+    border-color: #ec4040;
+    background-color: #fff1f1;
+}
+
+.error-icon {
+    padding-top: 3px;
+}
+
+.red-text {
+    color: #bb3939;
+}
+
+.section-box {
+    /* background-color: rgb(242, 242, 242); */
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .borderRadius{
+        padding: 4%;
+    }
+}
+
+/* Responsive Styles */
+@media only screen and (max-width: 480px) {
+    /* .container {
+        padding: 0.5rem;
+    } */
+
+    .error-box,
+    .section-box {
+        font-size: 0.95rem;
+    }
+
+    .buttonscls {
+        justify-content: flex-start;
+        flex-direction: column;
+        gap: 1em;
+    }
+
+    .backbtn,
+    .nextbtncls {
+        width: 100%;
+        font-size: large;
+        padding-top: 3%;
+    }
+
+    .textcls {
+        font-size: 14.2px;
+    }
+}

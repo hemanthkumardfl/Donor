@@ -1,0 +1,101 @@
+<template>
+
+    <lightning-layout multiple-rows  class="eggagencycls slds-p-around_medium">
+         <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+            <span class="headingcls">Donation Details – Fertility Attorney's</span>
+            <span class="textcls">
+              Aside from the embryo donation you completed, please offer us the details for any fertility attorney’s that you have worked with in the past for your egg donations.
+            </span>
+            <div class="checkboxparentcls">
+                <div class="checkboxcls">
+                    <lightning-input type="checkbox"></lightning-input>
+                    <span class="textcls">Check here if you have never worked with a fertility attorney or don’t know who you worked with to skip this step </span>
+                </div>
+            </div>
+         </lightning-layout-item>
+        <template if:true={attorneyDonationOutcomes} for:each={attorneyDonationOutcomes} for:item="outcome">
+                   <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="outcomesclass">
+              <div style="display:flex;justify-content:space-between;align-items:center;width:97%">
+                <h3 class="headingcls secondheadingcls slds-p-bottom_small">
+                    <template if:false={showNumberedHeadings}>
+                        <template if:false={index}>
+                            {outcome.attorneyHeading}
+                        </template>
+                        <template if:true={index}>
+                            Fertility Attorney #{outcome.index}
+                        </template>
+                    </template>
+                    <template if:true={showNumberedHeadings}>
+                        Fertility Attorney #{outcome.index}
+                    </template>
+                </h3>
+                <template if:true={showNumberedHeadings}>
+                    <lightning-icon 
+                        icon-name="action:delete" 
+                        size="small" 
+                        data-index={outcome.index} 
+                        onclick={handleDeleteClick}
+                        class="delete-icon">
+                    </lightning-icon>
+                </template>
+                <template if:false={showNumberedHeadings}>
+                    <template if:true={index}>
+                        <lightning-icon 
+                            icon-name="action:delete" 
+                            size="small" 
+                            data-index={outcome.index} 
+                            onclick={handleDeleteClick}
+                            class="delete-icon">
+                        </lightning-icon>
+                    </template>
+                </template>
+              </div>
+                   </lightning-layout-item>
+                     
+            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputparentcls">
+                <lightning-input type="text"  placeholder="Name of fertility attorney" variant="label-hidden" class="textcls"></lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small"  key={outcome.index} class="inputparentcls">
+                <lightning-input type="text"  placeholder="Phone" variant="label-hidden" class="textcls"></lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small"  key={outcome.index} class="inputparentcls">
+                <lightning-input type="text"   placeholder="Email" variant="label-hidden" class="textcls"></lightning-input>
+            </lightning-layout-item>
+
+             <lightning-layout-item size="12" padding="around-small"  key={outcome.index} class="cyclesDescriptioncls">
+                <span class="textcls">You mentioned that you completed 6 donations. Please select all of the cycles that you did with this clinic.</span>
+             </lightning-layout-item>
+
+            <!-- cycles -->
+            <lightning-layout-item size="12" padding="around-small" class="cyclesCls"  key={outcome.index}>
+                    <template if:true={outcome.cycles} for:each={outcome.cycles} for:item="cycle">
+                        <div class="cycle slds-p-right_small slds-p-bottom_small" key={cycle.cycleName}>
+                            <lightning-input type="checkbox"  class="textcls" ></lightning-input>
+                            <span class="textcls">{cycle.cycleName}</span>
+                        </div>
+                    </template>
+            </lightning-layout-item>
+             <!-- cycles -->
+        </template>
+         <lightning-layout-item size="12" class="slds-p-left_small slds-p-right_small slds-p-top_small">
+        <div class="checkboxcls">
+          <lightning-input type="checkbox" name="independentDonation" onchange={handleNoAgencyChange}></lightning-input>
+          <span class="textcls checkboxspancls">Cycle in progress – not yet completed</span>
+        </div>
+      </lightning-layout-item>
+        <lightning-layout-item size="12" padding="around-small">
+            <span class="textcls addagencycls" onclick={handleAddAnotherClinic}>+ Add Another Attorney</span>
+        </lightning-layout-item>
+
+           <!-- buttons -->
+        <lightning-layout-item size="12"  class="buttonscls" padding="around-medium">
+            <div  class="backbtn textcls" onclick={handleEggFertilityAttorneyWithoutEDNBack}>Back</div>
+            <div  class="nextbtncls textcls" onclick={handleEggFertilityAttorneyWithoutEDNNext}>Next</div>
+        </lightning-layout-item>
+        <!-- buttons -->
+
+    </lightning-layout>
+
+</template>

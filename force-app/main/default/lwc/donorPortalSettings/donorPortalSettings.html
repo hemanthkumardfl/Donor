@@ -1,0 +1,103 @@
+<template>
+
+        <lightning-layout multiple-rows class="slds-card slds-p-around_medium">
+                <lightning-layout-item size="12">
+                        <label>Nickname</label>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" medium-device-size="8" class="slds-p-top_small">
+                        <lightning-input variant="label-hidden" value={nickname}></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" medium-device-size="2" class="slds-p-top_small paddingCls">
+                        <div class="savebtncls" onclick={handleSaveNickname}>Save</div>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" medium-device-size="2" class="slds-p-left_small slds-p-top_small">
+                        <div class="cancelbtncls" onclick={handleCancelNickname}>Cancel</div>
+                </lightning-layout-item>
+        </lightning-layout>
+
+
+        <lightning-layout multiple-rows="true" class="slds-card slds-p-around_medium">
+                <lightning-layout-item size="12" class="slds-p-bottom_small">
+                        <label>Avatar</label>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" medium-device-size="2" class="slds-m-right_medium imageLayout">
+                        <img src={avatarUrl} alt="Avatar" class="avatar-image" />
+                </lightning-layout-item>
+                <lightning-layout-item size="6" medium-device-size="3" class="paddingCls slds-p-top_x-large">
+                        <div class="savebtncls" onclick={handleSaveNickname}>Change Avatar</div>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" medium-device-size="2" class="slds-p-left_small slds-p-top_x-large">
+                        <div class="cancelbtncls" onclick={handleCancelNickname}>Cancel</div>
+                </lightning-layout-item>
+        </lightning-layout>
+
+        <lightning-layout multiple-rows="true" class="slds-card slds-p-around_medium">
+                <lightning-layout-item size="12" class="slds-p-bottom_small">
+                        <label>Change Password</label>
+                </lightning-layout-item>
+                <lightning-layout-item size="12">
+                        <lightning-input type="password" label="Current Password"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12">
+                        <lightning-input type="password" label="New Password"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12">
+                        <lightning-input type="password" label="Confirm New Password"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12"  medium-device-size="4" class="slds-p-top_small">
+                        <div class="savebtncls" onclick={handleSaveNickname}>Update Password</div>
+                </lightning-layout-item>
+        </lightning-layout>
+
+        <lightning-layout multiple-rows="true" class="slds-card slds-p-around_medium">
+                <lightning-layout-item size="12" class="slds-p-bottom_small">
+                        <label>Personal Information</label>
+                </lightning-layout-item>
+                <lightning-layout-item size="12">
+                        <lightning-input label="First Name"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12">
+                        <lightning-input label="Last Name"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12">
+                        <lightning-input label="Cell Phone"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12">
+                        <lightning-input label="Email"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12"  medium-device-size="4" class="slds-p-top_small">
+                        <div class="savebtncls" onclick={handleSaveNickname}>Save Changes</div>
+                </lightning-layout-item>
+        </lightning-layout>
+
+        <lightning-layout multiple-rows="true" class="slds-card slds-p-around_medium">
+                <lightning-layout-item size="12" class="slds-p-bottom_small">
+                        <label>Match Codes</label>
+                </lightning-layout-item>
+                <lightning-layout-item size="12">Donor ID: {donorId}</lightning-layout-item>
+                <lightning-layout-item size="12"  medium-device-size="4" class="slds-p-top_small">
+                        <div class="savebtncls" onclick={handleSaveNickname}>Generate New Match Code</div>
+                </lightning-layout-item>
+        </lightning-layout>
+
+        <lightning-layout multiple-rows="true" class="slds-card slds-p-around_medium">
+                <lightning-layout-item size="12" class="slds-p-bottom_small">
+                        <label>Access Permissions</label>
+                </lightning-layout-item>
+                <template for:each={permissions} for:item="perm">
+                        <lightning-layout-item size="6" medium-device-size="8" key={perm.id} class="slds-p-around_small backgroundClr" >
+                                <div class="labelCls">{perm.label}</div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="3"  medium-device-size="2" key={perm.id} class="slds-p-around_small backgroundClr" >
+                                <div class="cancelbtncls" onclick={handleSaveNickname}>View</div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="3"  medium-device-size="2" key={perm.id} class="slds-p-top_small slds-p-bottom_small slds-p-right_small backgroundClr" >
+                                <div class="savebtncls" onclick={handleSaveNickname}>Revoke</div>
+                        </lightning-layout-item>
+                        <lightning-layout-item key={perm.id} size="12" class="slds-m-top_small"></lightning-layout-item>
+                </template>
+                <lightning-layout-item size="12"  medium-device-size="4" class="slds-p-top_small">
+                        <div class="savebtncls" onclick={handleSaveNickname}>Add New Permission</div>
+                </lightning-layout-item>
+        </lightning-layout>
+</template>

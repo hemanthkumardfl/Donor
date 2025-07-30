@@ -1,0 +1,33 @@
+<template>
+    <lightning-layout multiple-rows class="donorVideoCls" padding="around-medium">
+        <lightning-layout-item size="12" padding="around-small">
+          <h3 class="slds-text-heading_medium slds-m-bottom_medium"><b> Help us to foster community while improving health outcomes</b></h3>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" padding="around-small" class="textcls">
+            At Donor 21, we know that over 80% of medical diagnoses depend on health history. 
+            That’s why we’re dedicated to helping donor families access the information they need to keep their children healthy and safe, 
+            while empowering meaningful connections between donors and the families they’ve helped build.
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" padding="around-small">
+             <!-- <iframe 
+               style="border-radius:10px;" 
+               class="videocls"
+               src="https://www.youtube.com/embed/sample-video-id" 
+               title="Donor Community Video" 
+               frameborder="0" 
+               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+               allowfullscreen>
+            </iframe> -->
+           <iframe class="videocls"  src="https://www.youtube.com/embed/oqNoMCpEgF0" title="Egg Donor Recipient Video - Brigham and Women&#39;s Hospital" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </lightning-layout-item>
+
+         <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+            <div class="mobilebtnspaddingcls"></div>
+            <div  class="backbtn textcls" onclick={handleDonorVdeoBack}>Back</div>
+            <div  class="nextbtncls textcls" onclick={handleDonorVdeoContinue}>Continue</div>
+         </lightning-layout-item>
+    </lightning-layout>
+    
+</template>

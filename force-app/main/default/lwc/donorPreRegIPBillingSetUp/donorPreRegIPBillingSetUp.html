@@ -1,0 +1,80 @@
+<template>
+    <lightning-layout multiple-rows style="" class="paymentinfoparentcls">
+        <!-- Payment Information header-->
+        <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px" class="headingcls">
+            Payment Information
+        </lightning-layout-item>
+        <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px" class="paymentDetailsCls">
+            <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px" class="inputCls textcls">
+                <span class="textcls">Name on Card</span>
+                <lightning-input type="text" value="text" disabled class="textcls"></lightning-input>
+            </lightning-layout-item>
+           
+            <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px" class="inputCls inputPaddingCls">
+                <span class="textcls">Card Number</span>
+                <lightning-input type="text" class="textcls"></lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px" class="inputPaddingCls sidebysideInputCls">
+                <div class="inputCls sidebysideWidthCls">
+                    <span class="textcls">Expiration date</span>
+                    <lightning-input type="text" class="textcls"></lightning-input>
+                </div>
+                <div class="inputCls sidebysideWidthCls">
+                    <span class="textcls">Security Code(CVV)</span>
+                    <lightning-input type="text" class="textcls"></lightning-input>
+                </div>
+            </lightning-layout-item>
+
+             <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px" class="inputCls inputPaddingCls">
+                <span class="textcls">Billing Address</span>
+                <lightning-input type="text" placeholder="Street Address" class="textcls"></lightning-input>
+            </lightning-layout-item>
+
+             <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px" class="inputCls inputPaddingCls">
+                <lightning-input type="text" placeholder="Apt, Suite, etc." class="textcls"></lightning-input>
+            </lightning-layout-item>
+
+             <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px" class="inputPaddingCls sidebysideInputCls">
+                <lightning-input type="text" placeholder="City" class="sidebysideWidthCls textcls"></lightning-input>
+                <lightning-input type="text" placeholder="State" class="sidebysideWidthCls textcls"></lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px" class="inputPaddingCls sidebysideInputCls">
+                <lightning-input type="text" placeholder="Zip Code" class="sidebysideWidthCls textcls"></lightning-input>
+                <lightning-input type="text" placeholder="Country" class="sidebysideWidthCls textcls"></lightning-input>
+            </lightning-layout-item>
+
+        </lightning-layout-item>
+
+         <lightning-layout-item size="12" class="slds-p-around_small slds-m-top_medium">
+            <span class="textcls">
+                Note: $1,500 registration fee and the first annual fee will be collected only AFTER Donor 21 was able to verify and match you to your donor. 
+                If we are unable to verify the match, you will not be charged
+            </span>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="slds-p-around_small checkboxParentCls">
+            <lightning-input type="checkbox"></lightning-input>
+            <span class="textcls">
+                I understand and agree to the terms above and wish to proceed.
+            </span>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="slds-p-around_small checkboxParentCls">
+            <lightning-input type="checkbox"></lightning-input>
+            <span class="slds-p-around_x-small"></span>
+            <span class="textcls">
+                I understand that this card will be charged automatically on an annual basis for my subscription after the initial charge starting 1 year after registration is collected.
+                I may update the card at any time through my account settings and cancel my membership at any point.
+            </span>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="slds-p-around_small slds-m-top_medium buttonscls">
+             <div class="backbtn textcls" onclick={handleDonationBasicsBack}>Back</div>
+             <div class="nextbtncls textcls" onclick={handleDonationBasicsNext}>Next</div>
+        </lightning-layout-item>
+
+
+    </lightning-layout>
+</template>

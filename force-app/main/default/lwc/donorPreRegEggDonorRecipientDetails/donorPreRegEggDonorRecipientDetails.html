@@ -1,0 +1,244 @@
+<template>
+    <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium">
+        <!-- Header -->
+        <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+            <span class="headingcls">Recipient Details</span>
+            <span class="textcls">
+                Please list the information for any recipients that you completed a donation with or are working on
+                completing a donation with. If you don’t remember, don’t worry
+            </span>
+            <div class="checkboxparentcls">
+                <div class="checkboxcls">
+                    <lightning-input type="checkbox" variant="label-hidden" onchange={handleNoSpermBankChange}
+                        class="checkboxPrimaryCls" checked={noSpermBankChecked}>
+                    </lightning-input>
+                    <span class="textcls">Check here if you did not work with any recipients independently or do not
+                        know any recipient details</span>
+                </div>
+                <!-- <div class="checkboxcls">
+                    <lightning-input 
+                        type="checkbox" 
+                        variant="label-hidden" 
+                        onchange={handleDontRememberChange}
+                        disabled={checkboxStatus}>
+                    </lightning-input>
+                    <span class="textcls mobilePaddingcls">Check here if you do not remember any recipients you worked with</span>
+                </div> -->
+            </div>
+        </lightning-layout-item>
+
+        <!-- Unselected Cycles Popup -->
+        <div if:true={showMissedCycles}>
+            <div class="modalBackdrop">
+                <div class="modalContainer slds-p-around_small">
+                    <img src={warningIcon} class="imgWarningCls" />
+                    <span class="headingcls slds-p-top_large">Missing Recipient Information</span>
+                    <div class="slds-p-around_small modalheightdivcls">
+                        <template for:each={unselectedCycles} for:item="cycle" for:index="index">
+                            <div key={cycle.cycledId} if:false={cycle.confirmedNo}
+                                class="slds-p-around_small modalpaddinglcs">
+                                <span class="textcls">You didn't identify a recipient for {cycle.label}. Did you work
+                                    with a recipient for this cycle?</span>
+                                <div class="slds-p-around_large"
+                                    style="display:flex;gap:1em;place-content:center;flex-direction:row;padding-bottom:1%">
+                                    <button label="Yes" class="popupBackBtn" data-cycle={cycle.cycledId}
+                                        data-cyclename={cycle.label} onclick={handleMissedCycleYesClick}>
+                                        Yes
+                                    </button>
+                                    <button label="No" class="popupNextBtn" data-cycle={cycle.cycledId}
+                                        data-cyclename={cycle.label} onclick={handleMissedCycleNoClick}>
+                                        No
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                        <span class="textcls" if:true={showMissedPopupBackButton}>Thank you for the information, please
+                            go back and add the details for the recipient for this cycle</span>
+                        <div class="slds-p-around_large popupbtnsparentCls">
+                            <button class={disablePopupBackBtn} label="Back" onclick={handleBackFromMissedPopup}>
+                                Back
+                            </button>
+                            <button label="Next" class={disablePopupNextBtn} onclick={handleNextFromMissedPopup}>
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Popup -->
+        <div if:true={showDeletePopup}>
+            <div class="modalBackdrop">
+                <div class="modalContainer slds-p-around_medium">
+                    <img src={warningIcon} class="imgWarningCls" />
+                    <span class="headingcls slds-p-top_medium">Confirm Deletion</span>
+                    <span class="textcls slds-p-top_small slds-p-bottom_small">Are you sure you want to delete Recipient
+                        Detail #{deleteRecipientNumber}?</span>
+                    <div class="confirmPopupCls slds-p-top_small" style="display:flex;gap:1em;justify-content:center">
+                        <button class="popupNextBtn" label="Yes" onclick={handleDeleteYes}>Yes</button>
+                        <button class="popupBackBtn" label="No" onclick={handleDeleteNo}>No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <template for:each={spermBanks} for:item="spermBank" for:index="index">
+            <div key={spermBank.id} class="recipient recipientcls">
+                <lightning-layout-item size="12" key={spermBank.id}>
+                    <template if:true={index}>
+                        <div class="section-divider slds-p-bottom_medium"></div>
+                    </template>
+                    <div style="display:flex;justify-content:space-between;align-items:center;width:97%">
+                        <h3 class="headingcls secondheadingcls slds-p-left_x-small">
+                            <template if:false={showNumberedHeadings}>
+                                <template if:false={index}>
+                                    {spermBank.clinicHeading}
+                                </template>
+                                <template if:true={index}>
+                                    Recipient Detail #{spermBank.recipentNumber}
+                                </template>
+                            </template>
+                            <template if:true={showNumberedHeadings}>
+                                Recipient Detail #{spermBank.recipentNumber}
+                            </template>
+                        </h3>
+                        <template if:true={showNumberedHeadings}>
+                            <lightning-icon icon-name="action:delete" size="small" data-index={index}
+                                onclick={handleDeleteConfirm} class="delete-icon">
+                            </lightning-icon>
+                        </template>
+                        <template if:false={showNumberedHeadings}>
+                            <template if:true={index}>
+                                <lightning-icon icon-name="action:delete" size="small" data-index={index}
+                                    onclick={handleDeleteConfirm} class="delete-icon">
+                                </lightning-icon>
+                            </template>
+                        </template>
+                    </div>
+                </lightning-layout-item>
+
+                <!-- Recipient Details -->
+                <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">Recipient First Name</span>
+                    <lightning-input type="text" label="" class="textcls" value={spermBank.recipient1FirstName}
+                        onchange={handleInputChange} onblur={handleInputBlur} name="recipient1FirstName"
+                        data-index={index} disabled={noSpermBankOrDontRemember} maxlength="255">
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">Recipient Last Name</span>
+                    <lightning-input type="text" label="" class="textcls" value={spermBank.recipient1LastName}
+                        onchange={handleInputChange} onblur={handleInputBlur} name="recipient1LastName"
+                        data-index={index} disabled={noSpermBankOrDontRemember} maxlength="255">
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">Recipient Email</span>
+                    <lightning-input type="email" label="" class="textcls" value={spermBank.email}
+                        onchange={handleInputChange} onblur={handleInputBlur} name="email" data-index={index}
+                        disabled={noSpermBankOrDontRemember}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">Recipient Phone</span>
+                    <lightning-input type="tel" label="" class="textcls" value={spermBank.phone}
+                        onchange={handleInputChange} onblur={handleInputBlur} name="phone" data-index={index}
+                        disabled={noSpermBankOrDontRemember}
+                        pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                        message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890.">
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">Additional Information</span>
+                    <lightning-textarea name="additionalInfo" value={spermBank.additionalInfo}
+                        onchange={handleInputChange} onblur={handleInputBlur} data-index={index}
+                        disabled={noSpermBankOrDontRemember}
+                        placeholder="Tell us anything additional you know about this recipient that might assist us in verifying the match."
+                        class="textcls">
+                    </lightning-textarea>
+                </lightning-layout-item>
+
+                <!-- Cycles Section -->
+                <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="cyclesDescriptioncls">
+                    <span class="textcls">You said you did {totalDonationsCount} cycles, which cycles did you work with
+                        this recipient?</span>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small" class="cyclesCls" key={spermBank.id}>
+                    <template if:true={spermBank.cycles} for:each={spermBank.cycles} for:item="cycle">
+                        <div class="cycle slds-p-right_small slds-p-bottom_small" key={cycle.cycleId}>
+                            <lightning-input type="checkbox" class="textcls cycleCheckboxcls" value={cycle.cycleId}
+                                checked={cycle.checked} disabled={cycle.disabled} onchange={handleCycleChange}
+                                data-outcomeindex={index} data-cycleindex={cycle.index} name={cycle.cycleName}>
+                            </lightning-input>
+                            <span class="textcls">{cycle.cycleName}</span>
+                        </div>
+                    </template>
+                </lightning-layout-item>
+            </div>
+        </template>
+
+        <!-- Add Another Recipient Button -->
+        <lightning-layout-item size="12" padding="around-small" class="addagencyParentcls"
+            if:false={isHideAddAnotherRecipient}>
+            <span class={disableAddAnotherRecipient} onclick={handleAddAnotherClick}>+ Add Another Recipient</span>
+        </lightning-layout-item>
+
+        <!-- Intended Parent Details -->
+        <!-- <lightning-layout-item size="12" padding="around-small" class="intendedparentcls">
+            <div class="textcls slds-p-bottom_small">
+                <b>Intended Parent Details</b>
+            </div>
+            <div class="textcls slds-p-bottom_small">
+                Do you know the identity of any of your Intended Parents (name, email, or phone)?
+            </div>
+            <div class="intendedparentchildcls1 slds-p-bottom_small" style="display: flex;">
+                <lightning-input 
+                    type="radio" 
+                    class="textcls radioInputclsfordisable noradiocls" 
+                    value="no"
+                    variant="label-hidden" 
+                    disabled={intendedYesRadioDisabled}
+                    checked={intendedParentNoRadio}
+                    onchange={handleIntendedParentChange}>
+                </lightning-input>
+                <span class="textcls">No</span>
+            </div>
+            <div class="intendedparentchildcls2 slds-p-bottom_small" style="display: flex;">
+                <lightning-input 
+                    type="radio" 
+                    class="textcls radioInputclsfordisable yesradiocls" 
+                    value="yes" 
+                    variant="label-hidden"
+                    disabled={intendedNoRadioDisabled}
+                    checked={intendedParentYesRadio}
+                    onchange={handleIntendedParentChange}>
+                </lightning-input>
+                <span class="textcls">Yes, please offer whatever details you have for any Intended Parents you have worked with.</span>
+            </div>
+            <template if:true={showIntendedParentDetails}>
+                <lightning-layout-item size="12" padding="around-small" class="inputparentcls">
+                    <span class="inputscls agencyDescriptionCls textcls">Intended Parent Details</span>
+                    <lightning-input 
+                        type="text" 
+                        label="" 
+                        class="textcls intendedparentinputboxcls" 
+                        value={intendedParentDetails} 
+                        onchange={handleIntendedParentDetailsChange}>
+                    </lightning-input>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout-item> -->
+
+        <!-- Buttons -->
+        <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
+            <div class="backbtn textcls" onclick={handleRecipientDetailsBack}>Back</div>
+            <div class="nextbtncls textcls" onclick={handleRecipientDetailsNext}>Next</div>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

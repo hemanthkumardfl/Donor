@@ -1,0 +1,61 @@
+<template>
+    <div class="slds-card slds-p-around_large borderRadius">
+        <lightning-layout-item size="12" style="letter-spacing:0.3px"  class="videocls paddingcls">
+
+            <img src={imageUrl} alt="Donor Community Banner" style="width: 100%; height: 100%; border-radius: 8px;" />
+
+                </lightning-layout-item>
+            <div class="slds-grid slds-grid_align-center slds-grid_vertical-align-center  slds-p-top_small" style="font-size: 32px;font-weight: 600;">
+        <span>Status Update</span>
+        </div>
+       </br>
+        <div class="slds-grid slds-grid_align-center slds-grid_vertical-align-center" style="font-size: 16px;font-weight: 500;">
+         <span >
+          We are working hard to try to obtain an embryo identification number. We will update you as soon as we have successfully obtained this. We invite you to enter the EMB code below if you were able to secure this yourself from the industry professionals you worked with.
+        </span>
+        </div>
+        </br>
+                    <div class="slds-grid slds-grid_align-center slds-grid_vertical-align-center" style="font-size: 16px;font-weight: 500;">
+         <span>
+          Were you able to obtain an embryo identification code that starts with EMB?
+         </span>
+                    </div>
+
+        <br />
+        <!-- PMC Code Input - Static Fields -->
+        <div class="slds-form-element slds-p-top_small">
+            <div class="slds-form-element__control slds-grid slds-grid_align-center">
+                <span class="slds-m-right_x-small" style="margin-top:7px;">
+                    <p><b>EMB -</b></p>
+                </span>
+                <div class="code-container">
+                    <input maxlength="1" data-index="0" class="input-box" oninput={handleInputChange}
+                        onkeydown={handleInputChange}></input>
+                    <input maxlength="1" data-index="1" class="input-box" oninput={handleInputChange}
+                        onkeydown={handleInputChange}></input>
+                    <input maxlength="1" data-index="2" class="input-box" oninput={handleInputChange}
+                        onkeydown={handleInputChange}></input>
+                    <input maxlength="1" data-index="3" class="input-box" oninput={handleInputChange}
+                        onkeydown={handleInputChange}></input>
+                    <input maxlength="1" data-index="4" class="input-box" oninput={handleInputChange}
+                        onkeydown={handleInputChange}></input>
+                    <input maxlength="1" data-index="5" class="input-box" oninput={handleInputChange}
+                        onkeydown={handleInputChange}></input>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bypass Option -->
+        <div class="slds-m-around_large slds-align_absolute-center checkboxParentcls">
+            <lightning-input type="checkbox" label=""></lightning-input>
+            <span>Check here to disregard this code and to bypass this step</span>
+        </div>
+
+
+        <!-- Navigation Buttons -->
+        <div class="buttonscls">
+            <button class="backbtn textcls" onclick={handleCodeErrorBack}>Back</button>
+            <button class="nextbtncls textcls" onclick={handleCodeErrorNext}>Next</button>
+        </div>
+    </div>
+</template>

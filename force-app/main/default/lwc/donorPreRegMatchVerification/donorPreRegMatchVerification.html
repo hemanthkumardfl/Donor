@@ -1,0 +1,117 @@
+<template>
+     <lightning-layout multiple-rows  class="matchverifycls">
+        <c-confetti-celebration></c-confetti-celebration>
+        <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px"  class="headingcls">
+           Welcome to the Donor 21 Family
+        </lightning-layout-item>
+
+         <lightning-layout-item size="12" style="letter-spacing:0.3px"  class="videocls slds-p-around_x-large paddingcls">
+
+            <iframe 
+               style="width: 100%; height: 100%; border: none;" 
+               src="https://www.youtube.com/embed/sample-video-id" 
+               title="Donor Community Video" 
+               frameborder="0" 
+               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+               allowfullscreen>
+            </iframe>
+
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" padding="around-medium" style="letter-spacing:0.3px"  class="textcls congratulationscls paddingcls congratulationsScrollcls">
+          Congratulations on Taking the First Step! 
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12"   class="textcls slds-p-around_x-large paddingcls msgcls">
+            You’ve successfully completed your preregistration and we have set up a new portal for you. We’re excited to welcome you to our community!
+        </lightning-layout-item>
+
+         <lightning-layout-item size="12" class="slds-p-around_x-large paddingcls">
+            <div class="donor-info-container">
+                <div class="donor-info-box">
+                    <span class="donor-info-label">Your Donor Information code </span>
+                   <div class="donor-id-section">
+                <input
+                    type="text"
+                    class="slds-input donor-id-input"
+                    value={donorId}
+                    readonly
+                />
+                <lightning-button-icon
+                    icon-name="utility:copy"
+                    variant="bare"
+                    alternative-text="Copy Donor ID"
+                    title="Copy Donor ID"
+                    onclick={handleCopyDonorId}
+                    class="copy-icon"
+                ></lightning-button-icon>
+            </div>
+              <template if:true={showCopySuccess}>
+                    <div class="copy-success-message">
+                        <lightning-icon icon-name="utility:success" size="x-small"></lightning-icon>
+                        <span>Copied to clipboard!</span>
+                    </div>
+                </template>
+                </div>
+            </div>
+        </lightning-layout-item>
+
+         <lightning-layout-item size="12" style="letter-spacing:0.3px"  class="textcls personalParentPortalcls slds-p-around_x-large paddingcls">
+            <div class="personalportalsectioncls">
+                <p class="textcls slds-p-top_medium ">Click the button below to enter your personal portal, where you can:</p>
+
+                <div class="portalpointscls slds-p-top_small">
+                    <div class="dummycls"></div>
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                    <span class="textcls">Build your family tree</span>
+                </div>
+
+                <div class="portalpointscls slds-p-top_x-small">
+                    <div class="dummycls"></div>
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                    <span class="textcls">Complete your health questionnaire</span>
+                </div>
+
+                <div class="portalpointscls slds-p-top_x-small">
+                    <div class="dummycls"></div>
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                    <span class="textcls">Share updates with the families you helped to grow</span>
+                </div>
+
+                <div class="portalpointscls slds-p-top_x-small">
+                    <div class="dummycls"></div>
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                    <span class="textcls">Share messages and updates with your recipient families</span>
+                </div>
+
+                <div class="portalpointscls slds-p-top_x-small">
+                    <div class="dummycls"></div>
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                    <span class="textcls">Earn happy jar credits to spend on gift cards or donations to charity</span>
+                </div>
+
+                <div class="portalpointscls slds-p-top_x-small">
+                    <div class="dummycls"></div>
+                    <lightning-icon icon-name='action:approval'  size='small' class="iconcls"></lightning-icon>
+                    <span class="textcls">Build meaningful connections</span>
+                </div>
+
+            </div>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" padding="around-medium" style="letter-spacing:0.3px"  class="textcls congratulationscls paddingcls">
+            Start Your Journey Now
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+            <div  class="textcls">Enter Your Portal</div>
+            <!-- <div  class="textcls" onclick={handleMatchVerificationBack} >Back</div> -->
+        </lightning-layout-item>
+
+         <lightning-layout-item size="12" padding="around-medium" style="letter-spacing:0.3px;color:grey;word-break: break-all;"  class="textcls slds-p-around_x-large paddingcls">
+            Thank you for your commitment to helping others build their families. We're here to support you every step of the way!
+         </lightning-layout-item>
+
+     </lightning-layout>
+
+</template>

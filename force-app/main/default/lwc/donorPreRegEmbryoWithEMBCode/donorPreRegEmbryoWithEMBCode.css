@@ -1,0 +1,46 @@
+.backbtnCls {
+    border: 1px solid black;
+    background: white;
+    color: black;
+    text-align: center;
+    border-radius: 5px;
+    /* width: 10%; */
+    min-height: 2.5em;
+    align-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.nextbtnCls {
+    border: 1px solid black;
+    background: black;
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    /* width: 10%; */
+    min-height: 2.5em;
+    cursor: pointer;
+    align-content: center;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.buttonscls {
+    display: flex;
+    place-content: center;
+    gap: 2em;
+    justify-content: space-between;
+    /* box-shadow: 0 -1px 6px -2px rgba(7 6 6 / 50%); */
+}
+
+.codeiconcls {
+    --slds-c-icon-color-foreground-default: #55bf00;
+    align-content: center;
+}
+
+.txtCls{
+    text-align : right;
+}
+
+lightning-layout-item{
+    margin-bottom : 0.75rem;
+}

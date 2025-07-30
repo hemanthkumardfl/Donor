@@ -1,0 +1,91 @@
+<template>
+     <lightning-layout multiple-rows style="background: white;" class="journeyinfoparentcls">
+        <!-- Journey Info header-->
+        <lightning-layout-item size="12" padding="around-small" style="letter-spacing:0.3px" class="journeyinfocls">
+            Journey Info
+        </lightning-layout-item>
+
+      <!--Description -->
+        <lightning-layout-item size="12" padding="around-small" >
+            <span class="textcls">
+                At Donor21, we love helping to create healthy fmilies! Tell us a littile more about how you created or plan to grow your family
+                and who helped you on your journey to parenthood.
+            </span>
+        </lightning-layout-item>
+        <!--Description ends here-->
+
+    <!-- Egg Donors -->
+        <!-- header -->
+        <lightning-layout-item size="12" padding="around-small" style="" class="headingcls">
+           Egg Donors
+        </lightning-layout-item>
+
+        <!--Description -->
+        <lightning-layout-item size="12" padding="around-small" >
+            <span class="textcls">
+                Select the number of egg donors(fresh of frozen) whose eggs you used or plan to use for your family that you want linked to your account for updates
+            </span>
+        </lightning-layout-item>
+
+        <!--Number input-->
+        <lightning-layout-item size="12" padding="around-small" style="display:flex;gap:1em;align-items:center">
+            <span class="spancls"  onclick={handleRemoveEDN}> - </span>
+            <span style="font-size:medium;" class="textcls"> {eggdonorscount} </span>
+            <span class="spancls" onclick={handleAddNewEDN}> + </span>
+        </lightning-layout-item>
+    <!-- Egg Donors -->
+
+    <!-- sperm Donors -->
+        <!-- header -->
+        <lightning-layout-item size="12" padding="around-small" style="" class="headingcls">
+           Sperm Donors
+        </lightning-layout-item>
+
+        <!--Description -->
+        <lightning-layout-item size="12" padding="around-small" >
+            <span class="textcls">
+                Select the number of sperm donors(fresh of frozen) whose eggs you used or plan to use for your family that you want linked to your account for updates
+            </span>
+        </lightning-layout-item>
+
+        <!--Number input-->
+        <lightning-layout-item size="12" padding="around-small" style="display:flex;gap:1em;align-items:center">
+            <span class="spancls"> - </span>
+            <span style="font-size:medium;font-family:'Inter'"> 0 </span>
+            <span class="spancls"> + </span>
+        </lightning-layout-item>
+    <!-- Sperm Donors -->
+
+     <!-- Embryo Donors -->
+        <!-- header -->
+        <lightning-layout-item size="12" padding="around-small" style="" class="headingcls">
+           Embryo Donors
+        </lightning-layout-item>
+
+        <!--Description -->
+        <lightning-layout-item size="12" padding="around-small" >
+            <span class="textcls">
+                Select the number of families who donated embryos to you in order for you to grow your family that you want linked to your account for updates
+            </span>
+        </lightning-layout-item>
+
+        <!--Number input-->
+        <lightning-layout-item size="12" padding="around-small" style="display:flex;gap:1em;align-items:center">
+            <span class="spancls"> - </span>
+            <span style="font-size:medium;font-family:'Inter'"> 0 </span>
+            <span class="spancls"> + </span>
+        </lightning-layout-item>
+    <!-- Embryo Donors -->
+
+    <!-- buttons -->
+     <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+        <div  class="backbtn" onclick={handleBackClick}>Back</div>
+        <div  class="nextbtncls" onclick={handleNextClinic}>Next</div>
+     </lightning-layout-item>
+    <!-- buttons -->
+
+     </lightning-layout>
+
+      
+
+</template>

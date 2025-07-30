@@ -1,0 +1,47 @@
+.offspringcls{
+    background : white;
+}
+.dateOfBirthParentCls{
+    display: flex;
+    flex-direction: column;
+}
+.dateOfBirthParentCls div{
+    display: flex;
+    gap: 1em;
+    align-items: center;
+}
+.monthcls, .daycls{
+    width: 5%;
+}
+.yearcls{
+    width: 9%;
+}
+.offspringImageParentCls, .headerParentCls, .buttonscls{
+    display: flex;
+    place-content: center;
+    align-items: center;
+}
+.offspringImageCls{
+    width: 17%;
+}
+.headercls{
+    font-size: large;
+    font-weight: 600;
+    font-family: Inter, sans-serif;
+}
+.nextbtncls{
+    border: 1px solid black;
+	background: black;
+	color: white;
+	text-align: center;
+	border-radius: 5px;
+	width: 18%;
+	min-height: 3em;
+	padding: 10px;
+	cursor: pointer;
+}
+.offspringdescriptioncls{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}

@@ -1,0 +1,52 @@
+<template>
+    <div class="slds-card container slds-p-around_large borderRadius">
+        <div class="slds-box slds-text-color_error slds-p-around_small error-box">
+            <div class="slds-media slds-align-top">
+                <div class="slds-m-right_xx-small error-icon">
+                    <span class="icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="#b71c1c">
+                            <circle cx="10" cy="10" r="10" fill="#bb3939"/>
+                            <text x="50%" y="55%" text-anchor="middle" fill="white" font-size="14px" font-weight="bold" dy=".3em">!</text>
+                        </svg>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <p class="fontSizeClass"><b class="red-text">Error!</b></p>
+                    <div class="red-text">
+                        The code you entered is linked to a different email or phone number.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="slds-p-top_small slds-p-bottom_small">To proceed, select an option.</p>
+
+        <div class="slds-p-around_large slds-box slds-box_xx-small slds-theme_default section-box"
+             data-name="Option1" onclick={HandleOption}>
+            <p class="slds-text-title_bold slds-p-top_small slds-p-right_small slds-p-left_small fontSizeClass">Option 1:</p>
+            <p class="slds-text-body_regular slds-p-around_small">
+                Provide the alternate email or phone number you have on file with the professional partner who gave you this code.
+            </p>
+            <lightning-input type="email" label="Enter Email:" class="slds-p-right_small slds-p-left_small" name="email"></lightning-input>
+            <lightning-input type="tel" label="Enter Phone:" class="slds-p-around_small" name="phone"></lightning-input>
+            <p class="slds-text-body_small slds-text-color_weak slds-p-bottom_small slds-p-right_small slds-p-left_small">
+                Once you click next, we will send a verification code to this email/phone. <br />
+                <strong>Note: This will save time in the next steps.</strong>
+            </p>
+        </div>
+        <br/>
+
+        <div class="slds-p-around_small slds-box slds-box_xx-small slds-theme_default section-box"
+             data-name="Option2" onclick={HandleOption}>
+            <p class="slds-text-title_bold slds-p-around_small fontSizeClass">Option 2:</p>
+            <p class="slds-text-body_regular slds-p-bottom_small slds-p-right_small slds-p-left_small">
+                Opt out of entering an alternate email or phone number. Note that we will not be able to use your code for verification if you choose this step.
+            </p>
+        </div>
+
+        <div class="buttonscls slds-p-top_large">
+            <div class="backbtn textcls" onclick={handleErrorCodeSubmissionBack}>Back</div>
+            <div class="nextbtncls textcls" onclick={handleErrorCodeSubmissionNext}>Next</div>
+        </div>
+    </div>
+</template>

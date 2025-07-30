@@ -1,0 +1,206 @@
+<template>
+    <lightning-layout multiple-rows class="offspringcls slds-p-around_medium">
+        <lightning-layout-item size="12" padding="around-small" class="headerParentCls">
+            <span class="headingcls">Parties Involved</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" padding="around-small">
+            <span class="descriptioncls textcls">
+                We would be honored to help you to connect with your donor(s). To get started, please answer the following questions to the best of your availability. 
+            </span>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" padding="around-small" style="display: flex;flex-direction:column">
+            <span class="textcls">Which type of donor(s) are you hoping to connect with? </span>
+            <div style="display: flex;">
+                <lightning-input type="checkbox" class="checkboxcls"></lightning-input>
+                <span class="textcls">Egg Donor Only</span>
+            </div>
+            <div style="display: flex;">
+                <lightning-input type="checkbox" class="checkboxcls"></lightning-input>
+                <span class="textcls">Sperm Donor Only</span>
+            </div>
+            <div style="display: flex;">
+                <lightning-input type="checkbox" class="checkboxcls"></lightning-input>
+                <span class="textcls">Both Egg and Sperm Donor</span>
+            </div>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" padding="around-small" style="display: flex;flex-direction:column">
+            <span class="textcls">What are the main reasons you decided to seek this connection?</span>
+            <span class="textcls">Please check all that apply:</span>
+            <div style="display: flex;">
+                <lightning-input type="checkbox" class="checkboxcls"></lightning-input>
+                <span class="textcls">Hoping for medical history info</span>
+            </div>
+            <div style="display: flex;">
+                <lightning-input type="checkbox" class="checkboxcls"></lightning-input>
+                <span class="textcls">Heritage exploration</span>
+            </div>
+            <div style="display: flex;">
+                <lightning-input type="checkbox" class="checkboxcls"></lightning-input>
+                <span class="textcls">Curiosity about donor</span>
+            </div>
+            <div style="display: flex;">
+                <lightning-input type="checkbox" class="checkboxcls"></lightning-input>
+                <span class="textcls">Potential relationship or friendship</span>
+            </div>
+            <div style="display: flex;">
+                <lightning-input type="checkbox" class="checkboxcls"></lightning-input>
+                <span class="textcls">Sibling Search</span>
+            </div>
+            <div style="display: flex;">
+                <lightning-input type="checkbox" class="checkboxcls"></lightning-input>
+                <span class="textcls">Other</span>
+            </div>
+            <lightning-input type="text" placeholder="Please explain" class="textcls"></lightning-input>
+            <!-- <span class="textcls">Please explain</span> -->
+            <div class="inputsContainer">
+                <span class="textcls">Approximte Year Of Donation</span>
+                <lightning-input type="text"  class="textcls"></lightning-input>
+            </div>
+        </lightning-layout-item>
+
+         <!-- parent 1 section starts -->
+
+        <lightning-layout-item size="12" padding="around-small" class="">
+            
+            <div class="parentInfoContainerCls slds-p-top_medium slds-p-bottom_medium">
+                <lightning-layout-item size="12" padding="around-small" class="">
+                    Parent 1
+                </lightning-layout-item>
+
+                <!-- first name and last name section-->
+                <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div>
+                        <span>Parent 1 First Name</span>
+                        <lightning-input type="text"></lightning-input>
+                    </div>
+                    <div>
+                        <span>Parent 1 Last Name</span>
+                        <lightning-input type="text"></lightning-input>
+                    </div>
+                </lightning-layout-item>
+                
+                <!-- Dob section -->
+                <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div>
+                        <span>Parent 1 DOB</span>
+                        <lightning-input type="date"></lightning-input>
+                        <span>(used for verification by programs)</span>
+                    </div>
+                    <div>
+                        <span>Is this parent still living?</span>
+                        <div class="radiogroupCls">
+                            <lightning-input type="radio" label="Yes"></lightning-input>
+                            <lightning-input type="radio" label="No"></lightning-input>
+                        </div>
+                    </div>
+                </lightning-layout-item>
+            </div>
+
+        </lightning-layout-item> 
+
+         <!-- parent 1 section ends -->
+
+        <!-- parent 2 section starts -->
+
+        <lightning-layout-item if:true={isParent} size="12" padding="around-small" class="">
+            
+            <div class="parentInfoContainerCls slds-p-top_medium slds-p-bottom_medium">
+                <lightning-layout-item size="12" padding="around-small" class="parent2ContainerCls">
+                    <span>Parent 2</span>
+                    <div onclick={handleRemoveParent2}>
+                        X Remove Parent 2
+                    </div>
+                </lightning-layout-item>
+
+                <!-- first name and last name section-->
+                <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div>
+                        <span>Parent 2 First Name (if applicable)</span>
+                        <lightning-input type="text"></lightning-input>
+                    </div>
+                    <div>
+                        <span>Parent 2 Last Name (if applicable)</span>
+                        <lightning-input type="text"></lightning-input>
+                    </div>
+                </lightning-layout-item>
+                
+                <!-- Dob section -->
+                <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div>
+                        <span>Parent 2 DOB (if applicable)</span>
+                        <lightning-input type="date"></lightning-input>
+                        <span>(used for verification by programs)</span>
+                    </div>
+                    <div>
+                        <span>Is this parent still living?</span>
+                        <div class="radiogroupCls">
+                            <lightning-input type="radio" label="Yes"></lightning-input>
+                            <lightning-input type="radio" label="No"></lightning-input>
+                        </div>
+                    </div>
+                </lightning-layout-item>
+            </div>
+            
+        </lightning-layout-item> 
+
+        <!-- parent 2 section ends -->
+
+        <lightning-layout-item size="12" padding="around-small" class="conatinerCls">
+            <span>Are your parents willing to help with this search?</span>
+            <div class="radiogroupCls">
+                <lightning-input type="radio" label="Yes"></lightning-input>
+                <lightning-input type="radio" label="No"></lightning-input>
+            </div>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" padding="around-small" class="conatinerCls">
+            <span>Do we have your permission to contact theam as needed?</span>
+            <span>This is very helpful if possible</span>
+            <div class="radiogroupCls">
+                <lightning-input type="radio" label="Yes"></lightning-input>
+                <lightning-input type="radio" label="No"></lightning-input>
+            </div>
+        </lightning-layout-item>
+
+        <!-- parent 1 and 2 emails section starts-->
+        <lightning-layout-item size="12" class="">
+
+            <div class="slds-p-top_medium slds-p-bottom_medium">
+
+                <!-- parent 1 email and phone section-->
+                <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div>
+                        <span>Parent 1 Email</span>
+                        <lightning-input type="text"></lightning-input>
+                    </div>
+                    <div>
+                        <span>Parent 1 Phone</span>
+                        <lightning-input type="text"></lightning-input>
+                    </div>
+                </lightning-layout-item>
+
+                <!-- parent 2 email and phone section-->
+                <lightning-layout-item size="12" padding="around-small" class="childContainerCls">
+                    <div>
+                        <span>Parent 2 Email (if applicable)</span>
+                        <lightning-input type="text"></lightning-input>
+                    </div>
+                    <div>
+                        <span>Parent 2 Phone (if applicable)</span>
+                        <lightning-input type="text"></lightning-input>
+                    </div>
+                </lightning-layout-item>
+                
+            </div>
+
+        </lightning-layout-item> 
+         <!-- parent 1 and 2 emails section ends-->
+
+        <!-- buttons cls -->
+        <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+            <div class="backbtn textcls" >Back</div>
+            <div class="nextbtncls textcls">Next</div>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>
