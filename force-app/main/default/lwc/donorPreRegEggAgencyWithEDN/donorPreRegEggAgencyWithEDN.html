@@ -63,20 +63,19 @@
     <!-- Agency with EDN starts here -->
     <template if:true={donationOutcomesListFromApex} for:each={donationOutcomesListFromApex} for:item="outcome">
         <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium" key={outcome.index}>
-            <!-- header section starts here -->
+
             <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
-                <span class="textcls headingcls">Agency/Egg Bank #{outcome.index}</span>
+                <span class="textcls headingcls">Agency/Egg Bank - {outcome.PMC}</span>
                 <span class="textcls agencyDescriptionCls">
                     Based on the EDN code you entered, it seems that you worked with this agency/egg bank:
                 </span>
             </lightning-layout-item>
-            <!-- header section ends here -->
+
             <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
-                class="slds-p-left_small slds-p-right_small clinicinputcls">
+                padding="around-small">
                 <span class="textcls inputs đấtcls inputfontcls">Agency Name</span>
             </lightning-layout-item>
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7"
-                class="slds-p-left_small slds-p-right_small clinicinputcls">
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
                 <lightning-input type="text" value={outcome.Name} class="textcls inputscls"
                     onchange={handleApexInputChange} onblur={handleInputBlur} name="Name" data-index={outcome.index}
                     maxlength="255" disabled="true">
@@ -84,11 +83,10 @@
             </lightning-layout-item>
 
             <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
-                class="slds-p-left_small slds-p-right_small slds-p-top_small clinicinputcls">
+                padding="around-small">
                 <span class="textcls inputscls inputfontcls">Agency Website</span>
             </lightning-layout-item>
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7"
-                class="slds-p-left_small slds-p-right_small clinicinputcls">
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
                 <lightning-input type="url" value={outcome.Website} class="textcls inputscls"
                     onchange={handleApexInputChange} onblur={handleInputBlur} name="Website" data-index={outcome.index}
                     placeholder="http://www.example.com" disabled="true">
@@ -96,11 +94,10 @@
             </lightning-layout-item>
 
             <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
-                class="slds-p-left_small slds-p-right_small slds-p-top_small clinicinputcls">
+                padding="around-small">
                 <span class="textcls inputscls inputfontcls">Agency Phone</span>
             </lightning-layout-item>
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7"
-                class="slds-p-left_small slds-p-right_small clinicinputcls">
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
                 <lightning-input type="tel" value={outcome.Phone} class="textcls inputscls"
                     onchange={handleApexInputChange} onblur={handleInputBlur} name="Phone"
                     pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
@@ -108,17 +105,17 @@
                     data-index={outcome.index} disabled="true">
                 </lightning-input>
             </lightning-layout-item>
+
             <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
-                class="slds-p-left_small slds-p-right_small slds-p-top_small clinicinputcls">
+                padding="around-small">
                 <span class="textcls inputscls inputfontcls">Coordinator Name</span>
             </lightning-layout-item>
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7"
-                class="slds-p-left_small slds-p-right_small clinicinputcls">
-                <lightning-record-picker label="Contacts" object-api-name="Contact">
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7" class="slds-p-top_small">
+                <lightning-record-picker label="Coordinator Name" variant="label-hidden" object-api-name="Contact" value={outcome.CoordinatorName} filter={outcome.filter}>
                 </lightning-record-picker>
             </lightning-layout-item>
-
-            <lightning-layout-item size="12" padding="around-small">
+            
+            <lightning-layout-item size="12" padding="around-small" class="slds-m-top_medium">
                 <span class="slds-m-top_large slds-m-bottom_large textcls"><b>Do you know your donor code with this
                         agency?</b></span>
                 <div class="checkboxcls">

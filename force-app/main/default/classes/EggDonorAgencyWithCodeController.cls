@@ -1,6 +1,6 @@
 public without sharing class EggDonorAgencyWithCodeController {
-
-
+    
+    
     public class Response{
         @AuraEnabled public string message;
         @AuraEnabled public boolean isSuccess;
@@ -14,113 +14,128 @@ public without sharing class EggDonorAgencyWithCodeController {
     @AuraEnabled 
     public static Response fetchCodeData(string contactObj){
         try{
-        DonorRegistrationWrapper donor = (DonorRegistrationWrapper) JSON.deserialize(contactObj, DonorRegistrationWrapper.class);  
-            list<string> agencyIds = new list<string>();
+            
+            DonorRegistrationWrapper donor = (DonorRegistrationWrapper) JSON.deserialize(contactObj, DonorRegistrationWrapper.class);  
             list<string> pmccodes = new list<string>();
             List<string> associateCodes = new List<string>();
             list<Agency> agencies = new list<Agency>();
-            list<d21_PMC__c> PMCRecords = new list<d21_PMC__c>();
+            list<d21_PMC__c> pmcRecords = new list<d21_PMC__c>();
+            Map<string,string> pmcAgencyIdMap = new Map<string,string>();
+            
             pmccodes.addAll(donor.codes.PMC);
             associateCodes.addAll(donor.codes.EDN);
             associateCodes.addAll(donor.codes.SDN);
             associateCodes.addAll(donor.codes.EMB);
             associateCodes.addAll(donor.codes.REC);
-            if(!pmccodes.isEmpty()){
-             PMCRecords = [SELECT Id,Name,d21_Agency__c FROM d21_PMC__c WHERE Name IN :pmccodes  AND d21_Agency__c != NULL]; 
-            }
-            else if(!associateCodes.isEmpty()){
-                system.debug('associateCodes >>> '+associateCodes);
-                list<d21_Associated_Codes__c> associateList = [select Id,d21_PMC_Code__c from d21_Associated_Codes__c Where Name In :associateCodes];
+            
+            if(!associateCodes.isEmpty()){
+                list<d21_Associated_Codes__c> associateList = [SELECT Id,d21_PMC_Code__c 
+                                                               FROM d21_Associated_Codes__c 
+                                                               WHERE Name IN :associateCodes
+                                                               WITH SYSTEM_MODE];
                 for(d21_Associated_Codes__c aCode: associateList){
                     pmccodes.add(aCode.d21_PMC_Code__c);
                 }
-                system.debug('pmccodes >>> '+pmccodes);
-                PMCRecords = [SELECT Id,Name,d21_Agency__c FROM d21_PMC__c WHERE Id IN :pmccodes  AND d21_Agency__c != NULL]; 
+            }
+
+            system.debug('PMC Codes >>> '+pmccodes);
+            
+            if(!pmccodes.isEmpty()){
+                pmcRecords = [SELECT Id,Name,d21_Agency__c 
+                              FROM d21_PMC__c 
+                              WHERE Name IN :pmccodes  
+                              AND d21_Agency__c != NULL
+                              WITH SYSTEM_MODE]; 
             }
             
-            if(!PMCRecords.isEmpty()){
-                for(d21_PMC__c pmc : PMCRecords){
-                    agencyIds.add(pmc.d21_Agency__c);
+            if(!pmcRecords.isEmpty()){
+                
+                for(d21_PMC__c pmc : pmcRecords){
+                    pmcAgencyIdMap.put(pmc.Name,pmc.d21_Agency__c);
                 }
-                if(!agencyIds.isEmpty()){
-                    for(Account acc : [Select Name, Id,Phone,Website,d21_Email__c,d21_Coordinator_Name__c from Account where Id IN :agencyIds]){
+                
+                if(!pmcAgencyIdMap.values().isEmpty()){
+                    Map<Id,Account> accountMap = new Map<Id,Account>([SELECT Name, Id,Phone,Website,d21_Email__c,d21_Coordinator_Name__c 
+                                                                      FROM Account 
+                                                                      WHERE Id IN :pmcAgencyIdMap.values()
+                                                                      WITH SYSTEM_MODE]);
+                    for(string pmc : pmcAgencyIdMap.keySet()){
                         Agency agen = new Agency();
-                        agen.Name = acc.Name;
-                        agen.agencyId = acc.Id;
-                        agen.Phone = acc.Phone;
-                        agen.Website = acc.Website;
-                        agen.CoordinatorName = acc.d21_Coordinator_Name__c;
-                        agen.Email = acc.d21_Email__c;
+                        agen.Name = accountMap.get(pmcAgencyIdMap.get(pmc)).Name;
+                        agen.agencyId = pmcAgencyIdMap.get(pmc);
+                        agen.Phone = accountMap.get(pmcAgencyIdMap.get(pmc)).Phone;
+                        agen.Website = accountMap.get(pmcAgencyIdMap.get(pmc)).Website;
+                        agen.PMC = pmc;
                         agencies.add(agen);
                     }
                 }
             }
-        
+            
             return new Response(true, JSON.serialize(agencies));
         }catch(Exception e){
             return new Response(false, e.getMessage()+' >>> '+e.getLineNumber()+'  >>>  '+e.getStackTraceString());
         }
-}
-
-
+    }
+    
+    
     @AuraEnabled
     public  static Response updateEggAgenciesWithCodes(string existingAgencies,string addedAgencies,string cycles){
         try {
             list<RecordWrapper> existingAgencyList = (list<RecordWrapper>)JSON.deserialize(existingAgencies, list<RecordWrapper>.class);  
             list<RecordWrapper> addedAgencyList = (list<RecordWrapper>)JSON.deserialize(addedAgencies, list<RecordWrapper>.class);  
             list<Cycle> cyclesList = (list<Cycle>)JSON.deserialize(cycles, list<Cycle>.class);  
-
+            
             list<Account> upsertExistingAgencyList = new list<Account>();
             list<Account> upsertAddedAgencyList = new list<Account>();
             list<d21_Cycle__c> updateCycleList = new list<d21_Cycle__c>();
             Map<string,Account> cycleAccountMap = new Map<string,Account>();
             list<d21_Donor_Agency__c> donorAgencyList = new list<d21_Donor_Agency__c>();
-
-
+            
+            
             for(RecordWrapper record : existingAgencyList){
                 system.debug('record.selectedCycles >>> '+record.selectedCycles);
                 if(!record.noAgencyChecked && !record.selectedCycles.isEmpty()){
-                Account acc = new Account();
-                acc.Id = record.agencyId;
-                acc.Phone = record.Phone;
-                acc.d21_Email__c = record.Email;
-                acc.Website = record.Website;
-                acc.Name = record.Name;
-                acc.recordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Agency').getRecordTypeId();
-                acc.d21_Coordinator_Name__c = record.CoordinatorName;
-                upsertExistingAgencyList.add(acc);
-                for(string cycle : record.selectedCycles){
-                    cycleAccountMap.put('Cycle '+cycle,acc);
+                    Account acc = new Account();
+                    acc.Id = record.agencyId;
+                    acc.Phone = record.Phone;
+                    acc.d21_Email__c = record.Email;
+                    acc.Website = record.Website;
+                    acc.Name = record.Name;
+                    acc.recordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Agency').getRecordTypeId();
+                    acc.d21_Coordinator_Name__c = record.CoordinatorName;
+                    upsertExistingAgencyList.add(acc);
+                    for(string cycle : record.selectedCycles){
+                        cycleAccountMap.put('Cycle '+cycle,acc);
+                    }
                 }
             }
-            }
-
+            
             if(!upsertExistingAgencyList.isEmpty()){
                 upsert upsertExistingAgencyList;
             }
-
+            
             for(RecordWrapper record : addedAgencyList){
                 if(!record.selectedCycles.isEmpty()){
-                Account acc = new Account();
-                acc.Id = record.agencyId;
-                acc.Phone = record.Phone;
-                acc.d21_Email__c = record.Email;
-                acc.Website = record.Website;
-                acc.Name = record.Name;
-                acc.recordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Agency').getRecordTypeId();
-                acc.d21_Coordinator_Name__c = record.CoordinatorName;
-                upsertAddedAgencyList.add(acc);
-                for(string cycle : record.selectedCycles){
-                    cycleAccountMap.put('Cycle '+cycle,acc);
+                    Account acc = new Account();
+                    acc.Id = record.agencyId;
+                    acc.Phone = record.Phone;
+                    acc.d21_Email__c = record.Email;
+                    acc.Website = record.Website;
+                    acc.Name = record.Name;
+                    acc.recordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Agency').getRecordTypeId();
+                    acc.d21_Coordinator_Name__c = record.CoordinatorName;
+                    upsertAddedAgencyList.add(acc);
+                    for(string cycle : record.selectedCycles){
+                        cycleAccountMap.put('Cycle '+cycle,acc);
+                    }
                 }
             }
-            }
-
+            
             if(!upsertAddedAgencyList.isEmpty()){
                 upsert upsertAddedAgencyList;
                 for (Integer i = 0; i < addedAgencyList.size(); i++) {
                     if(!addedAgencyList[i].selectedCycles.isEmpty()){
-                    addedAgencyList[i].agencyId = upsertAddedAgencyList[i].Id;
+                        addedAgencyList[i].agencyId = upsertAddedAgencyList[i].Id;
                     }
                 }
             }
@@ -129,11 +144,11 @@ public without sharing class EggDonorAgencyWithCodeController {
                 d21_Cycle__c cycle = new d21_Cycle__c();
                 cycle.Id = record.Id;
                 if(cycleAccountMap.containsKey(record.Name)){
-                cycle.d21_Agency__c = cycleAccountMap.get(record.Name).Id;
+                    cycle.d21_Agency__c = cycleAccountMap.get(record.Name).Id;
                 }
                 updateCycleList.add(cycle);
             }
-
+            
             if(!updateCycleList.isEmpty()){
                 update updateCycleList;
                 Map<string,d21_Cycle__c> cycleMap = new Map<string,d21_Cycle__c>(updateCycleList);
@@ -145,7 +160,7 @@ public without sharing class EggDonorAgencyWithCodeController {
                 Map<string,string> accIdNameMap = new Map<string,string>();
                 for(d21_Cycle__c cycle : fetchCycles){
                     if(cycle.d21_Agency__c != null){
-                    accIdNameMap.put(cycle.d21_Agency__c, cycle.d21_Agency__r.Name);
+                        accIdNameMap.put(cycle.d21_Agency__c, cycle.d21_Agency__r.Name);
                     }
                 }
                 system.debug('accIdNameMap >>> '+accIdNameMap);
@@ -160,14 +175,14 @@ public without sharing class EggDonorAgencyWithCodeController {
                     insert donorAgencyList;
                 }
             }
-
+            
             return new Response(true,JSON.serialize(addedAgencyList));
-
+            
         } catch (Exception e) {
             return new Response(false, e.getMessage()+' >>> '+e.getLineNumber()+'  >>>  '+e.getStackTraceString());
         }
     }
-
+    
     @AuraEnabled
     public static Response deleteCycleAgency(string agencyId){
         try {
@@ -232,8 +247,9 @@ public without sharing class EggDonorAgencyWithCodeController {
         @AuraEnabled public String Website;
         @AuraEnabled public String CoordinatorName;
         @AuraEnabled public String AgencyId;
+        @AuraEnabled public string PMC;
     }
-
+    
     public class Clinic{
         @AuraEnabled public String Name;
         @AuraEnabled public String Email;
@@ -331,9 +347,9 @@ public without sharing class EggDonorAgencyWithCodeController {
         @AuraEnabled public string agencyId;
         @AuraEnabled public string clinicId;
     }
-
-
-   
+    
+    
+    
     
     
 }

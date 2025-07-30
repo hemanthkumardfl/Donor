@@ -26,27 +26,6 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
     @track workWithAgencyNo;
 
 
-    donationOutcomeObject = {
-        index: 1,
-        agencyHeading: 'Additional Agencies',
-        Name: '',
-        Website: '',
-        Phone: '',
-        Email: '',
-        CoordinatorName: '',
-        DonorCode: '',
-        showDonorCodeInput: false,
-        hideDonorCodeInput: true,
-        cycles: [],
-        selectedCycles: [],
-        headingIndex: 1,
-        noAgencyChecked: false,
-        incorrectAgencyChecked: false,
-        primaryConfirmed: false,
-        CityStateOfAgency: '' // Added for backward compatibility
-    };
-
-
     get isHideAddAnotherAgency() {
         return (this.noAgencyChecked || this.dontRememberChecked);
     }
@@ -93,74 +72,79 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
 
     async connectedCallback() {
         try {
-            this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
-            this.totalDonationsCount = this.contactObj.donationBasics.egg['liveBirths'];
-            const cyclesList = Array(this.totalDonationsCount)
-                .fill()
-                .map((_, index) => ({
-                    index: index,
-                    cycleId: `${index + 1}`,
-                    cycleName: `Cycle ${index + 1}`,
-                    disabled: false,
-                    checked: false
-                }));
-
-
-            if (!this.contactObj.isSkipped) {
-                let agencyList = [];
+            const { donationBasics, isSkipped, agenciesWithCodes = {} } = this.contactObj || {};
+            this.totalDonationsCount = donationBasics?.egg?.liveBirths || 0;
+    
+            const cyclesList = Array.from({ length: this.totalDonationsCount }, (_, index) => ({
+                index,
+                cycleId: `${index + 1}`,
+                cycleName: `Cycle ${index + 1}`,
+                disabled: false,
+                checked: false
+            }));
+    
+            let finalAgencies = [];
+            const selectedCycleSet = new Set(agenciesWithCodes.totalSelectedCycles || []);
+    
+            if (!isSkipped) {
                 const agencies = await fetchCodeData({ contactObj: JSON.stringify(this.contactObj) });
-                console.log('fetchCodeData Result >>> ' + JSON.stringify(agencies));
-                if (agencies.isSuccess) {
-                    agencyList = JSON.parse(agencies.message);
-                    const existingAgencies = this.contactObj?.agenciesWithCodes?.donationOutcomesListFromApex || [];
-                    this.donationOutcomesListFromApex = agencyList.map((outcome, index) => {
-                        const existing = existingAgencies[index] || {};
+                console.log('fetchCodeData Result >>> ', agencies);
+    
+                if (agencies?.isSuccess) {
+                    const existingAgencies = agenciesWithCodes.donationOutcomesListFromApex || [];
+                    finalAgencies = JSON.parse(agencies.message).map((outcome, idx) => {
+                        const existing = existingAgencies[idx] || {};
+                        const cycles = (existing.cycles || [...cyclesList]).map(cycle => {
+                            const id = parseInt(cycle.cycleId);
+                            const isChecked = cycle.checked;
+                            if (isChecked) selectedCycleSet.add(id);
+                            return { ...cycle, checked: isChecked };
+                        });
+    
                         return {
                             ...outcome,
-                            index,
-                            cycles: existing.cycles || [...cyclesList],
+                            index: idx,
+                            cycles,
                             selectedCycles: outcome.selectedCycles || [],
                             noAgencyChecked: outcome.noAgencyChecked || false,
                             incorrectAgencyChecked: existing.incorrectAgencyChecked || false,
                             primaryConfirmed: existing.primaryConfirmed || false,
                             showDonorCodeInput: !!outcome.showDonorCodeInput,
-                            hideDonorCodeInput: outcome.hideDonorCodeInput !== undefined ? outcome.hideDonorCodeInput : true,
-                            CityStateOfAgency: outcome.CityStateOfAgency || ''
+                            hideDonorCodeInput: outcome.hideDonorCodeInput ?? true,
+                            CityStateOfAgency: outcome.CityStateOfAgency || '',
+                            CoordinatorName: outcome.CoordinatorName || '',
+                            PMC: outcome.PMC,
+                            filter: {
+                                criteria: [{ fieldPath: 'AccountId', operator: 'eq', value: outcome.AgencyId }]
+                            }
                         };
                     });
                 }
             }
-            else {
-                this.donationOutcomesListFromApex = [];
-            }
-
-            this.noAgencyChecked = this.contactObj?.agenciesWithCodes?.noOtherAgencies || false;
-            this.workWithAgencyYes = this.noAgencyChecked;
-            this.workWithAgencyNo = !this.noAgencyChecked;
-            this.dontRememberChecked = this.contactObj?.agenciesWithCodes?.dontRememberAgencies || false;
-            this.totalSelectedCycles = this.contactObj?.agenciesWithCodes?.totalSelectedCycles || [];
-            this.unselectedCycles = this.contactObj?.agenciesWithCodes?.unselectedCycles || [];
-
-            // Initialize totalSelectedCycles from both lists
-            this.donationOutcomesListFromApex.forEach(outcome => {
-                outcome.cycles.forEach(cycle => {
-                    if (cycle.checked && !this.totalSelectedCycles.includes(parseInt(cycle.cycleId))) {
-                        this.totalSelectedCycles.push(parseInt(cycle.cycleId));
-                    }
-                });
-            });
-
-            this.donationOutcomesListFromApex = this.donationOutcomesListFromApex.map(outcome => ({
+    
+            // Final pass to mark disabled cycles in one loop
+            this.donationOutcomesListFromApex = finalAgencies.map(outcome => ({
                 ...outcome,
                 cycles: outcome.cycles.map(cycle => ({
                     ...cycle,
-                    disabled: this.totalSelectedCycles.includes(parseInt(cycle.cycleId)) && !cycle.checked
+                    disabled: selectedCycleSet.has(parseInt(cycle.cycleId)) && !cycle.checked
                 }))
             }));
+    
+            this.noAgencyChecked = agenciesWithCodes.noOtherAgencies || false;
+            this.workWithAgencyYes = this.noAgencyChecked;
+            this.workWithAgencyNo = !this.noAgencyChecked;
+            this.dontRememberChecked = agenciesWithCodes.dontRememberAgencies || false;
+            this.totalSelectedCycles = [...selectedCycleSet];
+            this.unselectedCycles = agenciesWithCodes.unselectedCycles || [];
+
+            console.log('donationOutcomesListFromApex >>> '+JSON.stringify(this.donationOutcomesListFromApex));
+    
         } catch (e) {
-            console.error(`connectedCallback Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`)
+            console.error(`connectedCallback Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`);
         }
     }
+    
 
 
     hasAgencyDetails() {
@@ -169,43 +153,6 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
             (outcome.showDonorCodeInput && outcome.DonorCode) || outcome.CityStateOfAgency ||
             outcome.cycles.some(cycle => cycle.checked)
         );
-    }
-
-
-    handleAddAnotherAgency() {
-        try {
-            if (this.donationOutcomesListFromApex.length + this.donationOutcomes.length < this.totalDonationsCount) {
-                this.showNumberedHeadings = true;
-                const newCyclesList = Array(this.totalDonationsCount)
-                    .fill()
-                    .map((_, index) => ({
-                        index: index,
-                        cycleId: `${index + 1}`,
-                        cycleName: `Cycle ${index + 1}`,
-                        disabled: this.totalSelectedCycles.includes(index + 1),
-                        checked: false
-                    }));
-
-                let obj = {
-                    ...this.donationOutcomeObject,
-                    cycles: newCyclesList,
-                    index: this.donationOutcomes.length,
-                    headingIndex: this.donationOutcomes.length + 1
-                };
-
-                let outcomesRecordsList = [...this.donationOutcomes, obj];
-                this.donationOutcomes = outcomesRecordsList.map((outcome, index) => ({
-                    ...outcome,
-                    index: index,
-                    agencyHeading: index === 0 ? 'Additional Agencies' : '',
-                    headingIndex: index + 1
-                }));
-            } else {
-                alert(`Cannot add more agencies. You have reached the maximum of ${this.totalDonationsCount} agencies.`);
-            }
-        } catch (e) {
-            console.error(`handleAddAnotherAgency Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`)
-        }
     }
 
 

@@ -3,6 +3,10 @@
 	font-family: Inter, sans-serif;
 }
 
+lightning-record-picker label {
+    display: none;
+}
+
 .radioinputs{
     display: flex;
     gap: 0.5em;
@@ -278,9 +282,9 @@
     gap: 0.5em;
 }
 
-.headingSectionCls{
+/* .headingSectionCls{
 	padding: 2%;
-}
+} */
 
 /* For mobile devices - stack the navigation */
 @media (max-width: 768px) {
