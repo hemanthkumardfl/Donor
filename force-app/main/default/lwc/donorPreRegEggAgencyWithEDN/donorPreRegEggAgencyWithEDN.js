@@ -136,26 +136,7 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
 
             const agenciesWithCodes = this.contactObj['agenciesWithCodes'];
 
-            this.donationOutcomes = agenciesWithCodes && agenciesWithCodes.additionalAgencies?.length > 0
-                ? agenciesWithCodes.additionalAgencies.map((outcome, index) => ({
-                    ...outcome,
-                    index,
-                    headingIndex: index + 1,
-                    agencyHeading: index === 0 ? 'Additional Agencies' : '',
-                    cycles: outcome.cycles?.map(cycle => ({ ...cycle })) || [...cyclesList],
-                    selectedCycles: outcome.selectedCycles || [],
-                    showDonorCodeInput: !!outcome.showDonorCodeInput,
-                    hideDonorCodeInput: outcome.hideDonorCodeInput !== undefined
-                        ? outcome.hideDonorCodeInput
-                        : true,
-                    CityStateOfAgency: outcome.CityStateOfAgency || ''
-                }))
-                : [{
-                    ...this.donationOutcomeObject,
-                    index: 0,
-                    headingIndex: 1,
-                    cycles: [...cyclesList]
-                }];
+
 
 
             this.noAgencyChecked = this.contactObj?.agenciesWithCodes?.noOtherAgencies || false;
@@ -164,7 +145,6 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
             this.dontRememberChecked = this.contactObj?.agenciesWithCodes?.dontRememberAgencies || false;
             this.totalSelectedCycles = this.contactObj?.agenciesWithCodes?.totalSelectedCycles || [];
             this.unselectedCycles = this.contactObj?.agenciesWithCodes?.unselectedCycles || [];
-            this.showNumberedHeadings = this.donationOutcomes.length > 1;
 
             // Initialize totalSelectedCycles from both lists
             this.donationOutcomesListFromApex.forEach(outcome => {
@@ -174,22 +154,7 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
                     }
                 });
             });
-            this.donationOutcomes.forEach(outcome => {
-                outcome.cycles.forEach(cycle => {
-                    if (cycle.checked && !this.totalSelectedCycles.includes(parseInt(cycle.cycleId))) {
-                        this.totalSelectedCycles.push(parseInt(cycle.cycleId));
-                    }
-                });
-            });
-
-            // Disable cycles that are already selected
-            this.donationOutcomes = this.donationOutcomes.map(outcome => ({
-                ...outcome,
-                cycles: outcome.cycles.map(cycle => ({
-                    ...cycle,
-                    disabled: (cycle.checked) ? false : this.totalSelectedCycles.includes(parseInt(cycle.cycleId))
-                }))
-            }));
+          
             this.donationOutcomesListFromApex = this.donationOutcomesListFromApex.map(outcome => ({
                 ...outcome,
                 cycles: outcome.cycles.map(cycle => ({
