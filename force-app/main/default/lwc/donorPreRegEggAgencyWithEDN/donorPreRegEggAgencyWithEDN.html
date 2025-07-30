@@ -114,7 +114,7 @@
             </lightning-layout-item>
             <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7"
                 class="slds-p-left_small slds-p-right_small clinicinputcls">
-                <lightning-record-picker variant="label-hidden" object-api-name="Contact">
+                <lightning-record-picker label="Contacts" object-api-name="Contact">
                 </lightning-record-picker>
             </lightning-layout-item>
 
@@ -144,31 +144,12 @@
                 <span class="slds-m-top_large slds-m-bottom_large textcls"><b>Do you work with this
                         agency?</b></span>
                 <div class="checkboxcls">
-                    <lightning-input type="radio" name={outcome.index} label="No" value="No"
-                        onchange={handleApexRadioChange} checked={outcome.hideDonorCodeInput}
-                        data-index={outcome.index}>
-                    </lightning-input>
                     <lightning-input type="radio" name={outcome.index} label="Yes" value="Yes"
-                        onchange={handleApexRadioChange} checked={outcome.showDonorCodeInput}
+                        onchange={handlePrimaryConfirmedChange} checked={outcome.primaryConfirmed}
                         data-index={outcome.index}>
                     </lightning-input>
-                </div>
-            </lightning-layout-item>
-
-            <lightning-layout-item size="12" class="slds-p-left_small slds-p-right_small slds-p-top_small">
-                <div class="checkboxcls">
-                    <lightning-input type="checkbox"
-                        label="Check to confirm this information is correct and that you did work with this agency."
-                        checked={outcome.primaryConfirmed} onchange={handlePrimaryConfirmedChange}
-                        data-index={outcome.index}>
-                    </lightning-input>
-                </div>
-            </lightning-layout-item>
-            <lightning-layout-item size="12" class="slds-p-left_small slds-p-right_small slds-p-top_small">
-                <div class="checkboxcls">
-                    <lightning-input type="checkbox"
-                        label="Check to confirm that you did not work with this agency and do not want to include this agency."
-                        checked={outcome.incorrectAgencyChecked} onchange={handleIncorrectAgencyChange}
+                    <lightning-input type="radio" name={outcome.index} label="No" value="No"
+                        onchange={handleIncorrectAgencyChange} checked={outcome.incorrectAgencyChecked}
                         data-index={outcome.index}>
                     </lightning-input>
                 </div>
@@ -195,17 +176,17 @@
             </lightning-layout-item>
             <!-- cycles -->
 
-            <!-- buttons -->
-            <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
-                <div class="backbtn textcls" onclick={handleEggAgencyWithEDNBack}>Back</div>
-                <div class="nextbtncls textcls" onclick={handleEggAgencyWithEDNNext}>Next</div>
-            </lightning-layout-item>
-            <!-- buttons -->
-        </lightning-layout>
-
         </lightning-layout>
         <div style="min-height:2em;" key={outcome.index}></div>
     </template>
     <!-- Agency with EDN ends here -->
+    <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium">
+        <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
+            <div class="backbtn textcls" onclick={handleEggAgencyWithEDNBack}>Back</div>
+            <div class="nextbtncls textcls" onclick={handleEggAgencyWithEDNNext}>Next</div>
+        </lightning-layout-item>
+        <!-- buttons -->
+
+    </lightning-layout>
 
 </template>
