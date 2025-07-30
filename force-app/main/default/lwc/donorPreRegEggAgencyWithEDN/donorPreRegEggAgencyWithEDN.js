@@ -27,7 +27,7 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
 
 
     donationOutcomeObject = {
-        index: 0,
+        index: 1,
         agencyHeading: 'Additional Agencies',
         Name: '',
         Website: '',
@@ -87,7 +87,7 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
     }
 
     get showAddAnother() {
-        return  (this.donationOutcomesListFromApex.length + this.donationOutcomes.length < this.totalDonationsCount)
+        return (this.donationOutcomesListFromApex.length + this.donationOutcomes.length < this.totalDonationsCount)
     }
 
 
@@ -134,11 +134,6 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
                 this.donationOutcomesListFromApex = [];
             }
 
-            const agenciesWithCodes = this.contactObj['agenciesWithCodes'];
-
-
-
-
             this.noAgencyChecked = this.contactObj?.agenciesWithCodes?.noOtherAgencies || false;
             this.workWithAgencyYes = this.noAgencyChecked;
             this.workWithAgencyNo = !this.noAgencyChecked;
@@ -154,7 +149,7 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
                     }
                 });
             });
-          
+
             this.donationOutcomesListFromApex = this.donationOutcomesListFromApex.map(outcome => ({
                 ...outcome,
                 cycles: outcome.cycles.map(cycle => ({
@@ -162,7 +157,6 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
                     disabled: this.totalSelectedCycles.includes(parseInt(cycle.cycleId)) && !cycle.checked
                 }))
             }));
-            console.log('donationOutcomes >>> ' + JSON.stringify(this.donationOutcomes));
         } catch (e) {
             console.error(`connectedCallback Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`)
         }

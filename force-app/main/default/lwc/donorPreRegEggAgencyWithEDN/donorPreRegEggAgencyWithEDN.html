@@ -79,7 +79,7 @@
                 class="slds-p-left_small slds-p-right_small clinicinputcls">
                 <lightning-input type="text" value={outcome.Name} class="textcls inputscls"
                     onchange={handleApexInputChange} onblur={handleInputBlur} name="Name" data-index={outcome.index}
-                    maxlength="255" disabled={outcome.noAgencyChecked}>
+                    maxlength="255" disabled="true">
                 </lightning-input>
             </lightning-layout-item>
 
@@ -91,7 +91,7 @@
                 class="slds-p-left_small slds-p-right_small clinicinputcls">
                 <lightning-input type="url" value={outcome.Website} class="textcls inputscls"
                     onchange={handleApexInputChange} onblur={handleInputBlur} name="Website" data-index={outcome.index}
-                    placeholder="http://www.example.com" disabled={outcome.noAgencyChecked}>
+                    placeholder="http://www.example.com" disabled="true">
                 </lightning-input>
             </lightning-layout-item>
 
@@ -105,32 +105,17 @@
                     onchange={handleApexInputChange} onblur={handleInputBlur} name="Phone"
                     pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
                     message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
-                    data-index={outcome.index} disabled={outcome.noAgencyChecked}>
+                    data-index={outcome.index} disabled="true">
                 </lightning-input>
             </lightning-layout-item>
-
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
-                class="slds-p-left_small slds-p-right_small slds-p-top_small clinicinputcls">
-                <span class="textcls inputscls inputfontcls">Agency Email</span>
-            </lightning-layout-item>
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7"
-                class="slds-p-left_small slds-p-right_small clinicinputcls">
-                <lightning-input type="email" value={outcome.Email} class="textcls inputscls"
-                    onchange={handleApexInputChange} onblur={handleInputBlur} name="Email" data-index={outcome.index}
-                    disabled={outcome.noAgencyChecked}>
-                </lightning-input>
-            </lightning-layout-item>
-
             <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
                 class="slds-p-left_small slds-p-right_small slds-p-top_small clinicinputcls">
                 <span class="textcls inputscls inputfontcls">Coordinator Name</span>
             </lightning-layout-item>
             <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7"
                 class="slds-p-left_small slds-p-right_small clinicinputcls">
-                <lightning-input type="text" value={outcome.CoordinatorName} class="textcls inputscls"
-                    onchange={handleApexInputChange} onblur={handleInputBlur} name="CoordinatorName"
-                    data-index={outcome.index} maxlength="255" disabled={outcome.noAgencyChecked}>
-                </lightning-input>
+                <lightning-record-picker variant="label-hidden" object-api-name="Contact">
+                </lightning-record-picker>
             </lightning-layout-item>
 
             <lightning-layout-item size="12" padding="around-small">
@@ -155,6 +140,21 @@
                 </template>
             </lightning-layout-item>
 
+            <lightning-layout-item size="12" padding="around-small">
+                <span class="slds-m-top_large slds-m-bottom_large textcls"><b>Do you work with this
+                        agency?</b></span>
+                <div class="checkboxcls">
+                    <lightning-input type="radio" name={outcome.index} label="No" value="No"
+                        onchange={handleApexRadioChange} checked={outcome.hideDonorCodeInput}
+                        data-index={outcome.index}>
+                    </lightning-input>
+                    <lightning-input type="radio" name={outcome.index} label="Yes" value="Yes"
+                        onchange={handleApexRadioChange} checked={outcome.showDonorCodeInput}
+                        data-index={outcome.index}>
+                    </lightning-input>
+                </div>
+            </lightning-layout-item>
+
             <lightning-layout-item size="12" class="slds-p-left_small slds-p-right_small slds-p-top_small">
                 <div class="checkboxcls">
                     <lightning-input type="checkbox"
@@ -173,18 +173,6 @@
                     </lightning-input>
                 </div>
             </lightning-layout-item>
-            <!-- <lightning-layout-item size="12" class="slds-p-left_small slds-p-right_small slds-p-top_small">
-                <div class="checkboxcls">
-                    <lightning-input 
-                        type="checkbox"
-                        label="Check to confirm that you did not work with this agency and do not want to include this agency."
-                        checked={outcome.noAgencyChecked}
-                        onchange={handleNoAgencyChange}
-                        data-index={outcome.index}>
-                    </lightning-input>
-                </div>
-            </lightning-layout-item> -->
-
             <hr>
 
             <lightning-layout-item size="12" padding="around-small" class="cyclesdescriptioncls">
@@ -206,6 +194,15 @@
                 </template>
             </lightning-layout-item>
             <!-- cycles -->
+
+            <!-- buttons -->
+            <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
+                <div class="backbtn textcls" onclick={handleEggAgencyWithEDNBack}>Back</div>
+                <div class="nextbtncls textcls" onclick={handleEggAgencyWithEDNNext}>Next</div>
+            </lightning-layout-item>
+            <!-- buttons -->
+        </lightning-layout>
+
         </lightning-layout>
         <div style="min-height:2em;" key={outcome.index}></div>
     </template>
