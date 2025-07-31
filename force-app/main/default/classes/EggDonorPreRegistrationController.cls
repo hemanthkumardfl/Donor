@@ -43,7 +43,7 @@ public without sharing class EggDonorPreRegistrationController {
         optDetails.verificationId = verification.Id;
         return sendOtp(optDetails);
     }
-
+    
     
     private static Response sendOtpByPhone(string otp,string toPhone){
         String accountSid = 'ACf7cf16139492ed2ae2af8b95e87743a9';
@@ -78,7 +78,7 @@ public without sharing class EggDonorPreRegistrationController {
         }
         return new Response(false, 'OTP Sending Failed through ' + response);
     }
-
+    
     
     public static Response sendOtp(SendOptWrapper optDetails){
         Response res;
@@ -114,7 +114,7 @@ public without sharing class EggDonorPreRegistrationController {
         res = new Response(true, optDetails.verificationCode);
         return res;
     }
-
+    
     
     @AuraEnabled
     public static Response deleteOtp(string conId){
@@ -126,7 +126,7 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false,e.getStackTraceString()+' - '+e.getMessage()+' - '+e.getLineNumber());
         }
     }
-
+    
     
     @AuraEnabled
     public static Response verifyOTP(string email, string verificationOTPinput){
@@ -146,7 +146,7 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false,e.getStackTraceString()+' - '+e.getMessage()+' - '+e.getLineNumber());
         }
     }
-
+    
     
     @AuraEnabled
     public static Response updateGetStarted(string contactObj){
@@ -236,7 +236,7 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - ' + e.getLineNumber());
         }
     }
-
+    
     
     @AuraEnabled
     public static Response sendOTPToEmailOrPhone(string contactObj,Boolean isOtpType){
@@ -281,8 +281,8 @@ public without sharing class EggDonorPreRegistrationController {
                 req.setBody(body);
                 
                 Http http = new Http();
-               // HttpResponse response = http.send(req);
-               // System.debug(response.getBody());
+                // HttpResponse response = http.send(req);
+                // System.debug(response.getBody());
             }
             if(wrapper.verificationType == 'Both' || wrapper.verificationType == 'Email'){
                 OrgWideEmailAddress owea = [SELECT Id FROM OrgWideEmailAddress 
@@ -330,7 +330,7 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - ' + e.getLineNumber());
         }
     }
-
+    
     
     @AuraEnabled
     public static Response validateCodeSubmission(string contactObj){
@@ -371,7 +371,7 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - ' + e.getLineNumber());
         }
     }
-
+    
     
     @AuraEnabled
     public static Response verifyReEnterCodes(string contactObj){
@@ -403,7 +403,7 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - ' + e.getLineNumber());
         }
     }
-
+    
     
     @AuraEnabled
     public static Response updateDonationBasics(string contactObj){
@@ -699,7 +699,7 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - ' + e.getLineNumber());
         }
     }
-
+    
     
     @AuraEnabled
     public static Response updateRecipientWithoutCode(String contactObj) {
@@ -750,7 +750,7 @@ public without sharing class EggDonorPreRegistrationController {
                         insertContactRecords.add(new contact(LastName = agencyList[i].recipient1LastName,FirstName = agencyList[i].recipient1FirstName,Phone = agencyList[i].Phone,Email = agencyList[i].Email));
                     }
                 }
-
+                
                 if(!insertContactRecords.isEmpty()){
                     insert insertContactRecords;
                 }
@@ -894,7 +894,7 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - ' + e.getLineNumber());
         }
     }
-
+    
     
     @AuraEnabled
     public static  Response fetchSpermDonorDetails(string contactObj){
@@ -931,7 +931,7 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - ' + e.getLineNumber());
         }
     }
-
+    
     
     @AuraEnabled
     public static  Response fetchSpermDonorClinicDetails(string contactObj){//SpermClinicDetails
@@ -1044,7 +1044,7 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - ' + e.getLineNumber());
         }
     }
-
+    
     
     @AuraEnabled 
     public static Response pmcEmailVerification(String contactObj) {
@@ -1116,7 +1116,7 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - ' + e.getLineNumber());
         }
     }
-
+    
     
     private static boolean checkCode(string code){
         list<d21_Associated_Codes__c> codeList = [SELECT Id,Name FROM d21_Associated_Codes__c Where Name = :code];
@@ -1155,7 +1155,7 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - Line: ' + e.getLineNumber());
         }
     }
-
+    
     
     public class BankDetails{
         @AuraEnabled public string bankName;
@@ -1164,7 +1164,7 @@ public without sharing class EggDonorPreRegistrationController {
         @AuraEnabled public string email;
         @AuraEnabled public string coordinatorName;
     }
-
+    
     
     public class SpermClinicDetails{
         @AuraEnabled public string bankName;
@@ -1207,19 +1207,19 @@ public without sharing class EggDonorPreRegistrationController {
         @AuraEnabled public list<RecordWrapper> additionalAgencies;
     }
     
-
+    
     public class ClinicDetails{
         @AuraEnabled public list<RecordWrapper> donationOutcomesListFromApex;
         @AuraEnabled public list<RecordWrapper> additionalClinics;
     }
-
+    
     
     public class AlternateObject {
         @AuraEnabled public String email;
         @AuraEnabled public String phone;
         @AuraEnabled public Boolean isOptOut;
     }
-
+    
     
     public class Codes {
         @AuraEnabled public List<String> PMC;
@@ -1229,13 +1229,13 @@ public without sharing class EggDonorPreRegistrationController {
         @AuraEnabled public List<String> REC;
         @AuraEnabled public Boolean isSkipped;
     }
-
+    
     
     public class DonationBasics {
         @AuraEnabled public Egg egg;
         @AuraEnabled public Sperm sperm;
     }
-
+    
     
     public class Egg {
         @AuraEnabled public Integer liveBirths;
@@ -1244,14 +1244,14 @@ public without sharing class EggDonorPreRegistrationController {
         @AuraEnabled public Boolean workWithAttorney;
         @AuraEnabled public Boolean haveIntendedParentDetails;
     }
-
+    
     
     public class Sperm {
         @AuraEnabled public Boolean workWithAnySpermBank;
         @AuraEnabled public Boolean workWithAnyClinic;
         @AuraEnabled public Boolean haveIntendedParentDetailsForSperm;
     } 
-
+    
     
     public class RecordWrapper {
         @AuraEnabled public String AgencyName;
@@ -1286,7 +1286,7 @@ public without sharing class EggDonorPreRegistrationController {
         @AuraEnabled public Boolean noAttorneyChecked;
         @AuraEnabled public Boolean noSpermBankChecked;
     }
-
+    
     
     public class Cycles{
         @AuraEnabled public Integer index;
@@ -1295,7 +1295,7 @@ public without sharing class EggDonorPreRegistrationController {
         @AuraEnabled public Boolean disabled;
         @AuraEnabled public Boolean checked;
     }
-
+    
     
     public class Cycle{
         @AuraEnabled public string Id;
@@ -1313,7 +1313,7 @@ public without sharing class EggDonorPreRegistrationController {
             this.message = message;
         }
     }
-
+    
     
     public class SendOptWrapper{
         @AuraEnabled public string email;
@@ -1333,8 +1333,8 @@ public without sharing class EggDonorPreRegistrationController {
             this.verificationId = verificationId;
         }
     }
-
-
+    
+    
     public class CycleResponse{
         @AuraEnabled public string allCyclesData;
         @AuraEnabled public boolean isChanged;

@@ -123,8 +123,12 @@ export default class DonorPreRegHippa extends LightningElement {
                 coordinatorName: item.coordinatorName || '',
                 spermBankWebsite: item.website || '',
                 spermBankEmail: item.email || '',
-                isFromPrimaryBanks: false
+                pmcNumber: item.pmcNumber || '',
+                isEditable: item.isEditable || false,
+                isFromPrimaryBanks: !item.isEditable
             }));
+            alert('11111111');
+            console.log('this.sperms'+JSON.stringify(this.sperms));
         
     }
     if (result.Cliniclist) {

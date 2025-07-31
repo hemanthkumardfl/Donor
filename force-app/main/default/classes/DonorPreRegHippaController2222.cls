@@ -1,5 +1,5 @@
 public without sharing class DonorPreRegHippaController2222 {
-    
+        
     @AuraEnabled
     public static hipaaWrapper spermDonor(String donorId) {
         hipaaWrapper hipaaWrapperlist = new hipaaWrapper();
@@ -10,7 +10,39 @@ public without sharing class DonorPreRegHippaController2222 {
             FROM d21_Donor_Agency__c 
             WHERE d21_Egg_Donor__c = :donorId AND Agency__c != null
         ];
-              
+        
+        Set<Id> agencyIds = new Set<Id>();
+        for (d21_Donor_Agency__c agencyJunction : Agencyjunctionlist) {
+            agencyIds.add(agencyJunction.Agency__c);
+        }
+        List<d21_PMC__c> pmcList = [
+            SELECT Id, Name, d21_Sperm_Bank__c 
+            FROM d21_PMC__c 
+            WHERE d21_Sperm_Bank__c IN : agencyIds
+        ];
+        
+        // Create a map of Agency Id to PMC Name
+        Map<Id, String> agencyToPmcMap = new Map<Id, String>();
+        for (d21_PMC__c pmc : pmcList) {
+            agencyToPmcMap.put(pmc.d21_Sperm_Bank__c, pmc.Name);
+        }
+        
+        List<Agency> Agencylist = new List<Agency>();
+        for (d21_Donor_Agency__c agencyJunction : Agencyjunctionlist) {
+            Agency a = new Agency();
+            a.Id = agencyJunction.Agency__c;
+            a.Name = agencyJunction.Agency__r.Name;
+            a.Phone = agencyJunction.Agency__r.Phone;
+            a.coordinatorName = agencyJunction.Agency__r.d21_Coordinator_Name__c;
+            a.website = agencyJunction.Agency__r.Website;
+            a.email = agencyJunction.Agency__r.d21_Email__c;
+            a.pmcNumber = agencyToPmcMap.get(agencyJunction.Agency__c); 
+            a.isEditable = String.isBlank(a.pmcNumber); 
+            Agencylist.add(a);
+        }
+        hipaaWrapperlist.Agencylist = Agencylist;
+        
+        // Rest of the method remains unchanged
         List<d21_Donor_Fertility_Clinic__c> Clinicjunctionlist = [
             SELECT Id, d21_Clinic__c, d21_Clinic__r.Name, d21_Donor__c, d21_Clinic__r.Phone,
             d21_Clinic__r.d21_Coordinator_Name__c, d21_Clinic__r.Website, 
@@ -19,7 +51,8 @@ public without sharing class DonorPreRegHippaController2222 {
             WHERE d21_Donor__c = :donorId AND d21_Clinic__c != null
         ];
         List<d21_Donor_Fertility_Attorney__c> Attorneyjunctionlist = [
-            SELECT Id, d21_Donor__c, d21_Attorney__c, d21_Attorney__r.Name,d21_Attorney__r.Email,d21_Attorney__r.Phone,d21_Attorney__r.MailingState,d21_Attorney__r.LastName
+            SELECT Id, d21_Donor__c, d21_Attorney__c, d21_Attorney__r.Name, d21_Attorney__r.Email, 
+            d21_Attorney__r.Phone, d21_Attorney__r.MailingState, d21_Attorney__r.LastName
             FROM d21_Donor_Fertility_Attorney__c 
             WHERE d21_Donor__c = :donorId AND d21_Attorney__c != null
         ];
@@ -28,38 +61,25 @@ public without sharing class DonorPreRegHippaController2222 {
             FROM d21_Donor_Recipient__c 
             WHERE d21_Contact__c = :donorId AND d21_Recipient__c != null
         ];
+        
         parentdetail parent = new parentdetail();
-        Contact con = [SELECT FirstName, LastName, d21_Date_Of_Birth__c,MailingState,MailingCity,MailingStreet,MailingPostalCode, Phone, Email FROM Contact WHERE Id = :donorId LIMIT 1];
+        Contact con = [SELECT FirstName, LastName, d21_Date_Of_Birth__c, MailingState, MailingCity, 
+                       MailingStreet, MailingPostalCode, Phone, Email 
+                       FROM Contact WHERE Id = :donorId LIMIT 1];
         parent.fristName = con.FirstName;
         parent.Id = con.Id;
         parent.lastName = con.LastName;
         parent.dob = String.valueOf(con.d21_Date_Of_Birth__c);
         parent.email = con.Email;
         parent.phone = con.Phone;
-        parent.address = con.MailingState +','+ con.MailingCity +','+ con.MailingStreet +','+ con.MailingPostalCode;
+        parent.address = con.MailingState + ',' + con.MailingCity + ',' + con.MailingStreet + ',' + con.MailingPostalCode;
         parent.state = con.MailingState;
         parent.street = con.MailingStreet;
         parent.pincode = con.MailingPostalCode;
-         parent.city = con.MailingCity;
+        parent.city = con.MailingCity;
         hipaaWrapperlist.parentdetails = parent;
         
-        List<Agency> Agencylist = new List<Agency>();
         List<Clinic> Cliniclist = new List<Clinic>();
-        List<Attorney> Attorneylist = new List<Attorney>();
-        List<Recipient> Recipientlist = new List<Recipient>();
-        
-        for (d21_Donor_Agency__c agencyJunction : Agencyjunctionlist) {
-            Agency a = new Agency();
-            a.Name = agencyJunction.Agency__r.Name;
-            a.Id = agencyJunction.Agency__c;
-            a.Phone = agencyJunction.Agency__r.Phone;
-            a.coordinatorName = agencyJunction.Agency__r.d21_Coordinator_Name__c;
-            a.website = agencyJunction.Agency__r.Website;
-            a.email = agencyJunction.Agency__r.d21_Email__c;
-            Agencylist.add(a);
-        }
-        hipaaWrapperlist.Agencylist = Agencylist;
-        
         for (d21_Donor_Fertility_Clinic__c clinicJunction : Clinicjunctionlist) {
             Clinic c = new Clinic();
             c.Name = clinicJunction.d21_Clinic__r.Name;
@@ -73,38 +93,23 @@ public without sharing class DonorPreRegHippaController2222 {
         }
         hipaaWrapperlist.Cliniclist = Cliniclist;
         
+        List<Attorney> Attorneylist = new List<Attorney>();
         Attorney at = new Attorney();
         if (!Attorneyjunctionlist.isEmpty()) {
             d21_Donor_Fertility_Attorney__c junction = Attorneyjunctionlist[0];
             at.Id = junction.d21_Attorney__c;
-            Contact attorneyContact = junction.d21_Attorney__r;
-            /* String lawFirm = '';
-if (attorneyContact.AccountId != null) {
-Account acc = [SELECT Name FROM Account WHERE Id = :attorneyContact.AccountId LIMIT 1];
-lawFirm = acc.Name;
-}*/
             at.lawFirm = '';
             at.Phone = junction.d21_Attorney__r.Phone;
             at.email = junction.d21_Attorney__r.Email;
             at.cityState = junction.d21_Attorney__r.MailingState;
-            at.Name = junction.d21_Attorney__r.LastName ;
+            at.Name = junction.d21_Attorney__r.LastName;
             at.website = '';
+            Attorneylist.add(at);
         }
-        hipaaWrapperlist.Attorneylist = new List<Attorney>{ at };
-            
-            /* Recipient recp = new Recipient();
-if (!RecipientjunctionList.isEmpty()) {
-d21_Donor_Recipient__c junction = RecipientjunctionList[0];
-recp.Id = junction.d21_Recipient__c;
-recp.fristName = junction.d21_Recipient__r.Name;
-contact conts =[select id,name,Phone,Email,LastName,d21_Additional_Information__c from contact where AccountId =:junction.d21_Recipient__c]; 
-recp.Phone = conts.Phone;
-recp.email = conts.Email;
-recp.lastName = conts.LastName;
-recp.additionalInfo = conts.d21_Additional_Information__c;
-}
-hipaaWrapperlist.Recipientlist = new List<Recipient>{ recp };*/
-            Recipient recp = new Recipient();
+        hipaaWrapperlist.Attorneylist = Attorneylist;
+        
+        List<Recipient> Recipientlist = new List<Recipient>();
+        Recipient recp = new Recipient();
         if (!RecipientjunctionList.isEmpty()) {
             d21_Donor_Recipient__c junction = RecipientjunctionList[0];
             recp.Id = junction.d21_Recipient__c;
@@ -123,34 +128,38 @@ hipaaWrapperlist.Recipientlist = new List<Recipient>{ recp };*/
                 recp.email = cont.Email;
                 recp.lastName = cont.LastName;
                 recp.additionalInfo = cont.d21_Additional_Information__c;
-            }else{
+            } else {
                 recp.Phone = '';
                 recp.email = '';
                 recp.lastName = '';
-                recp.additionalInfo = '';   
+                recp.additionalInfo = '';
             }
+            Recipientlist.add(recp);
         }
+        hipaaWrapperlist.Recipientlist = Recipientlist;
         
-        hipaaWrapperlist.Recipientlist = new List<Recipient>{ recp };
-            
-            return hipaaWrapperlist;
+        return hipaaWrapperlist;
     }
     
-    public class hipaaWrapper {
-        @AuraEnabled public List<Agency> Agencylist;
-        @AuraEnabled public List<Clinic> Cliniclist; 
-        @AuraEnabled public List<Attorney> Attorneylist;
-        @AuraEnabled public List<Recipient> Recipientlist;
-        @AuraEnabled public parentdetail parentdetails;
-    }
-    
+    // Update Agency class to include pmcNumber and isEditable
     public class Agency {
         @AuraEnabled public String Id;
-        @AuraEnabled public String Name; 
+        @AuraEnabled public String Name;
         @AuraEnabled public String Phone;
         @AuraEnabled public String coordinatorName;
         @AuraEnabled public String website;
         @AuraEnabled public String email;
+        @AuraEnabled public String pmcNumber; // New field for PMC number
+        @AuraEnabled public Boolean isEditable; // New field to control editability
+    }
+    
+    // Rest of the classes remain unchanged
+    public class hipaaWrapper {
+        @AuraEnabled public List<Agency> Agencylist;
+        @AuraEnabled public List<Clinic> Cliniclist;
+        @AuraEnabled public List<Attorney> Attorneylist;
+        @AuraEnabled public List<Recipient> Recipientlist;
+        @AuraEnabled public parentdetail parentdetails;
     }
     
     public class Clinic {
@@ -195,7 +204,6 @@ hipaaWrapperlist.Recipientlist = new List<Recipient>{ recp };*/
         @AuraEnabled public String street;
         @AuraEnabled public String pincode;
     }
-    
     @AuraEnabled
     public static void updateDonorName(String donorId, String firstName, String lastName, String dob,string city,string street,string pincode,string state) {
         try {

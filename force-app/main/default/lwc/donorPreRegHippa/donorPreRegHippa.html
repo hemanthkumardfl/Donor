@@ -68,7 +68,7 @@
                     medium-device-size="6" large-device-size="6">
                     <span class="inputscls textcls">State <span style="color:red;">*</span></span>
                     <lightning-input label="" value={address.state} name="state" data-field="state"
-                        onchange={handleAddressChange} placeholder="State" ></lightning-input>
+                        onchange={handleAddressChange} placeholder="State"></lightning-input>
                 </lightning-layout-item>
                 <lightning-layout-item class="slds-p-top_small recipientinputcls2" size="12" small-device-size="12"
                     medium-device-size="6" large-device-size="6">
@@ -185,7 +185,7 @@
                     <template for:each={sperms} for:item="sperm" for:index="index">
                         <div key={sperm.id}
                             class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
-                            <span>{sperm.spermBankName}</span>
+                            <span>{sperm.spermBankName} <template if:true={sperm.pmcNumber}>(PMC: {sperm.pmcNumber})</template></span>
                             <div>
                                 <template if:false={sperm.isFromPrimaryBanks}>
                                     <lightning-button-icon icon-name="utility:edit" variant="bare"
