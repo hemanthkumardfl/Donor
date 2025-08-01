@@ -113,10 +113,12 @@ export default class DonorPreRegHippa extends LightningElement {
             coordinatorName: item.coordinatorName || '',
             website: item.website || '',
             cityState: '',
-            coordinatorEmail: item.email || ''
+            coordinatorEmail: item.email || '',
+             isEditable: item.isEditable || false,
+            isFromPrimaryBanks: !item.isEditable
         }));
         
-            this.sperms = result.Agencylist.map(item => ({
+            this.sperms = result.spermlist.map(item => ({
                 id: item.Id,
                 spermBankName: item.Name,
                 spermBankPhone: item.Phone || '',
@@ -139,7 +141,10 @@ export default class DonorPreRegHippa extends LightningElement {
             coordinatorName: item.coordinatorName || '',
             website: item.website || '',
             cityState: item.cityState || '',
-            coordinatorEmail: item.email || ''
+            coordinatorEmail: item.email || '',
+             pmcNumber: item.pmcNumber || '',
+             isEditable: item.isEditable || false,
+            isFromPrimaryBanks: !item.isEditable
         }));
     }
     if (result.Attorneylist) {
@@ -150,7 +155,9 @@ export default class DonorPreRegHippa extends LightningElement {
             lawFirm: item.lawFirm || '',
             website: item.website || '',
             cityState: item.cityState || '',
-            email: item.email || ''
+            email: item.email || '',
+             isEditable: item.isEditable || false,
+                isFromPrimaryBanks: !item.isEditable
         }));
     }
    if (result.Recipientlist) {

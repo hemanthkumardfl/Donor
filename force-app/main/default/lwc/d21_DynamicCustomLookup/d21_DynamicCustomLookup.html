@@ -1,0 +1,58 @@
+<template>
+    <div class="slds-combobox_container slds-p-around_x-small lookupcontainercls">
+        <div class={comboboxClass}
+             role="combobox"
+             aria-expanded={dropdownOpen}
+             aria-haspopup="listbox"
+             aria-label={label}>
+            <!-- Search input -->
+            <lightning-input type="search"
+                             label={label}
+                             placeholder="Search Coordinator..."
+                             value={searchKey}
+                             onchange={handleInputChange}
+                             onfocus={handleFocus}
+                             class="lookup-input"
+                             variant="label-hidden"
+                             aria-autocomplete="list">
+            </lightning-input>
+ 
+            <!-- Dropdown list -->
+            <div if:true={recordsList} class="slds-dropdown slds-dropdown_fluid dropodownCLs" >
+                <ul class="slds-listbox slds-listbox_vertical containerCls" role="listbox" >
+                    <template if:true={records}>
+                        <template for:each={records} for:item="record">
+                            <li key={record.Id} class="slds-listbox__item" role="presentation" style="border-bottom: none;">
+                                <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-p-around_x-small slds-hint-parent"
+                                     role="option"
+                                     onclick={handleSelect}
+                                     data-id={record.Id}
+                                     data-name={record.Name}
+                                     tabindex="0">
+                                    <span class="slds-media__figure">
+                                        <span class="slds-icon_container slds-icon-standard-account">
+                                           <lightning-icon icon-name='action:add_contact' size='small' title='add_contact'></lightning-icon>
+                                        </span>
+                                    </span>
+                                    <span class="slds-media__body">
+                                        <span class="slds-listbox__option-text slds-text-color_default">{record.Name}</span>
+                                        <span class="slds-listbox__option-meta slds-text-color_weak">{record.Phone}</span>
+                                    </span>
+                                </div>
+                            </li>
+                        </template>
+                    </template>
+                    <template if:false={records}>
+                        <li class="slds-listbox__item" role="presentation">
+                            <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-p-around_x-small">
+                                <span class="slds-media__body">
+                                    <span class="slds-listbox__option-text slds-text-color_weak">No results found</span>
+                                </span>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>

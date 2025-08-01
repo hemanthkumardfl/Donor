@@ -3,6 +3,8 @@ import createSpermClinicWithSDN from '@salesforce/apex/SpermDonorPreRegistration
 //import fetchSpermDonorClinicDetails from '@salesforce/apex/EggDonorPreRegistrationController.fetchSpermDonorClinicDetails'
 import fetchSpermDonorClinicDetails from '@salesforce/apex/SpermDonorWithCodesController.fetchSpermDonorClinicDetails';
 import deleteSpermBank from '@salesforce/apex/SpermDonorPreRegistrationController.deleteSpermBank';
+import createCoordinator from '@salesforce/apex/UtilityClass.createCoordinator';
+
 
 export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
     //  @track warningIcon = WARNING_ICON_LOGO;
@@ -19,29 +21,14 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
     @track deleteIndex = null;
     @track deleteBankNumber = null;
     @track showInformation = false;
-    @track additionalBanks = [
-        {
-            id: Date.now() + Math.random(),
-            bankNumber: 1,
-            bankHeading: '',
-            bankName: '',
-            website: '',
-            phone: '',
-            email: '',
-            coordinator: '',
-            donorCode: '',
-            showDonorCodeInput: false,
-            hideDonorCodeInput: true,
-            spermclinicId : '',
-            accountId : '',
-            spermbankId : ''
-        }
-    ];
     @api clinicUserInput;
     @api contactObj;
-    @track deleteSpermBankId = '';
+    @track deletespermclinicid = '';
     @track didYouWorkAnyOtherClinic = null;
     @track showErrorMsg = false;
+    @track addCoordinators = false;
+    //for coordinator user input
+    @track coordinatorUserInputsObj = {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : ''} 
 
     get options() {
         return [
@@ -81,14 +68,37 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
             console.log(JSON.parse(spermdonorClinicResponse.message));
             this.primaryClinicsListFromApex = JSON.parse(spermdonorClinicResponse.message);
             this.contactObj['clinicInfoWithSDN'] = JSON.parse(spermdonorClinicResponse.message);
-            // if(this.additionalBanks){
-            //     this.contactObj.clinicInfoWithSDN['additionalBanks'] = this.additionalBanks
-            // }
-           if(this.contactObj.selectedDisabledForSDNclinicAdditionalInputs){
-                this.noOtherBanks = true;
-           }
-            
-            console.log('FROM CONTACTOBJ RECORD CLINIC >>>>>>>>>' + JSON.stringify(this.contactObj));
+            this.primaryClinicsListFromApex.forEach(clinic => {
+                clinic['coordinatorUserInputsObj'] = this.coordinatorUserInputsObj;
+                clinic['isAdditionalCoordinators'] = this.addCoordinators;
+                clinic['coordinator'] = '';
+                clinic['showAddIcon'] = false,
+                clinic['primaryConfirmed'] = false;
+                clinic['incorrectClinicChecked'] = false;
+            });
+
+           if (this.contactObj && this.contactObj.spermClinicsWithSDNrecordsCopy && this.contactObj.spermClinicsWithSDNrecordsCopy.length > 0) {
+                //alert();
+                let clonedList = [...this.contactObj.spermClinicsWithSDNrecordsCopy];
+                console.log(JSON.stringify(clonedList));
+                
+                this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
+                    let clonedBank = clonedList.find(cb => cb.spermclinicId == bank.spermclinicId);
+                    if (clonedBank) {
+                        return {
+                            ...bank,
+                            primaryConfirmed: clonedBank.primaryConfirmed,
+                            incorrectClinicChecked: clonedBank.incorrectClinicChecked,
+                            coordinatorUserInputsObj: clonedBank.coordinatorUserInputsObj
+                        };
+                    }
+                    return bank;
+                });
+            }
+
+            this.primaryClinicsListFromApex = [...this.primaryClinicsListFromApex];
+            console.log('Cloned FROM CONTACTOBJ RECORD >>>>>>>>> ' + JSON.stringify(this.contactObj));
+            console.log('Cloned primaryClinicsListFromApex>>>>>>>>> ' + JSON.stringify(this.primaryClinicsListFromApex));
         }
 
     }
@@ -97,59 +107,139 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
 
         this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
         console.log(JSON.stringify(this.contactObj));
-        
-
         console.log('Test Strated');
          console.log(JSON.stringify(this.contactObj));
-
-        /*********************************************** */
-         
-        /******************************************** */
-        if(this.contactObj && this.contactObj.clinicInfoWithSDN && this.contactObj['clinicInfoWithSDN']['didYouWorkAnyOtherClinic']){
-            this.didYouWorkAnyOtherClinic = this.contactObj['clinicInfoWithSDN']['didYouWorkAnyOtherClinic'];
-        }
-
-
-        if(this.contactObj && this.contactObj.clinicInfoWithSDN && this.contactObj.clinicInfoWithSDN['additionalBanks'].length > 0) {
-             console.log('contactObj Recod >>>>' + JSON.stringify(this.contactObj))
-            this.additionalBanks = [...this.contactObj.clinicInfoWithSDN['additionalBanks']];
-            this.primaryBank = { ...this.contactObj.clinicInfoWithSDN['primaryBank'] };
-            this.primaryConfirmed = this.contactObj.clinicInfoWithSDN['primaryConfirmed'] || false;
-            this.primaryIncorrect = this.contactObj.clinicInfoWithSDN['primaryIncorrect'] || false;
-            this.noOtherBanks = this.contactObj.clinicInfoWithSDN['noOtherBanks'] || false;
-            this.showNumberedHeadings = this.additionalBanks.length > 1;
-        }
-        else {
-            let objList = [{
-                ...this.bankObject,
-                id: Date.now() + Math.random(),
-                index: 0,
-                bankNumber: 1
-            }];
-            if(this.additionalBanks && this.additionalBanks.length > 0){
-            }
-            else{
-                this.additionalBanks = [...objList];
-            }
-
-        }
-         this.primaryConfirmed = this.contactObj['spermWithSDNclinicprimaryConfirmed'];
-         this.primaryIncorrect = this.contactObj['spermWithSDNclinicprimaryIncorrect'];
-        //alert();
-        console.log('contactObj >>>>' + JSON.stringify(this.contactObj))
-
         this.fetchSpermDonorClinics();
     }
 
-    get checkboxStatus() {
-        return this.additionalBanks.length > 1 ; // || this.hasBankDetails();
+    handleClinicRadioChange(event){
+        //alert();
+        //debugger;
+        console.log(event.target.label)
+        let spermclinicid = event.target.dataset.spermclinicid;
+        this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
+            console.log(bank.spermclinicId +'____'+ spermclinicid)
+            if(bank.spermclinicId == spermclinicid){
+                if(event.target.label == "Yes"){
+                    return { ... bank, 
+                            primaryConfirmed : true,
+                            incorrectClinicChecked : false
+                        }
+                }
+                else{
+                    return { ... bank, 
+                            primaryConfirmed : false,
+                            incorrectClinicChecked : true
+                        }
+                }
+                
+            }
+            return bank; 
+        });
+        console.log(event.target.label)
+        console.log(JSON.stringify(this.primaryClinicsListFromApex))
     }
 
+     /************************Coordinator logic starts*********************/
+
+
+    //if there are no records from coordinator search this function will handle
+    handleNoLookUpData(event){
+        let spermclinicid = event.target.dataset.spermclinicid;
+        this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
+            if(bank.spermclinicId == spermclinicid){
+                return { ... bank, showAddIcon : true} 
+            }
+        });
+        console.log('lookup >>> ' + event.detail);
+    }
+
+     //if there are records from coordinator search this function will handle
+    handleLookupSelection(event) {
+        const selectedId = event.detail.recordId;
+        const selectedName = event.detail.recordName;
+        let spermclinicid = event.target.dataset.spermclinicid;
+        this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
+            if(bank.spermclinicId == spermclinicid){
+                return { ... bank, coordinatorContactAvailable : selectedId}
+            }
+            return bank;
+        });
+
+    }
+
+    //function enables inputs section
+    handleAddCoordinator(event){
+        let spermclinicid = event.target.dataset.spermclinicid;
+        this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
+            if(bank.spermclinicId == spermclinicid){
+                return { ... bank, isAdditionalCoordinators : !bank.isAdditionalCoordinators}
+            }
+            return bank;
+        }); 
+    }
+
+    //this function will collect the user entered info
+    handleCoordinatorInputs(event){
+        let spermclinicid = event.target.dataset.spermclinicid;
+        this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
+            if (bank.spermclinicId == spermclinicid) {
+                return {
+                    ...bank,
+                    coordinatorUserInputsObj: {
+                        ...bank.coordinatorUserInputsObj,
+                        [event.target.name]: event.target.value,
+                        parentId: spermclinicid
+                    }
+                };
+            }
+            return bank;
+        });
+        console.log(JSON.stringify(this.primaryClinicsListFromApex));
+    }
+
+    //this function will save additional coordinator record
+    async handleCoordinatorSave(event){
+        let spermclinicid = event.target.dataset.spermclinicid;
+        let coordinatorUserInputs = {};
+        this.primaryClinicsListFromApex.forEach(bank => {
+            if(bank.spermclinicId == spermclinicid){
+                coordinatorUserInputs = {... bank.coordinatorUserInputsObj};
+            }
+        });
+
+        console.log('  >>> '+JSON.stringify(this.primaryClinicsListFromApex))  
+        let result = await createCoordinator({coordinateData : JSON.stringify(coordinatorUserInputs)})
+        if (result.isSuccess) {
+            let response = JSON.parse(result.message)
+
+            this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
+                if (bank.spermclinicId == spermclinicid) {
+                    return {
+                        ...bank,
+                        coordinator: response.coordinatorId,
+                        isAdditionalCoordinators : false,
+                        coordinatorUserInputsObj : {... response},
+                        showAddIcon : false
+                    };
+                }
+                return bank;
+            });
+           
+
+            this.primaryClinicsListFromApex = [... this.primaryClinicsListFromApex];
+
+            console.log(' primaryClinicsListFromApex >>> '+JSON.stringify(this.primaryClinicsListFromApex))  
+
+        }
+    }
+
+
+
+     /************************Coordinator logic ends*********************/
+
     hasBankDetails() {
-        return this.additionalBanks.some(bank =>
-            bank.bankName || bank.website || bank.phone || bank.email || bank.coordinator ||
-            (bank.showDonorCodeInput && bank.donorCode)
-        );
+       
     }
 
     handlePrimaryChange(event) {
@@ -193,134 +283,24 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
                 return;
             }
             this.showInformation = false;
-            this.additionalBanks = this.additionalBanks.map(bank => ({
-                ...bank,
-                bankName: '',
-                website: '',
-                phone: '',
-                email: '',
-                coordinator: '',
-                donorCode: '',
-                showDonorCodeInput: false,
-                hideDonorCodeInput: true
-            }));
+          
         }
     }
 
     handleAdditionalChange(event) {
-        const index = parseInt(event.currentTarget.dataset.index, 10);
-        if (isNaN(index)) {
-            console.error('Invalid index in handleAdditionalChange:', event.currentTarget.dataset.index);
-            return;
-        }
-        const field = event.currentTarget.dataset.field;
-        const value = event.target.value;
-        this.additionalBanks = this.additionalBanks.map((bank, i) =>
-            i === index ? { ...bank, [field]: value } : bank
-        );
-        const input = event.target;
-        if (input.validity.valid) {
-            input.setCustomValidity('');
-            input.reportValidity();
-        }
-        console.log(JSON.stringify(this.additionalBanks))
-         console.log(JSON.stringify(this.contactObj))
+      
     }
 
     handleRadioChange(event) {
-        const index = parseInt(event.currentTarget.dataset.index, 10);
-        if (isNaN(index)) {
-            console.error('Invalid index in handleRadioChange:', event.currentTarget.dataset.index);
-            return;
-        }
-        const value = event.target.value;
-        this.additionalBanks = this.additionalBanks.map((bank, i) =>
-            i === index
-                ? {
-                    ...bank,
-                    showDonorCodeInput: value === 'yes',
-                    hideDonorCodeInput: value === 'no'
-                }
-                : bank
-        );
+       
     }
 
     addAnotherBank() {
-        this.showNumberedHeadings = true;
-        const newBank = {
-            id: Date.now() + Math.random(),
-            bankNumber: this.additionalBanks.length + 1,
-            bankHeading: '',
-            bankName: '',
-            website: '',
-            phone: '',
-            email: '',
-            coordinator: '',
-            donorCode: '',
-            showDonorCodeInput: false,
-            hideDonorCodeInput: true
-        };
-        this.additionalBanks = [
-            ...this.additionalBanks.map((bank, i) => ({
-                ...bank,
-                bankNumber: i + 1,
-                bankHeading: ''
-            })),
-            newBank
-        ];
+     
     }
 
     handleDeleteBank(event) {
-        const index = parseInt(event.currentTarget.dataset.index, 10);
-       // alert(index);
-        if (isNaN(index)) {
-            console.error('Invalid index in handleDeleteBank:', event.currentTarget.dataset.index);
-            return;
-        }
-        const bank = this.additionalBanks.find(b => b.index === index);
-        this.deleteIndex = index;
-        this.deleteBankNumber = bank ? bank.bankNumber : null;
-        this.deleteSpermBankId = event.target.dataset.accountid;
-        //alert(event.target.dataset.accountid);
-        this.showDeletePopup = true;
-    }
-
-    async handleDeleteYes() {
-        console.log(JSON.stringify(this.additionalBanks[this.deleteIndex]));
-        
-        if(this.additionalBanks[this.deleteIndex].accountId){
-            let resultData = await deleteSpermBank({ spermbankId: this.additionalBanks[this.deleteIndex].accountId }); 
-            //alert('Delete Clinic >>> ' + JSON.stringify(resultData));
-        }
-       
-        const index = this.deleteIndex;
-        let updatedBanks = [...this.additionalBanks];
-        updatedBanks.splice(index, 1);
-        updatedBanks = updatedBanks.map((bank, i) => ({
-            ...bank,
-            bankNumber: i + 1,
-            bankHeading: ''
-        }));
-        if (updatedBanks.length === 0) {
-            updatedBanks.push({
-                id: Date.now() + Math.random(),
-                bankNumber: 1,
-                bankHeading: '',
-                bankName: '',
-                website: '',
-                phone: '',
-                email: '',
-                coordinator: '',
-                donorCode: '',
-                showDonorCodeInput: false,
-                hideDonorCodeInput: true
-            });
-        }
-        this.additionalBanks = updatedBanks;
-        this.showNumberedHeadings = this.additionalBanks.length > 1;
-        this.showDeletePopup = false;
-        this.deleteIndex = null;
-        this.deleteBankNumber = null;
+      
     }
 
     handleDeleteNo() {
@@ -364,7 +344,6 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
         console.log('contact back @@@ >>>>' + JSON.stringify(this.contactObj));
         this.updateContactObj();
         console.log('Test Hello')
-        this.contactObj.clinicInfoWithSDN['additionalBanks'] = this.additionalBanks;
         this.contactObj.clinicInfoWithSDN['noOtherBanks'] = this.noOtherBanks
          this.contactObj['selectedDisabledForSDNclinicAdditionalInputs'] = this.noOtherBanks;
         this.contactObj['clinicInfoWithSDN']['didYouWorkAnyOtherClinic'] = this.didYouWorkAnyOtherClinic;
@@ -373,168 +352,91 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
     }
 
     async handleClinicInfoWithSDNNext() {
-        console.log('next 1')
-        const fieldsMap = new Map([
-            ['bankName', 'Please enter clinic name'],
-            /*['website', 'Please enter website'],
-            ['phone', 'Please enter phone number'],
-            ['email', 'Please enter email'],
-            ['coordinator', 'Please enter coordinator name'],
-            ['donorCode', 'Please enter donor code']*/
-        ]);
-        console.log('next 2')
-        let isValid = true;
-        if (!this.noOtherBanks) {
-            this.contactObj.clinicInfoWithSDN['noOtherBanks'] = this.noOtherBanks
-            console.log('next 3')
-            this.template.querySelectorAll('lightning-input[data-index]').forEach(input => {
-                const fieldName = input.dataset.field;
-                const value = input.value;
-                if (fieldsMap.has(fieldName) && value === '' && fieldName !== 'donorCode' && fieldName !== 'coordinator') {
-                    input.setCustomValidity(fieldsMap.get(fieldName));
-                    input.reportValidity();
-                    isValid = false;
-                } else if (fieldName === 'donorCode' && value === '' && input.closest('.clinic')?.querySelector('lightning-input[value="yes"]')?.checked) {
-                    input.setCustomValidity(fieldsMap.get(fieldName));
-                    input.reportValidity();
-                    isValid = false;
-                } else {
-                    input.setCustomValidity('');
-                    input.reportValidity();
-                }
-            });
-            console.log('next 4')
-        }
-        console.log('next 5')
-        let isWorkWithOtherSpermBank = true;
-        if(this.didYouWorkAnyOtherClinic == null){
-            isWorkWithOtherSpermBank = false;
-            this.showErrorMsg = true;
-        }
-        else{
-            isWorkWithOtherSpermBank = true;
-            this.showErrorMsg = false;
-        }
-        if (isValid && isWorkWithOtherSpermBank) {
-            console.log('next 6')
-            this.updateContactObj();
-            console.log('Clinic With Code Add >>> ' + JSON.stringify(this.contactObj))
-            if(this.didYouWorkAnyOtherClinic != null && this.didYouWorkAnyOtherClinic == "Yes"){
-                 this.contactObj.clinicInfoWithSDN['noOtherBanks'] = false;
-            }
-            else{
-                 this.contactObj.clinicInfoWithSDN['noOtherBanks'] = true;
-            }
-            this.contactObj['clinicInfoWithSDN']['additionalBanks'] = this.additionalBanks;
-            this.contactObj['clinicInfoWithSDN']['primaryBanksListFromApex'] = this.primaryClinicsListFromApex;
-            this.contactObj.clinicInfoWithSDN['isAutoSpermClinicsAllowedToDml'] = this.primaryConfirmed;
-            this.contactObj['selectedDisabledForSDNclinicAdditionalInputs'] = this.noOtherBanks;
-            console.log('Clinic With Code >>> ' + JSON.stringify(this.contactObj))
+        debugger;
+        this.contactObj = JSON.parse(JSON.stringify(this.contactObj))
+        this.updateContactObj();
+        this.contactObj['clinicInfoWithSDN']['primaryClinicsListFromApex'] = this.primaryClinicsListFromApex;
+        this.contactObj['spermClinicsWithSDNrecordsCopy'] = this.primaryClinicsListFromApex;
+
+       // this.contactObj.clinicInfoWithSDN['isAutoSpermClinicsAllowedToDml'] = this.primaryConfirmed;
+
+        console.log('Clinic With Code >>> ' + JSON.stringify(this.contactObj))
+         try{
             let result = await createSpermClinicWithSDN({ contactObj: JSON.stringify(this.contactObj) });
             if (result.isSuccess) {
-                console.log('Result >>> ' + result.message);
-                
-                /*let parseData = JSON.parse(result.message);
-                this.contactObj.clinicInfoWithSDN.primaryBank = parseData.spermBank;
-                this.contactObj.clinicInfoWithSDN.additionalBanks = parseData.spermBankList;
-                this.contactObj.clinicInfoWithSDN['noOtherBanks'] = this.noOtherBanks
-                this.dispatchEvent(new CustomEvent('next', { detail: this.contactObj }));*/
-                const responseMessage = JSON.parse(result.message);
-                this.primaryConfirmed = responseMessage.primaryCheckBoxOptions['primaryConfirmed'];
-                this.primaryIncorrect = responseMessage.primaryCheckBoxOptions['primaryIncorrect'];
-                   
-                console.log(responseMessage.primaryCheckBoxOptions['primaryIncorrect']);
-                console.log(responseMessage.primaryCheckBoxOptions['primaryConfirmed']);
-                 if (responseMessage.spermBankList) {
-                    const allBanks = [
-                        ...responseMessage.spermBankList
-                    // ...responseMessage.autoPopulateList
-                    ];
-                  this.additionalBanks = allBanks.map((item, index) => ({
-                                        id: index,                        
-                                        index: index,                     
-                                        bankHeading: '',     
-                                        bankName: item.bankName || '',      
-                                        website: item.website || '',
-                                        phone: item.phone || '',
-                                        email: item.email || '',
-                                        coordinator: item.coordinator || '',
-                                        donorCode: item.donorCode || '',
-                                        showDonorCodeInput: item.showDonorCodeInput,          
-                                        hideDonorCodeInput: item.hideDonorCodeInput,           
-                                        noSpermBankChecked: item.noBankChecked || false, // Changed to match Apex expectation      
-                                        spermbankId: item.spermbankId || '',
-                                        accountId: item.accountId || ''
-                                    }));
-
-                    console.log('result ' +JSON.stringify(this.additionalBanks));
-                    this.contactObj.clinicInfoWithSDN.additionalBanks = this.additionalBanks;
-                    this.contactObj.clinicInfoWithSDN['noOtherBanks'] = this.noOtherBanks
-                     this.contactObj['clinicInfoWithSDN']['didYouWorkAnyOtherClinic'] = this.didYouWorkAnyOtherClinic;
-                    // alert();
-                    
+                try{
+                    console.log('this.contactObj additional banks>>> '+JSON.stringify(this.contactObj));
                     this.dispatchEvent(new CustomEvent('next', { detail: this.contactObj }));
-                     console.log('result ' +JSON.stringify(this.contactObj));
-                   
                 }
-              
-
+                catch(e){
+                    console.log(e.stack)
+                    console.log(e.message);
+                }
+                
             }
-            else {
-                console.log('Error >>> ' + result.message);
-            }
-            // 
+         }
+        catch(e){
+            console.log(e.stack)
+            console.log(e.message);
         }
+        
     }
 
-    updateContactObj() {
-        const primarySection = this.template.querySelector('.slds-box');
-        const additionalSections = this.template.querySelectorAll('.clinic');
-
-        console.log('additionalSections length >>> ' + additionalSections.length);
-        console.log('primarySection length >>> ' + primarySection);
+  updateContactObj() {
+    try {
+        // Always initialize the object
+        this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
 
         let primaryResult = {};
+        const primarySection = this.template.querySelector('.slds-box');
         if (primarySection) {
-            primarySection.querySelectorAll('lightning-input').forEach(input => {
+            primarySection.querySelectorAll('lightning-input')?.forEach(input => {
                 if (!['checkbox', 'radio'].includes(input.type)) {
-                    console.log('input.name >>> ' + input.name);
                     primaryResult[input.name] = input.value;
                 }
             });
         }
-        primaryResult.primaryConfirmed = this.primaryConfirmed;
-        primaryResult.primaryIncorrect = this.primaryIncorrect;
-        console.log('Test one');
+
+        const additionalSections = this.template.querySelectorAll('.clinic');
         const additionalResultArray = [];
-        additionalSections.forEach(section => {
-            const obj = {};
-            section.querySelectorAll('lightning-input').forEach(input => {
-                if (!['checkbox', 'radio'].includes(input.type)) {
-                    obj[input.dataset.field] = input.value;
-                }
+
+        if (additionalSections?.length > 0) {
+            additionalSections.forEach(section => {
+                const obj = {};
+                section.querySelectorAll('lightning-input')?.forEach(input => {
+                    if (!['checkbox', 'radio'].includes(input.type)) {
+                        obj[input.dataset.field] = input.value;
+                    }
+                });
+
+                const yesRadio = section.querySelector('lightning-input[value="yes"]');
+                const noRadio = section.querySelector('lightning-input[value="no"]');
+
+                obj.showDonorCodeInput = yesRadio ? yesRadio.checked : false;
+                obj.hideDonorCodeInput = noRadio ? noRadio.checked : true;
+
+                additionalResultArray.push(obj);
             });
 
-            const yesRadio = section.querySelector('lightning-input[value="yes"]');
-            const noRadio = section.querySelector('lightning-input[value="no"]');
+            additionalResultArray.shift(); // remove the first if it's primary
+        }
 
-            obj.showDonorCodeInput = yesRadio ? yesRadio.checked : false;
-            obj.hideDonorCodeInput = noRadio ? noRadio.checked : true;
-
-            additionalResultArray.push(obj);
-        });
-        console.log('Test Two');
-        additionalResultArray.shift();
-
+        // Fallback structure if no DOM present
         this.contactObj['clinicInfoWithSDN'] = {
             primaryBank: primaryResult,
-            additionalBanks: additionalResultArray,
-            noOtherBanks: this.noOtherBanks,
-            primaryConfirmed: this.primaryConfirmed,
-            primaryIncorrect: this.primaryIncorrect
+            additionalBanks: additionalResultArray
         };
-        console.log('Test three');
+
+    } catch (e) {
+        console.error('[updateContactObj] Error:', e.message);
+        // Ensure fallback so Apex doesn’t crash
+        this.contactObj['clinicInfoWithSDN'] = this.contactObj['clinicInfoWithSDN'] || {
+            primaryBank: {},
+            additionalBanks: []
+        };
     }
+}
+
 
      handleClinicConfirmation(event){
         if(event.target.value == "Yes"){

@@ -37,7 +37,7 @@ public without sharing class EggDonorAgencyWithCodeController {
                     pmccodes.add(aCode.d21_PMC_Code__c);
                 }
             }
-
+            
             system.debug('PMC Codes >>> '+pmccodes);
             
             if(!pmccodes.isEmpty()){
@@ -79,104 +79,31 @@ public without sharing class EggDonorAgencyWithCodeController {
     
     
     @AuraEnabled
-    public  static Response updateEggAgenciesWithCodes(string existingAgencies,string addedAgencies,string cycles){
+    public  static Response updateEggAgenciesWithCodes(string donorId,string agencyData){
         try {
-            list<RecordWrapper> existingAgencyList = (list<RecordWrapper>)JSON.deserialize(existingAgencies, list<RecordWrapper>.class);  
-            list<RecordWrapper> addedAgencyList = (list<RecordWrapper>)JSON.deserialize(addedAgencies, list<RecordWrapper>.class);  
-            list<Cycle> cyclesList = (list<Cycle>)JSON.deserialize(cycles, list<Cycle>.class);  
-            
-            list<Account> upsertExistingAgencyList = new list<Account>();
-            list<Account> upsertAddedAgencyList = new list<Account>();
-            list<d21_Cycle__c> updateCycleList = new list<d21_Cycle__c>();
-            Map<string,Account> cycleAccountMap = new Map<string,Account>();
-            list<d21_Donor_Agency__c> donorAgencyList = new list<d21_Donor_Agency__c>();
+            List<RecordWrapper> agencyList = (List<RecordWrapper>)JSON.deserialize(agencyData, List<RecordWrapper>.class);
+            List<Account> accList = new List<Account>();
+            Map<string,string> cycleMap = new Map<string,string>();
+            list<d21_Cycle__c> cycleList = new list<d21_Cycle__c>();
+            for(d21_Cycle__c cycle : [SELECT Id,Name,d21_Donor__c FROM d21_Cycle__c WHERE d21_Donor__c = :donorId]){
+                cycleMap.put(cycle.Name,cycle.Id);
+            }
             
             
-            for(RecordWrapper record : existingAgencyList){
-                system.debug('record.selectedCycles >>> '+record.selectedCycles);
-                if(!record.noAgencyChecked && !record.selectedCycles.isEmpty()){
-                    Account acc = new Account();
-                    acc.Id = record.agencyId;
-                    acc.Phone = record.Phone;
-                    acc.d21_Email__c = record.Email;
-                    acc.Website = record.Website;
-                    acc.Name = record.Name;
-                    acc.recordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Agency').getRecordTypeId();
-                    acc.d21_Coordinator_Name__c = record.CoordinatorName;
-                    upsertExistingAgencyList.add(acc);
-                    for(string cycle : record.selectedCycles){
-                        cycleAccountMap.put('Cycle '+cycle,acc);
-                    }
+            for(RecordWrapper acc : agencyList){
+                for(string cyc : acc.selectedCycles){
+                    d21_Cycle__c cycle = new d21_Cycle__c();
+                    cycle.Id = cycleMap.get('Cycle '+cyc);
+                    cycle.d21_Agency__c = acc.agencyId;
+                    cycleList.add(cycle);
                 }
             }
             
-            if(!upsertExistingAgencyList.isEmpty()){
-                upsert upsertExistingAgencyList;
+            if(!cycleList.isEmpty()){
+                update cycleList;
             }
             
-            for(RecordWrapper record : addedAgencyList){
-                if(!record.selectedCycles.isEmpty()){
-                    Account acc = new Account();
-                    acc.Id = record.agencyId;
-                    acc.Phone = record.Phone;
-                    acc.d21_Email__c = record.Email;
-                    acc.Website = record.Website;
-                    acc.Name = record.Name;
-                    acc.recordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Agency').getRecordTypeId();
-                    acc.d21_Coordinator_Name__c = record.CoordinatorName;
-                    upsertAddedAgencyList.add(acc);
-                    for(string cycle : record.selectedCycles){
-                        cycleAccountMap.put('Cycle '+cycle,acc);
-                    }
-                }
-            }
-            
-            if(!upsertAddedAgencyList.isEmpty()){
-                upsert upsertAddedAgencyList;
-                for (Integer i = 0; i < addedAgencyList.size(); i++) {
-                    if(!addedAgencyList[i].selectedCycles.isEmpty()){
-                        addedAgencyList[i].agencyId = upsertAddedAgencyList[i].Id;
-                    }
-                }
-            }
-            system.debug('cycleAccountMap >>> '+cycleAccountMap);
-            for(Cycle record : cyclesList){
-                d21_Cycle__c cycle = new d21_Cycle__c();
-                cycle.Id = record.Id;
-                if(cycleAccountMap.containsKey(record.Name)){
-                    cycle.d21_Agency__c = cycleAccountMap.get(record.Name).Id;
-                }
-                updateCycleList.add(cycle);
-            }
-            
-            if(!updateCycleList.isEmpty()){
-                update updateCycleList;
-                Map<string,d21_Cycle__c> cycleMap = new Map<string,d21_Cycle__c>(updateCycleList);
-                list<d21_Cycle__c> fetchCycles = [Select Id,d21_Agency__r.Name,d21_Agency__c,d21_Donor__c from d21_Cycle__c Where Id In :cycleMap.keySet()];
-                list<d21_Donor_Agency__c> deleteDonorAgencyList = [SELECT Id,Name from d21_Donor_Agency__c WHERE d21_Egg_Donor__c = :fetchCycles[0].d21_Donor__c];
-                if(!deleteDonorAgencyList.isEmpty()){
-                    delete deleteDonorAgencyList;
-                }
-                Map<string,string> accIdNameMap = new Map<string,string>();
-                for(d21_Cycle__c cycle : fetchCycles){
-                    if(cycle.d21_Agency__c != null){
-                        accIdNameMap.put(cycle.d21_Agency__c, cycle.d21_Agency__r.Name);
-                    }
-                }
-                system.debug('accIdNameMap >>> '+accIdNameMap);
-                for(string accId : accIdNameMap.keySet()){
-                    d21_Donor_Agency__c donorAgency = new 	d21_Donor_Agency__c();
-                    donorAgency.Name = accIdNameMap.get(accId);
-                    donorAgency.Agency__c = accId;
-                    donorAgency.d21_Egg_Donor__c = fetchCycles[0].d21_Donor__c;
-                    donorAgencyList.add(donorAgency);
-                } 
-                if(!donorAgencyList.isEmpty()){
-                    insert donorAgencyList;
-                }
-            }
-            
-            return new Response(true,JSON.serialize(addedAgencyList));
+            return new Response(true,'');
             
         } catch (Exception e) {
             return new Response(false, e.getMessage()+' >>> '+e.getLineNumber()+'  >>>  '+e.getStackTraceString());
@@ -246,7 +173,7 @@ public without sharing class EggDonorAgencyWithCodeController {
         @AuraEnabled public String Phone;
         @AuraEnabled public String Website;
         @AuraEnabled public String CoordinatorName;
-        @AuraEnabled public String AgencyId;
+        @AuraEnabled public String agencyId;
         @AuraEnabled public string PMC;
     }
     
@@ -347,9 +274,5 @@ public without sharing class EggDonorAgencyWithCodeController {
         @AuraEnabled public string agencyId;
         @AuraEnabled public string clinicId;
     }
-    
-    
-    
-    
     
 }

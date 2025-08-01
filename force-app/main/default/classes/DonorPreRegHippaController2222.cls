@@ -11,20 +11,52 @@ public without sharing class DonorPreRegHippaController2222 {
             WHERE d21_Egg_Donor__c = :donorId AND Agency__c != null
         ];
         
+        Set<Id> spermIds = new Set<Id>();
+        for (d21_Donor_Agency__c agencyJunction : Agencyjunctionlist) {
+            spermIds.add(agencyJunction.Agency__c);
+        }
+        List<d21_PMC__c> spermpmcList = [
+            SELECT Id, Name, d21_Sperm_Bank__c 
+            FROM d21_PMC__c 
+            WHERE d21_Sperm_Bank__c IN : spermIds
+        ];
+        
+        // Create a map of Agency Id to PMC Name
+        Map<Id, String> agencyToPmcMap = new Map<Id, String>();
+        for (d21_PMC__c spermpmc : spermpmcList) {
+            agencyToPmcMap.put(spermpmc.d21_Sperm_Bank__c, spermpmc.Name);
+        }
+        
+        List<Agency> spermlist = new List<Agency>();
+        for (d21_Donor_Agency__c agencyJunction : Agencyjunctionlist) {
+            Agency a = new Agency();
+            a.Id = agencyJunction.Agency__c;
+            a.Name = agencyJunction.Agency__r.Name;
+            a.Phone = agencyJunction.Agency__r.Phone;
+            a.coordinatorName = agencyJunction.Agency__r.d21_Coordinator_Name__c;
+            a.website = agencyJunction.Agency__r.Website;
+            a.email = agencyJunction.Agency__r.d21_Email__c;
+            a.pmcNumber = agencyToPmcMap.get(agencyJunction.Agency__c); 
+            a.isEditable = String.isBlank(a.pmcNumber); 
+            spermlist.add(a);
+        }
+        hipaaWrapperlist.spermlist = spermlist;
+        
+        
         Set<Id> agencyIds = new Set<Id>();
         for (d21_Donor_Agency__c agencyJunction : Agencyjunctionlist) {
             agencyIds.add(agencyJunction.Agency__c);
         }
         List<d21_PMC__c> pmcList = [
-            SELECT Id, Name, d21_Sperm_Bank__c 
+            SELECT Id, Name, d21_Agency__c 
             FROM d21_PMC__c 
-            WHERE d21_Sperm_Bank__c IN : agencyIds
+            WHERE d21_Agency__c IN : agencyIds
         ];
         
         // Create a map of Agency Id to PMC Name
-        Map<Id, String> agencyToPmcMap = new Map<Id, String>();
+        Map<Id, String> spermToPmcMap = new Map<Id, String>();
         for (d21_PMC__c pmc : pmcList) {
-            agencyToPmcMap.put(pmc.d21_Sperm_Bank__c, pmc.Name);
+            spermToPmcMap.put(pmc.d21_Agency__c, pmc.Name);
         }
         
         List<Agency> Agencylist = new List<Agency>();
@@ -79,6 +111,22 @@ public without sharing class DonorPreRegHippaController2222 {
         parent.city = con.MailingCity;
         hipaaWrapperlist.parentdetails = parent;
         
+         Set<Id> clinicIds = new Set<Id>();
+        for (d21_Donor_Fertility_Clinic__c clinicJunction : Clinicjunctionlist) {
+            clinicIds.add(clinicJunction.d21_Clinic__c);
+        }
+        List<d21_PMC__c> clinicPmcList = [
+            SELECT Id, Name, d21_Clinic__c 
+            FROM d21_PMC__c 
+            WHERE d21_Clinic__c IN :clinicIds
+        ];
+        
+        // Create a map of Clinic Id to PMC Name
+        Map<Id, String> clinicToPmcMap = new Map<Id, String>();
+        for (d21_PMC__c pmc : clinicPmcList) {
+            clinicToPmcMap.put(pmc.d21_Clinic__c, pmc.Name);
+        }
+        
         List<Clinic> Cliniclist = new List<Clinic>();
         for (d21_Donor_Fertility_Clinic__c clinicJunction : Clinicjunctionlist) {
             Clinic c = new Clinic();
@@ -89,14 +137,34 @@ public without sharing class DonorPreRegHippaController2222 {
             c.website = clinicJunction.d21_Clinic__r.Website;
             c.cityState = clinicJunction.d21_Clinic__r.BillingCity;
             c.email = clinicJunction.d21_Clinic__r.d21_Email__c;
+            c.pmcNumber = clinicToPmcMap.get(clinicJunction.d21_Clinic__c);
+            c.isEditable = String.isBlank(c.pmcNumber);
             Cliniclist.add(c);
         }
         hipaaWrapperlist.Cliniclist = Cliniclist;
         
+        
+        // Query PMC records related to Attorneys
+        Set<Id> attorneyIds = new Set<Id>();
+        for (d21_Donor_Fertility_Attorney__c attorneyJunction : Attorneyjunctionlist) {
+            attorneyIds.add(attorneyJunction.d21_Attorney__c);
+        }
+        List<d21_PMC__c> attorneyPmcList = [
+            SELECT Id, Name, d21_Attorney__c 
+            FROM d21_PMC__c 
+            WHERE d21_Attorney__c IN :attorneyIds
+        ];
+        
+        // Create a map of Attorney Id to PMC Name
+        Map<Id, String> attorneyToPmcMap = new Map<Id, String>();
+        for (d21_PMC__c pmc : attorneyPmcList) {
+            attorneyToPmcMap.put(pmc.d21_Attorney__c, pmc.Name);
+        }
+        
         List<Attorney> Attorneylist = new List<Attorney>();
-        Attorney at = new Attorney();
         if (!Attorneyjunctionlist.isEmpty()) {
             d21_Donor_Fertility_Attorney__c junction = Attorneyjunctionlist[0];
+            Attorney at = new Attorney();
             at.Id = junction.d21_Attorney__c;
             at.lawFirm = '';
             at.Phone = junction.d21_Attorney__r.Phone;
@@ -104,6 +172,8 @@ public without sharing class DonorPreRegHippaController2222 {
             at.cityState = junction.d21_Attorney__r.MailingState;
             at.Name = junction.d21_Attorney__r.LastName;
             at.website = '';
+            at.pmcNumber = attorneyToPmcMap.get(junction.d21_Attorney__c);
+            at.isEditable = String.isBlank(at.pmcNumber);
             Attorneylist.add(at);
         }
         hipaaWrapperlist.Attorneylist = Attorneylist;
@@ -155,6 +225,7 @@ public without sharing class DonorPreRegHippaController2222 {
     
     // Rest of the classes remain unchanged
     public class hipaaWrapper {
+         @AuraEnabled public List<Agency> spermlist;
         @AuraEnabled public List<Agency> Agencylist;
         @AuraEnabled public List<Clinic> Cliniclist;
         @AuraEnabled public List<Attorney> Attorneylist;
@@ -170,6 +241,8 @@ public without sharing class DonorPreRegHippaController2222 {
         @AuraEnabled public String website;
         @AuraEnabled public String email;
         @AuraEnabled public String cityState;
+        @AuraEnabled public String pmcNumber;
+        @AuraEnabled public Boolean isEditable;
     }
     
     public class Attorney {
@@ -180,6 +253,8 @@ public without sharing class DonorPreRegHippaController2222 {
         @AuraEnabled public String email;
         @AuraEnabled public String cityState;
         @AuraEnabled public String lawFirm;
+        @AuraEnabled public String pmcNumber;
+        @AuraEnabled public Boolean isEditable;
     }
     
     public class Recipient {
@@ -189,6 +264,8 @@ public without sharing class DonorPreRegHippaController2222 {
         @AuraEnabled public String Phone;
         @AuraEnabled public String email;
         @AuraEnabled public String additionalInfo;
+        @AuraEnabled public String pmcNumber;
+        @AuraEnabled public Boolean isEditable;
     }
     
     public class parentdetail {
@@ -683,5 +760,26 @@ update attorney;*/
         } catch (Exception e) {
             throw new AuraHandledException('Error updating recipient: ' + e.getMessage());
         }
+    }
+    @AuraEnabled(cacheable=true)
+    public static List<Agency> getSpermBanks() {
+        List<Account> spermBankAccounts = [
+            SELECT Id, Name, Phone, d21_Coordinator_Name__c, Website, d21_Email__c 
+            FROM Account 
+            WHERE RecordType.DeveloperName = 'd21_Sperm_Bank'
+        ];
+        
+        List<Agency> spermBanks = new List<Agency>();
+        for (Account acc : spermBankAccounts) {
+            Agency a = new Agency();
+            a.Id = acc.Id;
+            a.Name = acc.Name;
+            a.Phone = acc.Phone;
+            a.coordinatorName = acc.d21_Coordinator_Name__c;
+            a.website = acc.Website;
+            a.email = acc.d21_Email__c;
+            spermBanks.add(a);
+        }
+        return spermBanks;
     }
 }

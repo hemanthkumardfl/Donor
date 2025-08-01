@@ -105,11 +105,13 @@
                     <template for:each={agencies} for:item="agency" for:index="index">
                         <div key={agency.id}
                             class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
-                            <span>{agency.agencyName}</span>
+                            <span>{agency.agencyName}<template if:true={agency.pmcNumber}>({agency.pmcNumber})</template></span>
                             <div>
+                                 <template if:false={agency.isFromPrimaryBanks}>
                                 <lightning-button-icon icon-name="utility:edit" variant="bare"
                                     onclick={handleEditAgency} data-index={index} class="slds-m-right_x-small"
                                     title="Edit Agency"></lightning-button-icon>
+                                 </template>
                                 <lightning-button-icon icon-name="action:delete" variant="bare"
                                     onclick={handleDeleteAgency} data-index={index} title="Delete Agency"
                                     class="delete-icon"></lightning-button-icon>
@@ -185,7 +187,7 @@
                     <template for:each={sperms} for:item="sperm" for:index="index">
                         <div key={sperm.id}
                             class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
-                            <span>{sperm.spermBankName} <template if:true={sperm.pmcNumber}>(PMC: {sperm.pmcNumber})</template></span>
+                            <span>{sperm.spermBankName} <template if:true={sperm.pmcNumber}>({sperm.pmcNumber})</template></span>
                             <div>
                                 <template if:false={sperm.isFromPrimaryBanks}>
                                     <lightning-button-icon icon-name="utility:edit" variant="bare"
@@ -205,7 +207,7 @@
                                     size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
                                     <span class="inputscls textcls">Sperm Bank Name <span style="color:red;">*</span></span>
                                     <lightning-input label="" value={newSperm.spermBankName} data-field="spermBankName"
-                                        onchange={handleSpermFieldChange} required></lightning-input>
+                                        onchange={handleSpermFieldChange}></lightning-input>
                                 </lightning-layout-item>
                                 <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
                                     size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
@@ -262,7 +264,7 @@
                     <template for:each={clinics} for:item="clinic" for:index="index">
                         <div key={clinic.id}
                             class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
-                            <span>{clinic.clinicName}</span>
+                            <span>{clinic.clinicName}<template if:true={clinic.pmcNumber}>({clinic.pmcNumber})</template></span>
                             <div>
                                 <template if:false={clinic.isFromPrimaryBanks}>
                                     <lightning-button-icon icon-name="utility:edit" variant="bare"

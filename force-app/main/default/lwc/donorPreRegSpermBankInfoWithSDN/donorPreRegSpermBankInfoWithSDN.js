@@ -3,11 +3,12 @@ import WARNING_ICON_LOGO from '@salesforce/resourceUrl/warningIcon';
 import createSpermBankWithSDN from '@salesforce/apex/SpermDonorPreRegistrationController.createSpermBankWithSDN'
 import fetchSpermDonorDetails from '@salesforce/apex/SpermDonorWithCodesController.fetchSpermDonorDetails';
 import deleteSpermBank from '@salesforce/apex/SpermDonorPreRegistrationController.deleteSpermBank';
+import createCoordinator from '@salesforce/apex/UtilityClass.createCoordinator';
+
 
 export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
     @track warningIcon = WARNING_ICON_LOGO;
     @track primaryBanksListFromApex = [];
-    @track additionalBanks = [];
     @track noOtherBanks = false;
     @track dontRememberBanks = false;
     @track showNumberedHeadings = false;
@@ -26,6 +27,10 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
     @track primaryConfirmed = null;
     @track didYouWorkAnyOtherSpermBank = null;
     @track showErrorMsg = false;
+    @track addCoordinators = false;
+    //for coordinator user input
+    @track coordinatorUserInputsObj = {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : ''} 
+    @track showAddIcon = false;
     
     get options() {
         return [
@@ -33,6 +38,11 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
             { label: 'No', value: 'No' },
         ];
     }
+
+    displayInfo = {
+        primaryField: 'Name',
+        //additionalFields: ['Industry'],
+    };
 
     bankObject = {
         id: 0,
@@ -64,6 +74,39 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
             this.primaryBanksListFromApex = JSON.parse(spermBankResponse.message);
             this.contactObj['spermBanksWithSDN'] = JSON.parse(spermBankResponse.message);
             console.log('FROM CONTACTOBJ RECORD >>>>>>>>>' + JSON.stringify(this.contactObj));
+            this.primaryBanksListFromApex.forEach(bank => {
+                bank['coordinatorUserInputsObj'] = this.coordinatorUserInputsObj;
+                bank['isAdditionalCoordinators'] = this.addCoordinators;
+                bank['coordinator'] = '';
+                bank['showAddIcon'] = false;
+                bank['primaryConfirmed'] = false;
+                bank['incorrectSpermBankChecked'] = false;
+            })
+
+            if (this.contactObj && this.contactObj.spermBanksWithSDNrecordsCopy && this.contactObj.spermBanksWithSDNrecordsCopy.length > 0) {
+                //alert();
+                let clonedList = [...this.contactObj.spermBanksWithSDNrecordsCopy];
+                console.log(JSON.stringify(clonedList));
+                
+                this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
+                    let clonedBank = clonedList.find(cb => cb.spermbankId == bank.spermbankId);
+                    if (clonedBank) {
+                        return {
+                            ...bank,
+                            primaryConfirmed: clonedBank.primaryConfirmed,
+                            incorrectSpermBankChecked: clonedBank.incorrectSpermBankChecked,
+                            coordinatorUserInputsObj: clonedBank.coordinatorUserInputsObj
+                        };
+                    }
+                    return bank;
+                });
+            }
+
+            this.primaryBanksListFromApex = [...this.primaryBanksListFromApex];
+            console.log('Cloned FROM CONTACTOBJ RECORD >>>>>>>>> ' + JSON.stringify(this.contactObj));
+             console.log('Cloned primaryBanksListFromApex>>>>>>>>> ' + JSON.stringify(this.primaryBanksListFromApex));
+
+           
         }
 
     }
@@ -73,47 +116,146 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
         if(this.contactObj && this.contactObj.spermBanksWithSDN && this.contactObj['spermBanksWithSDN']['didYouWorkAnyOtherSpermBank']){
             this.didYouWorkAnyOtherSpermBank = this.contactObj['spermBanksWithSDN']['didYouWorkAnyOtherSpermBank'];
         }
-       
-        if(this.contactObj && this.contactObj.spermBanksWithSDN && this.contactObj.spermBanksWithSDN['additionalBanks'].length > 0) {
-            this.additionalBanks = [...this.contactObj.spermBanksWithSDN['additionalBanks']];
-            this.noOtherBanks = this.contactObj.spermBanksWithSDN['noOtherBanks'] || false;
-            //this.didYouWorkAnyOtherSpermBank = this.contactObj.spermBanksWithSDN['didYouWorkAnyOtherSpermBank'] || false;
-            this.dontRememberBanks = this.contactObj.spermBanksWithSDN['dontRememberBanks'] || false;
-            this.showNumberedHeadings = this.additionalBanks.length > 1;
-        }
-        else {
-            let objList = [{
-                ...this.bankObject,
-                id: Date.now() + Math.random(),
-                index: 0,
-                bankNumber: 1
-            }];
-            if(this.additionalBanks && this.additionalBanks.length > 0){
-            }
-            else{
-                this.additionalBanks = [...objList];
-            }
-
-        }
         this.primaryConfirmed = this.contactObj['spermWithSDNBankprimaryConfirmed'];
         this.primaryIncorrect = this.contactObj['spermWithSDNclinicprimaryIncorrect'];
-         this.fetchSpermDonorBankDetails();
-         console.log('CONTACTOBJ RECORD >>>>>>>>>' + JSON.stringify(this.contactObj));
+        this.fetchSpermDonorBankDetails();
+        
+        console.log('radio CONTACTOBJ RECORD >>>>>>>>>' + JSON.stringify(this.contactObj));
     }
+
+    get primaryBanksList(){
+        return this.primaryBanksListFromApex;
+    }
+    
+   handleRadioChange(event){
+        let spermbankId = event.target.dataset.spermbankid;
+        this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
+            if(bank.spermbankId == spermbankId){
+                if(event.target.label == "Yes"){
+                    return { ... bank, 
+                            primaryConfirmed : true,
+                            incorrectSpermBankChecked : false
+                        }
+                }
+                else{
+                    return { ... bank, 
+                            primaryConfirmed : false,
+                            incorrectSpermBankChecked : true
+                        }
+                }
+                
+            }
+        });
+    }
+    
+    /************************Coordinator logic starts*********************/
+
+
+    //if there are no records from coordinator search this function will handle
+    handleNoLookUpData(event){
+        let spermbankId = event.target.dataset.spermbankid;
+        this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
+            if(bank.spermbankId == spermbankId){
+                return { ... bank, showAddIcon : true}
+            }
+        });
+        console.log('lookup >>> ' + event.detail);
+    }
+
+     //if there are records from coordinator search this function will handle
+    handleLookupSelection(event) {
+        const selectedId = event.detail.recordId;
+        const selectedName = event.detail.recordName;
+        let spermbankId = event.target.dataset.spermbankid;
+        this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
+            if(bank.spermbankId == spermbankId){
+                return { ... bank, coordinatorContactAvailable : selectedId}
+            }
+            return bank;
+        });
+
+    }
+
+    //function enables inputs section
+    handleAddCoordinator(event){
+        let spermbankId = event.target.dataset.spermbankid;
+        this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
+            if(bank.spermbankId == spermbankId){
+                return { ... bank, isAdditionalCoordinators : !bank.isAdditionalCoordinators}
+            }
+            return bank;
+        }); 
+    }
+
+    //this function will collect the user entered info
+    handleCoordinatorInputs(event){
+        let spermbankId = event.target.dataset.spermbankid;
+        this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
+            if (bank.spermbankId == spermbankId) {
+                return {
+                    ...bank,
+                    coordinatorUserInputsObj: {
+                        ...bank.coordinatorUserInputsObj,
+                        [event.target.name]: event.target.value,
+                        parentId: spermbankId
+                    }
+                };
+            }
+            return bank;
+        });
+        console.log(JSON.stringify(this.primaryBanksListFromApex));
+    }
+
+    //this function will save additional coordinator record
+    async handleCoordinatorSave(event){
+        let spermbankId = event.target.dataset.spermbankid;
+        let coordinatorUserInputs = {};
+        this.primaryBanksListFromApex.forEach(bank => {
+            if(bank.spermbankId == spermbankId){
+                coordinatorUserInputs = {... bank.coordinatorUserInputsObj};
+            }
+        });
+
+        console.log('  >>> '+JSON.stringify(this.primaryBanksListFromApex))  
+        let result = await createCoordinator({coordinateData : JSON.stringify(coordinatorUserInputs)})
+        if (result.isSuccess) {
+            let response = JSON.parse(result.message)
+
+            this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
+                if (bank.spermbankId == spermbankId) {
+                    return {
+                        ...bank,
+                        coordinator: response.coordinatorId,
+                        isAdditionalCoordinators : false,
+                        coordinatorUserInputsObj : {... response},
+                        showAddIcon : false
+                    };
+                }
+                return bank;
+            });
+           
+
+            this.primaryBanksListFromApex = [... this.primaryBanksListFromApex];
+
+            console.log(' primaryBanksListFromApex >>> '+JSON.stringify(this.primaryBanksListFromApex))  
+
+        }
+    }
+
+
+
+     /************************Coordinator logic ends*********************/
 
     get noOtherBanksOrDontRemember() {
         return this.noOtherBanks || this.dontRememberBanks;
     }
 
     get checkboxStatus() {
-        return this.additionalBanks.length > 1 ; //|| this.hasBankDetails();
+       
     }
 
     hasBankDetails() {
-        return this.additionalBanks.some(bank =>
-            bank.bankName || bank.website || bank.phone || bank.email || bank.coordinator ||
-            (bank.showDonorCodeInput && bank.donorCode)
-        );
+      
     }
 
     handlePrimaryInputChange(event) {
@@ -253,17 +395,7 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
                 return;
             }
             this.showInformation = false;
-            this.additionalBanks = this.additionalBanks.map(bank => ({
-                ...bank,
-                bankName: '',
-                website: '',
-                phone: '',
-                email: '',
-                coordinator: '',
-                donorCode: '',
-                showDonorCodeInput: false,
-                hideDonorCodeInput: true
-            }));
+        
         }
     }
 
@@ -282,150 +414,29 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
                 return;
             }
             this.showInformation = false;
-            this.additionalBanks = this.additionalBanks.map(bank => ({
-                ...bank,
-                bankName: '',
-                website: '',
-                phone: '',
-                email: '',
-                coordinator: '',
-                donorCode: '',
-                showDonorCodeInput: false,
-                hideDonorCodeInput: true
-            }));
+          
         }
     }
 
     handleAdditionalChange(event) {
-        const index = parseInt(event.target.dataset.index, 10);
-        const field = event.target.dataset.field;
-        const value = event.target.value;
-        this.additionalBanks = this.additionalBanks.map((bank, i) =>
-            i === index ? { ...bank, [field]: value } : bank
-        );
-        console.log('this.additionalBanks @@@@' + JSON.stringify(this.additionalBanks));
-        const input = event.target;
-        if (input.validity.valid) {
-            input.setCustomValidity('');
-            input.reportValidity();
-        }
+
     }
 
     handleAdditionalRadioChange(event) {
-        const index = parseInt(event.target.dataset.index, 10);
-        const value = event.target.value;
-        this.additionalBanks = this.additionalBanks.map((bank, i) =>
-            i === index
-                ? {
-                    ...bank,
-                    showDonorCodeInput: value === 'yes',
-                    hideDonorCodeInput: value === 'no'
-                }
-                : bank
-        );
-        console.log(JSON.stringify(this.contactObj));
+    
     }
 
     addAnotherBank() {
-        this.showNumberedHeadings = true;
-        const newBank = {
-            ...this.bankObject,
-            id: Date.now() + Math.random(),
-            index: this.additionalBanks.length,
-            bankNumber: this.additionalBanks.length + 1
-        };
-        this.additionalBanks = [
-            ...this.additionalBanks.map((bank, i) => ({
-                ...bank,
-                index: i,
-                bankNumber: i + 1,
-                bankHeading: i === 0 ? 'Sperm Bank Info' : ''
-            })),
-            newBank
-        ];
+
     }
 
     handleDeleteBank(event) {
-        const index = parseInt(event.target.dataset.index, 10);
-        this.deleteIndex = index;
-        /*const bank = this.additionalBanks[index];
-        this.deleteIndex = index;
-        this.deleteBankNumber = bank ? bank.bankNumber : null;
-        this.showDeletePopup = true;
-        let deleteBankId = event.target.dataset.spermbankid;
-        if(deleteBankId){
-            this.deleteSpermbankDetails['deleteId'] = deleteBankId;
-        }*/
-       /* alert('spermbankId' + event.target.dataset.spermbankid);
-        alert('accountid' + event.target.dataset.accountid);
-        alert('bankId' + event.target.dataset.bankid);*/
-        this.deleteSpermBankId = event.target.dataset.accountid;
-        this.deleteSpermbankNumber = event.target.dataset.bankid;
 
-        const bank = this.additionalBanks.find(b => b.index === index);
-        this.deleteIndex = index;
-        this.deleteBankNumber = bank ? bank.bankNumber : null;
-        this.showDeletePopup = true;
 
     }
 
     async handleDeleteYes() {
 
-
-        if(this.deleteSpermBankId){
-            let resultData = await deleteSpermBank({ spermbankId: this.deleteSpermBankId }); 
-            //alert('Delete Agency >>> ' + JSON.stringify(resultData));
-            if (resultData.isSuccess) {
-                //outcomesList.splice(index, 1);
-            }
-           
-        }
-
-        const index = this.deleteIndex;
-        //alert(index);
-        let updatedBanks = [...this.additionalBanks];
-        updatedBanks.splice(index, 1); 
-
-        updatedBanks = updatedBanks.map((bank, i) => ({
-            ...bank,
-            bankNumber: i + 1,
-            bankHeading: i === 0 ? 'Sperm Bank Info' : ''
-        }));
-        if (updatedBanks.length === 0) {
-            updatedBanks.push({
-                id: Date.now() + Math.random(),
-                bankNumber: 1,
-                bankHeading: '',
-                bankName: '',
-                website: '',
-                phone: '',
-                email: '',
-                coordinator: '',
-                donorCode: '',
-                showDonorCodeInput: false,
-                hideDonorCodeInput: true
-            });
-        }
-        this.additionalBanks = updatedBanks;
-        this.showNumberedHeadings = this.additionalBanks.length > 1;
-        this.showDeletePopup = false;
-        this.deleteIndex = null;
-        this.deleteBankNumber = null;
-
-        
-
-
-        
-       
-       
-        /*if(this.deleteSpermbankDetails['deleteId'] != null){
-            deleteSpermBank({'spermbankId' : this.deleteSpermbankDetails['deleteId']})
-            .then(result => {
-                console.log(result);
-            }).catch(error => {
-                console.log(error);
-            })
-        }*/
     }
 
     handleDeleteNo() {
@@ -465,113 +476,28 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
     }
 
     async handleSpermBankInfoWithSDNNext() {
-        //alert();
-        const fieldsMap = new Map([
-            ['bankName', 'Please enter sperm bank name'],
-            ['donorCode', 'Please enter donor code']
-        ]);
-         console.log('contactObjApex >>>' + JSON.stringify(this.contactObj));
-
-        let isValid = true;
-        //alert('TEst 11');
-        if (!this.noOtherBanksOrDontRemember) {
-             this.template.querySelectorAll('lightning-input[data-index]').forEach(input => {
-                const fieldName = input.dataset.field;
-                const value = input.value;
-                if (fieldsMap.has(fieldName) && value === '' && (!this.noSpermBankChecked  || this.spermBanks[input.dataset.index].knowDonorCode === 'Yes')) {
-                    input.setCustomValidity(fieldsMap.get(fieldName));
-                    input.reportValidity();
-                    isValid = false;
-                }
-                else {
-                    input.setCustomValidity('');
-                    input.reportValidity();
-                }
-            });
-        }
-        let isWorkWithOtherSpermBank = true;
-        if(this.didYouWorkAnyOtherSpermBank == null){
-            isWorkWithOtherSpermBank = false;
-            this.showErrorMsg = true;
-        }
-        else{
-            isWorkWithOtherSpermBank = true;
-            this.showErrorMsg = false;
-        }
-        console.log('TEst 14');
-          let inputValidityList = [];
-            this.template.querySelectorAll('.donorcodeinputcls').forEach(input => {
-                if (input.classList.contains('slds-has-error')) {
-                    inputValidityList.push('Error class is present');
-                }
-            })
-            console.log('inputValidityList' + JSON.stringify(inputValidityList));
-
-        if (isValid && inputValidityList.length == 0 && isWorkWithOtherSpermBank) {
-            this.updateContactObj();
-            //alert();
-            console.log('primaryBanksListFromApex' + JSON.stringify(this.primaryBanksListFromApex));
-             console.log('contactObjApex' + JSON.stringify(this.contactObj));
-            //alert();
+        this.updateContactObj();;
+        console.log('primaryBanksListFromApex' + JSON.stringify(this.primaryBanksListFromApex));
+        console.log('contactObjApex' + JSON.stringify(this.contactObj));
+        
+        this.contactObj.spermBanksWithSDN['primaryBanksListFromApex'] = this.primaryBanksListFromApex;
+        this.contactObj['spermBanksWithSDNrecordsCopy'] = this.primaryBanksListFromApex;
+        
+        console.log('contactObjApex' + JSON.stringify(this.contactObj));
             
-            this.contactObj.spermBanksWithSDN['additionalBanks'] = this.additionalBanks;
-            this.contactObj.spermBanksWithSDN['primaryBanksListFromApex'] = this.primaryBanksListFromApex;
-            if(this.didYouWorkAnyOtherSpermBank != null && this.didYouWorkAnyOtherSpermBank == "Yes"){
-                 this.contactObj.spermBanksWithSDN['noOtherSpermBanks'] = true;
-            }
-            else{
-                this.contactObj.spermBanksWithSDN['noOtherSpermBanks'] = false;
-            }
-           
-           // this.contactObj.spermBanksWithSDN['didYouWorkAnyOtherSpermBank'] = this.didYouWorkAnyOtherSpermBank;
-            //this.contactObj['didYouWorkAnyOtherSpermBank'] = this.didYouWorkAnyOtherSpermBank;
-             
-              this.contactObj.spermBanksWithSDN['isAutoSpermBanksAllowedToDml'] = this.primaryConfirmed
-            
-            let result = await createSpermBankWithSDN({ contactObj: JSON.stringify(this.contactObj) })
-            console.log('result >>> ' + JSON.stringify(result));
-            if (result.isSuccess) {
-              try{
-                const responseMessage = JSON.parse(result.message);
-               
-
-                 if (responseMessage.responseList) {
-                    const allBanks = [
-                        ...responseMessage.responseList
-                    // ...responseMessage.autoPopulateList
-                    ];
-                        
-                    this.additionalBanks = allBanks.map((item, index) => ({
-                                id: index,                        
-                                index: index,                     
-                                bankNumber: index + 1,             
-                                bankHeading: 'Sperm Bank Info',    
-                                bankName: item.bankName || '',      
-                                website: item.website || '',
-                                phone: item.phone || '',
-                                email: item.email || '',
-                                coordinator: item.coordinator || '',
-                                donorCode: item.donorCode || '',
-                                showDonorCodeInput: item.showDonorCodeInput,          
-                                hideDonorCodeInput: item.hideDonorCodeInput,           
-                                noBankChecked: item.noSpermBankChecked || false,
-                                incorrectBankChecked: false,       
-                                primaryConfirmed: false,            
-                                spermbankId: item.spermbankId || '' ,
-                                accountId : item.accountId || ''
-                                }));
-                    console.log('result' +JSON.stringify(this.additionalBanks));
-                 }
-
-                this.contactObj['spermBanksWithSDN']['additionalBanks'] = this.additionalBanks;
-                this.contactObj['spermBanksWithSDN']['didYouWorkAnyOtherSpermBank'] = this.didYouWorkAnyOtherSpermBank;
+        this.contactObj.spermBanksWithSDN['isAutoSpermBanksAllowedToDml'] = true; //this.primaryConfirmed
+        
+        let result = await createSpermBankWithSDN({ contactObj: JSON.stringify(this.contactObj) })
+        
+        console.log('result >>> ' + JSON.stringify(result));
+        if (result.isSuccess) {
+            try{
                 console.log('this.contactObj additional banks>>> '+JSON.stringify(this.contactObj));
                 this.dispatchEvent(new CustomEvent('next', { detail: this.contactObj }));
-              }
-              catch(e){
-                console.log(e.stack)
-                console.log(e.message);
-              }
+            }
+            catch(e){
+            console.log(e.stack)
+            console.log(e.message);
             }
         }
     }
@@ -614,7 +540,6 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
         console.log('TEst 1103');
         this.contactObj['spermBanksWithSDN'] = {
             primaryBanksListFromApex: primaryResultArray,
-            additionalBanks: additionalResultArray,
             noOtherBanks: this.noOtherBanks,
             dontRememberBanks: this.dontRememberBanks
         };

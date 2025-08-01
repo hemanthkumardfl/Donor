@@ -4,24 +4,24 @@ public without sharing class SpermDonorWithCodesController {
     public static Response fetchSpermDonorDetails(string contactObj){
         try{
             DonorRegistrationWrapper donor = (DonorRegistrationWrapper) JSON.deserialize(contactObj, DonorRegistrationWrapper.class);  
-             list<string> pmccodes = new list<string>();
-             list<string> spermbankIds = new list<string>();
+            list<string> pmccodes = new list<string>();
+            list<string> spermbankIds = new list<string>();
             List<string> associateCodes = new List<string>();
             list<SpermBank> spermBanks = new list<SpermBank>();
+            Map<string,string> pmcSpermbankIdMap = new Map<string,string>();
             pmccodes.addAll(donor.codes.PMC);
             associateCodes.addAll(donor.codes.SDN);
             associateCodes.addAll(donor.codes.REC);
-             list<d21_PMC__c> PMCRecords;
+            list<d21_PMC__c> PMCRecords;
             if(!pmccodes.isEmpty()){
-                
-                 PMCRecords = [SELECT Id,Name,d21_Sperm_Bank__c FROM d21_PMC__c WHERE Name IN :pmccodes  AND d21_Sperm_Bank__c != NULL]; 
-                 system.debug('pmccodes' + pmccodes);
+                PMCRecords = [SELECT Id,Name,d21_Sperm_Bank__c FROM d21_PMC__c WHERE Name IN :pmccodes  AND d21_Sperm_Bank__c != NULL]; 
+                system.debug('pmccodes' + pmccodes);
             }
             else {
                 if(!associateCodes.isEmpty()){
                     pmccodes = new list<string>();
                     list<d21_Associated_Codes__c> associateCodeList = [SELECT Id, Name,
-                                                                    d21_PMC_Code__c FROM d21_Associated_Codes__c WHERE NAME In : associateCodes];
+                                                                       d21_PMC_Code__c FROM d21_Associated_Codes__c WHERE NAME In : associateCodes];
                     for(d21_Associated_Codes__c a : associateCodeList){
                         pmccodes.add(a.d21_PMC_Code__c);
                     }
@@ -30,12 +30,12 @@ public without sharing class SpermDonorWithCodesController {
                 }
             }
             system.debug('PMCRecords' + PMCRecords);
-            //list<d21_PMC__c> PMCRecords = [SELECT Id,Name,d21_Sperm_Bank__c FROM d21_PMC__c WHERE Name IN :pmccodes  AND d21_Sperm_Bank__c != NULL]; 
             
-             system.debug('PMCRecords' + PMCRecords);
-               if(!PMCRecords.isEmpty()){
+            system.debug('PMCRecords' + PMCRecords);
+            if(!PMCRecords.isEmpty()){
                 for(d21_PMC__c pmc : PMCRecords){
                     spermbankIds.add(pmc.d21_Sperm_Bank__c);
+                    pmcSpermbankIdMap.put(pmc.d21_Sperm_Bank__c, pmc.Name);
                 }
                 if(!spermbankIds.isEmpty()){
                     for(Account acc : [Select Name, Id,Phone,Website,d21_Email__c,d21_Coordinator_Name__c from Account where Id IN :spermbankIds]){
@@ -46,6 +46,10 @@ public without sharing class SpermDonorWithCodesController {
                         bank.website = acc.Website;
                         bank.coordinator = acc.d21_Coordinator_Name__c;
                         bank.email = acc.d21_Email__c;
+                        if(pmcSpermbankIdMap.containsKey(acc.Id)){
+                            bank.PMC = pmcSpermbankIdMap.get(acc.Id);
+                        }
+                        
                         spermBanks.add(bank);
                     }
                 }
@@ -58,8 +62,8 @@ public without sharing class SpermDonorWithCodesController {
         }
         
     }
-
-      @AuraEnabled
+    
+    @AuraEnabled
     public static Response fetchSpermDonorClinicDetails(string contactObj){
         try{
             DonorRegistrationWrapper donor = (DonorRegistrationWrapper) JSON.deserialize(contactObj, DonorRegistrationWrapper.class);  
@@ -67,27 +71,29 @@ public without sharing class SpermDonorWithCodesController {
             list<string> spermclinicIds = new list<string>();
             List<string> associateCodes = new List<string>();
             list<SpermClinic> spermClinics = new list<SpermClinic>();
+            Map<string,string> pmcVsClinicIdMap = new Map<string,string>();
             pmccodes.addAll(donor.codes.PMC);
             associateCodes.addAll(donor.codes.SDN);
             associateCodes.addAll(donor.codes.REC);
             list<d21_PMC__c> PMCRecords;
-             if(!pmccodes.isEmpty()){
-            	PMCRecords = [SELECT Id,Name,d21_Clinic__c FROM d21_PMC__c WHERE Name IN :pmccodes  AND d21_Clinic__c != NULL]; 
-             }
-             else {
-                 if(!associateCodes.isEmpty()){
-                     pmccodes = new list<string>();
-                     list<d21_Associated_Codes__c> associateCodeList = [SELECT Id, Name,
-                                                                    	d21_PMC_Code__c FROM d21_Associated_Codes__c WHERE NAME In : associateCodes];
-                     for(d21_Associated_Codes__c a : associateCodeList){
-                         pmccodes.add(a.d21_PMC_Code__c);
-                     }
-                     PMCRecords = [SELECT Id,Name,d21_Clinic__c FROM d21_PMC__c WHERE Id IN :pmccodes]; 
-                 }
-             }
+            if(!pmccodes.isEmpty()){
+                PMCRecords = [SELECT Id,Name,d21_Clinic__c FROM d21_PMC__c WHERE Name IN :pmccodes  AND d21_Clinic__c != NULL]; 
+            }
+            else {
+                if(!associateCodes.isEmpty()){
+                    pmccodes = new list<string>();
+                    list<d21_Associated_Codes__c> associateCodeList = [SELECT Id, Name,
+                                                                       d21_PMC_Code__c FROM d21_Associated_Codes__c WHERE NAME In : associateCodes];
+                    for(d21_Associated_Codes__c a : associateCodeList){
+                        pmccodes.add(a.d21_PMC_Code__c);
+                    }
+                    PMCRecords = [SELECT Id,Name,d21_Clinic__c FROM d21_PMC__c WHERE Id IN :pmccodes]; 
+                }
+            }
             if(!PMCRecords.isEmpty()){
                 for(d21_PMC__c pmc : PMCRecords){
                     spermclinicIds.add(pmc.d21_Clinic__c);
+                    pmcVsClinicIdMap.put(pmc.d21_Clinic__c, pmc.Name);
                 }
                 if(!spermclinicIds.isEmpty()){
                     for(Account acc : [Select Name, Id,Phone,Website,d21_Email__c,d21_Coordinator_Name__c from Account where Id IN :spermclinicIds]){
@@ -98,29 +104,32 @@ public without sharing class SpermDonorWithCodesController {
                         clinic.website = acc.Website;
                         clinic.coordinator = acc.d21_Coordinator_Name__c;
                         clinic.email = acc.d21_Email__c;
+                        if(pmcVsClinicIdMap.containsKey( acc.Id)){
+                            clinic.PMC = pmcVsClinicIdMap.get(acc.Id);
+                        }
                         spermClinics.add(clinic);
                     }
                 }
             }
             
-             /*system.debug('PMCRecords' + PMCRecords);
-               if(!PMCRecords.isEmpty()){
-                for(d21_PMC__c pmc : PMCRecords){
-                    spermclinicIds.add(pmc.d21_Clinic__c);
-                }
-                if(!spermclinicIds.isEmpty()){
-                    for(Account acc : [Select Name, Id,Phone,Website,d21_Email__c,d21_Coordinator_Name__c from Account where Id IN :spermclinicIds]){
-                        SpermClinic clinic = new SpermClinic();
-                        clinic.bankName = acc.Name;
-                        clinic.spermclinicId = acc.Id;
-                        clinic.phone = acc.Phone;
-                        clinic.website = acc.Website;
-                        clinic.coordinator = acc.d21_Coordinator_Name__c;
-                        clinic.email = acc.d21_Email__c;
-                        spermClinics.add(clinic);
-                    }
-                }
-            } */
+            /*system.debug('PMCRecords' + PMCRecords);
+if(!PMCRecords.isEmpty()){
+for(d21_PMC__c pmc : PMCRecords){
+spermclinicIds.add(pmc.d21_Clinic__c);
+}
+if(!spermclinicIds.isEmpty()){
+for(Account acc : [Select Name, Id,Phone,Website,d21_Email__c,d21_Coordinator_Name__c from Account where Id IN :spermclinicIds]){
+SpermClinic clinic = new SpermClinic();
+clinic.bankName = acc.Name;
+clinic.spermclinicId = acc.Id;
+clinic.phone = acc.Phone;
+clinic.website = acc.Website;
+clinic.coordinator = acc.d21_Coordinator_Name__c;
+clinic.email = acc.d21_Email__c;
+spermClinics.add(clinic);
+}
+}
+} */
             system.debug('spermClinics' + spermClinics);
             return new Response(true,JSON.serialize(spermClinics));
         } 
@@ -147,16 +156,16 @@ public without sharing class SpermDonorWithCodesController {
         //@AuraEnabled public DonationBasics donationBasics;
         @AuraEnabled public list<string> newCodeList;
         /*@AuraEnabled public list<RecordWrapper> agenciesWithoutCode;
-        @AuraEnabled public list<RecordWrapper> clinicsWithoutCode;
-        @AuraEnabled public list<RecordWrapper> AttorniesWithoutCode;
-        @AuraEnabled public list<RecordWrapper> recipientsWithoutCode;
-        @AuraEnabled public list<Cycle> allCycles;
-        @AuraEnabled public AlternateObject alternateDetails;
-        @AuraEnabled public ClinicDetails clinicsWithCodes;    
-        @AuraEnabled public AgencyDetails agenciesWithCodes;*/
+@AuraEnabled public list<RecordWrapper> clinicsWithoutCode;
+@AuraEnabled public list<RecordWrapper> AttorniesWithoutCode;
+@AuraEnabled public list<RecordWrapper> recipientsWithoutCode;
+@AuraEnabled public list<Cycle> allCycles;
+@AuraEnabled public AlternateObject alternateDetails;
+@AuraEnabled public ClinicDetails clinicsWithCodes;    
+@AuraEnabled public AgencyDetails agenciesWithCodes;*/
     }
     
-      public class Codes {
+    public class Codes {
         @AuraEnabled public List<String> PMC;
         @AuraEnabled public List<String> EDN;
         @AuraEnabled public List<String> SDN;
@@ -172,8 +181,9 @@ public without sharing class SpermDonorWithCodesController {
         @AuraEnabled public String website;
         @AuraEnabled public String coordinator;
         @AuraEnabled public String spermbankId;
+        @AuraEnabled public string PMC;
     }
-
+    
     public class SpermClinic{
         @AuraEnabled public String bankName;
         @AuraEnabled public String email;
@@ -181,8 +191,9 @@ public without sharing class SpermDonorWithCodesController {
         @AuraEnabled public String website;
         @AuraEnabled public String coordinator;
         @AuraEnabled public String spermclinicId;
+        @AuraEnabled public string PMC;
     }
-
+    
     public class Response{
         @AuraEnabled public string message;
         @AuraEnabled public boolean isSuccess;

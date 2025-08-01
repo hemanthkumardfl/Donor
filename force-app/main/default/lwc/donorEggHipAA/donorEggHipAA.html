@@ -18,7 +18,8 @@
             <div>
                 <span class="headingcls">HIPAA Release Information</span>
                 <span class="agencyDescriptionCls">
-                    Was <span class="underline-name">{legalNamesri.firstName} {legalNamesri.lastName}</span> the name you used and have on file with the agency/clinic/attorney?
+                    Was <span class="underline-name">{legalNamesri.firstName} {legalNamesri.lastName}</span> the name you
+                used and have on file with the agency/clinic/attorney?
                 </span>
                 <div class="radioinputs slds-p-bottom_small slds-p-top_small">
                     <lightning-input type="radio" label="Yes" name="spermBank" value="Yes" checked={isYesChecked}
@@ -52,24 +53,65 @@
             </span>
             <span class="inputscls textcls" style="padding-top: 1rem;">Date of Birth <span style="color:red;">*</span></span>
             <lightning-input type="date" name="dob" value={dob} onchange={handleDobChange}
-                class="slds-m-bottom_medium dobcls validateInputCls" label=" " variant="label-stacked" >
+                class="slds-m-bottom_medium dobcls validateInputCls" label=" " variant="label-stacked">
             </lightning-input>
             <template if:true={dobError}>
                 <div class="slds-text-color_error">{dobError}</div>
             </template>
 
+            <!-- Address Section -->
+            <span class="agencyDescriptionCls textcls">
+               Please provide your address details for the HIPAA release.
+            </span>
+            <lightning-layout multiple-rows="true" class="parentlayoutcls slds-p-bottom_small">
+                <lightning-layout-item class="slds-p-top_small recipientinputcls1" size="12" small-device-size="12"
+                    medium-device-size="6" large-device-size="6">
+                    <span class="inputscls textcls">State <span style="color:red;">*</span></span>
+                    <lightning-input label="" value={address.state} name="state" data-field="state"
+                        onchange={handleAddressChange} placeholder="State"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-p-top_small recipientinputcls2" size="12" small-device-size="12"
+                    medium-device-size="6" large-device-size="6">
+                    <span class="inputscls textcls">City <span style="color:red;">*</span></span>
+                    <lightning-input label="" value={address.city} name="city" data-field="city"
+                        onchange={handleAddressChange} placeholder="City"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-p-top_small recipientinputcls1" size="12" small-device-size="12"
+                    medium-device-size="6" large-device-size="6">
+                    <span class="inputscls textcls">Street</span>
+                    <lightning-input label="" value={address.street} name="street" data-field="street"
+                        onchange={handleAddressChange} placeholder="Street"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-p-top_small recipientinputcls2" size="12" small-device-size="12"
+                    medium-device-size="6" large-device-size="6">
+                    <span class="inputscls textcls">Pincode</span>
+                    <lightning-input label="" value={address.pincode} name="pincode" data-field="pincode"
+                        onchange={handleAddressChange} placeholder="Pincode" type="text"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-p-top_small recipientinputcls1" size="12" small-device-size="12"
+                    medium-device-size="12" large-device-size="12">
+                    <span class="inputscls textcls">Additional Information</span>
+                    <lightning-textarea label="" value={address.additionalInfo} name="additionalInfo"
+                        data-field="additionalInfo" onchange={handleAddressChange}
+                        placeholder="Additional address information"></lightning-textarea>
+                </lightning-layout-item>
+            </lightning-layout>
+
             <!-- Agencies/Egg Banks -->
             <template if:true={showagencySection}>
                 <div class="slds-m-top_medium">
-                    <p class="textcls agencyDescriptionCls inputscls">You said you worked with the following agencies/egg banks:</p>
+                    <p class="textcls agencyDescriptionCls inputscls">You said you worked with the following
+                        agencies/egg banks:</p>
                     <template for:each={agencies} for:item="agency" for:index="index">
                         <div key={agency.id}
                             class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
-                            <span>{agency.agencyName}</span>
+                            <span>{agency.agencyName}<template if:true={agency.pmcNumber}>({agency.pmcNumber})</template></span>
                             <div>
-                                <lightning-button-icon icon-name="utility:edit" variant="bare"
-                                    onclick={handleEditAgency} data-index={index} class="slds-m-right_x-small"
-                                    title="Edit Agency"></lightning-button-icon>
+                                <template if:false={agency.isFromPrimaryBanks}>
+                                    <lightning-button-icon icon-name="utility:edit" variant="bare"
+                                        onclick={handleEditAgency} data-index={index} class="slds-m-right_x-small"
+                                        title="Edit Agency"></lightning-button-icon>
+                                </template>
                                 <lightning-button-icon icon-name="action:delete" variant="bare"
                                     onclick={handleDeleteAgency} data-index={index} title="Delete Agency"
                                     class="delete-icon"></lightning-button-icon>
@@ -144,9 +186,9 @@
                     <template for:each={sperms} for:item="sperm" for:index="index">
                         <div key={sperm.id}
                             class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
-                            <span>{sperm.spermBankName}</span>
+                            <span>{sperm.spermBankName} <template if:true={sperm.pmcNumber}>({sperm.pmcNumber})</template></span>
                             <div>
-                                <template if:false={sperm.isFromPrimaryBanks}>
+                                <template if:true={sperm.isEditable}>
                                     <lightning-button-icon icon-name="utility:edit" variant="bare"
                                         onclick={handleEditSperm} data-index={index} class="slds-m-right_x-small"
                                         title="Edit Sperm Bank"></lightning-button-icon>
@@ -157,6 +199,29 @@
                             </div>
                         </div>
                     </template>
+                    <br/>
+                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddSpermClick}>
+                        + I need to add a sperm bank
+                    </div>
+                    <template if:true={showSpermPicker}>
+                        <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC;">
+                            <lightning-layout class="slds-m-top_small">
+                                <lightning-layout-item size="12" padding="around-small">
+                                    <lightning-record-picker
+                                        label="Select Sperm Bank"
+                                        placeholder="Search Sperm Banks..."
+                                        object-api-name="Account"
+                                        filter={spermBankFilter}
+                                        value={selectedSpermBankId}
+                                        onchange={handleSpermBankSelect}
+                                        display-info={spermBankDisplayInfo}>
+                                    </lightning-record-picker>
+                                    <button class="slds-button slds-button_neutral slds-m-left_small" disabled={isAddButtonDisabled}
+                                        onclick={handleAddNewSpermBankClick}>Add</button>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </div>
+                    </template>
                     <template if:true={showSpermForm}>
                         <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC;">
                             <lightning-layout multiple-rows="true" class="parentlayoutcls">
@@ -164,7 +229,7 @@
                                     size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
                                     <span class="inputscls textcls">Sperm Bank Name <span style="color:red;">*</span></span>
                                     <lightning-input label="" value={newSperm.spermBankName} data-field="spermBankName"
-                                        onchange={handleSpermFieldChange} required></lightning-input>
+                                        onchange={handleSpermFieldChange}></lightning-input>
                                 </lightning-layout-item>
                                 <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
                                     size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
@@ -207,10 +272,6 @@
                             </lightning-layout>
                         </div>
                     </template>
-                    <br/>
-                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddSpermClick}>
-                        + I need to add a sperm bank
-                    </div>
                 </div>
             </template>
 
@@ -221,7 +282,7 @@
                     <template for:each={clinics} for:item="clinic" for:index="index">
                         <div key={clinic.id}
                             class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
-                            <span>{clinic.clinicName}</span>
+                            <span>{clinic.clinicName}<template if:true={clinic.pmcNumber}>({clinic.pmcNumber})</template></span>
                             <div>
                                 <template if:false={clinic.isFromPrimaryBanks}>
                                     <lightning-button-icon icon-name="utility:edit" variant="bare"
@@ -234,6 +295,10 @@
                             </div>
                         </div>
                     </template>
+                    <br/>
+                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddClinicClick}>
+                        + I need to add a clinic
+                    </div>
                     <template if:true={showClinicForm}>
                         <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC;">
                             <lightning-layout multiple-rows="true" class="parentlayoutcls">
@@ -288,15 +353,11 @@
                             </lightning-layout>
                         </div>
                     </template>
-                    <br/>
-                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddClinicClick}>
-                        + I need to add a clinic
-                    </div>
                 </div>
             </template>
 
             <!-- Fertility Attorneys -->
-            <template if:true={showAttorneySection}>
+            <template if:true={showattorneySection}>
                 <div class="slds-m-top_medium">
                     <p class="textcls inputscls">You said you worked with the following fertility attorneys:</p>
                     <template for:each={attorneys} for:item="attorney" for:index="index">
@@ -313,6 +374,10 @@
                             </div>
                         </div>
                     </template>
+                    <br/>
+                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddAttorneyClick}>
+                        + I need to add a fertility attorney
+                    </div>
                     <template if:true={showAttorneyForm}>
                         <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC;">
                             <lightning-layout multiple-rows="true" class="parentlayoutcls">
@@ -337,7 +402,7 @@
                                 <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls"
                                     size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
                                     <span class="inputscls textcls">Website</span>
-                                    <lightning-input label="" value={newAttorney.website} data-field="website"
+                                    <lightning-input label="" value={newAnimation.website} data-field="website"
                                         onchange={handleAttorneyFieldChange} type="url"></lightning-input>
                                 </lightning-layout-item>
                                 <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls"
@@ -365,15 +430,11 @@
                             </lightning-layout>
                         </div>
                     </template>
-                    <br/>
-                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddAttorneyClick}>
-                        + I need to add a fertility attorney
-                    </div>
                 </div>
             </template>
 
             <!-- Recipient Details -->
-            <template if:true={showRecipientsection}>
+            <template if:true={showrecipientSection}>
                 <div class="slds-m-top_medium">
                     <p class="textcls inputscls">You said you worked with the following Recipient Details:</p>
                     <template for:each={recipients} for:item="recipient" for:index="index">
@@ -392,6 +453,10 @@
                             </div>
                         </div>
                     </template>
+                    <br/>
+                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddRecipientClick}>
+                        + I need to add a recipient
+                    </div>
                     <template if:true={showRecipientForm}>
                         <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC;">
                             <lightning-layout multiple-rows="true" class="parentlayoutcls">
@@ -439,10 +504,6 @@
                             </lightning-layout>
                         </div>
                     </template>
-                    <br/>
-                    <div class="textcls slds-m-top_small addagencycls" onclick={handleAddRecipientClick}>
-                        + I need to add a recipient
-                    </div>
                 </div>
             </template>
 

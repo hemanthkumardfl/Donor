@@ -6,84 +6,107 @@
                 Based on the SDN code you entered, it seems that you worked with this sperm bank:
             </p>
             <!-- Primary Sperm Banks Section -->
-            <template if:true={primaryBanksListFromApex}>
-                <template for:each={primaryBanksListFromApex} for:item="bank">
+            <template if:true={primaryBanksList}>
+                <template for:each={primaryBanksList} for:item="bank">
                     <div key={bank.index} class="spermbankcls">
                         <div class="slds-box slds-theme_shade slds-m-bottom_large slds-m-top_medium" style="background-color: #E8E3DC;">
-                            <h3 class="slds-text-heading_medium slds-m-bottom_small"><b>Sperm Bank #{bank.index}</b></h3>
+                            <h3 class="slds-text-heading_medium slds-m-bottom_small"><b>Sperm Bank - {bank.PMC}</b></h3>
                             <lightning-layout multiple-rows="true" class="parentlayoutcls">
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"><b>Bank Name</b></lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
-                                    <lightning-input variant="label-hidden" value={bank.bankName} onchange={handlePrimaryInputChange} disabled={disableAutoPoulateInputs}
+                                    <lightning-input variant="label-hidden" value={bank.bankName} onchange={handlePrimaryInputChange} disabled="true"
                                       data-spermbankid={bank.spermbankId}  onblur={handleInputBlur} name="bankName" data-index={bank.index} maxlength="255"></lightning-input>
                                 </lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"><b>Website</b></lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
-                                    <lightning-input variant="label-hidden" type="text" value={bank.website} onchange={handlePrimaryInputChange} disabled={disableAutoPoulateInputs}
+                                    <lightning-input variant="label-hidden" type="text" value={bank.website} onchange={handlePrimaryInputChange} disabled="true"
                                          data-spermbankid={bank.spermbankId} onblur={handleInputBlur} name="website" data-index={bank.index} placeholder="http://www.example.com"></lightning-input>
                                 </lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"><b>Phone</b></lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
-                                    <lightning-input variant="label-hidden" type="tel" value={bank.phone} onchange={handlePrimaryInputChange} disabled={disableAutoPoulateInputs}
-                                         data-spermbankid={bank.spermbankId} onblur={handleInputBlur} name="phone" data-index={bank.index} pattern="^\+\d{1,3}(?=\d{10}$)\d{10}$"
-                                        message-when-pattern-mismatch="Enter a valid phone number with country code, e.g: +911234567890."></lightning-input>
-                                </lightning-layout-item>
-                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"><b>Email</b></lightning-layout-item>
-                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
-                                    <lightning-input variant="label-hidden" type="email" value={bank.email} onchange={handlePrimaryInputChange} disabled={disableAutoPoulateInputs}
-                                         data-spermbankid={bank.spermbankId} onblur={handleInputBlur} name="email" data-index={bank.index}></lightning-input>
+                                    <lightning-input variant="label-hidden" type="tel" value={bank.phone} onchange={handlePrimaryInputChange} disabled="true"
+                                         data-spermbankid={bank.spermbankId} onblur={handleInputBlur} name="phone" data-index={bank.index} ></lightning-input>
                                 </lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"><b>Coordinator</b></lightning-layout-item>
-                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
-                                    <lightning-input variant="label-hidden" type="text" value={bank.coordinator} onchange={handlePrimaryInputChange} disabled={disableAutoPoulateInputs}
-                                         data-spermbankid={bank.spermbankId} onblur={handleInputBlur} name="coordinator" data-index={bank.index} maxlength="255"></lightning-input>
-                                </lightning-layout-item>
-                                <!--<lightning-layout-item size="12" padding="around-small">
-                                    <span class="slds-m-top_large slds-m-bottom_large"><b>Do you know your donor code with this bank?</b></span>
-                                    <div class="radioinputs">
-                                        <lightning-input type="radio" name={bank.spermbankId} label="No" value="no" onchange={handlePrimaryRadioChange}
-                                            data-index={bank.index} checked={bank.hideDonorCodeInput} maxlength="6"></lightning-input>
-                                        <lightning-input type="radio" name={bank.spermbankId} label="Yes, please enter:" value="yes" onchange={handlePrimaryRadioChange}
-                                            data-index={bank.index} checked={bank.showDonorCodeInput}></lightning-input>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7" class="coordinatorSectionCls">
+                                    <div class="coordinatorContainerCls" key={bank.coordinator}>
+                                        <!-- <lightning-record-picker
+                                            key={bank.spermbankId}
+                                            class="recordPickerCls"
+                                            label="Coordinator"
+                                            variant="label-hidden"
+                                            placeholder="Search Coordinator..."
+                                            value={bank.coordinator}
+                                            object-api-name="Contact" 
+                                            display-info={displayInfo}
+                                            filter={bank.filter}
+                                            data-spermbankid={bank.spermbankId}
+                                            onchange={handleCoordinator}>
+                                        </lightning-record-picker> -->
+                                        <c-d21_-dynamic-custom-lookup
+                                        object-api-name = "Contact"
+                                        class="recordPickerCls"
+                                        search-key= {bank.coordinatorUserInputsObj.fullName}
+                                        onlookupselect={handleLookupSelection}
+                                        onlookupnodata={handleNoLookUpData}
+                                        account-id={bank.spermbankId}
+                                        data-spermbankid={bank.spermbankId}>
+                                        </c-d21_-dynamic-custom-lookup>
+                                        <lightning-icon icon-name='utility:add' if:true={bank.showAddIcon} data-spermbankid={bank.spermbankId} size='small' onclick={handleAddCoordinator} class="addIconCls"></lightning-icon>
                                     </div>
-                                    <template if:true={primaryshowDonorCodeInput}>
-                                        <lightning-input class="slds-m-top_small" placeholder="Enter donor code" variant="label-hidden"
-                                            value={bank.donorCode} onchange={handlePrimaryInputChange} onblur={handleInputBlur}
-                                            name="donorCode" data-index={bank.index}></lightning-input>
-                                    </template>
-                                </lightning-layout-item> -->
+                                    <div if:true={bank.isAdditionalCoordinators} class="coordinatorInputsContainerCls">
+                                        <div class="coordinatorCls">
+                                            <!-- <span class="textcls">FirstName</span> -->
+                                            <lightning-input type="text" placeholder="FirstName" name="firstName" value={bank.coordinatorUserInputsObj.firstName}
+                                             data-spermbankid={bank.spermbankId} onchange={handleCoordinatorInputs}></lightning-input>
+                                        </div>
+                                        <div class="coordinatorCls">
+                                            <!-- <span class="textcls">LastName</span> -->
+                                            <lightning-input type="text" placeholder="LastName" name="lastName"  value={bank.coordinatorUserInputsObj.lastName} 
+                                            data-spermbankid={bank.spermbankId} onchange={handleCoordinatorInputs}></lightning-input>
+                                        </div>
+                                        <div class="coordinatorCls">
+                                            <!-- <span class="textcls">Phone</span> -->
+                                            <lightning-input type="tel"  name="phone"  data-spermbankid={bank.spermbankId} placeholder="Phone" value={bank.coordinatorUserInputsObj.phone}
+                                             pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                                            message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                                            onchange={handleCoordinatorInputs}></lightning-input>
+                                        </div>
+                                        <!-- save coordinator button  -->
+                                        <div class="saveCoordinatorBtnCls">
+                                            <div class="savebtnCls textcls" data-spermbankid={bank.spermbankId} onclick={handleCoordinatorSave}>Save Coordinator</div>
+                                        </div>
+
+                                    </div>
+                                    
+                                </lightning-layout-item>
+                              
                             </lightning-layout>
                         </div>
-                        <lightning-input type="checkbox" label="Check to confirm this information is correct and that you did work with this program."
+                        <!-- <lightning-input type="checkbox" label="Check to confirm this information is correct and that you did work with this program."
                             class="slds-m-bottom_medium" checked={primaryConfirmed} onchange={handlePrimaryConfirmedChange}
                             data-index={bank.index}>
                         </lightning-input>
                         <lightning-input type="checkbox" label="Check to confirm this information is incorrect and that you did work with this program."
                             class="slds-m-bottom_medium" checked={primaryIncorrect} onchange={handlePrimaryIncorrectChange}
                             data-index={bank.index}>
-                        </lightning-input>
+                        </lightning-input> -->
+                        <lightning-layout-item size="12" padding="around-small">
+                            <span class="slds-m-top_large slds-m-bottom_large textcls">Did you work with this Sperm Bank?</span>
+                            <div class="checkboxcls">
+                                <lightning-input type="radio" name={bank.index} label="Yes" value="primaryConfirmed"
+                                    onchange={handleRadioChange} checked={bank.primaryConfirmed} data-index={bank.index}  data-spermbankid={bank.spermbankId}>
+                                </lightning-input>
+                                <lightning-input type="radio" name={bank.index} label="No" value="incorrectSpermBankChecked"
+                                    onchange={handleRadioChange} checked={bank.incorrectSpermBankChecked}
+                                    data-index={bank.index}  data-spermbankid={bank.spermbankId}>
+                                </lightning-input>
+                            </div>
+                        </lightning-layout-item>
                         <br/>
                     </div>
                 </template>
             </template>
-            <p class="slds-m-bottom_small">
-                <b>Please list the information for any additional sperm bank you completed a donation with or are working on completing a donation with:</b>
-            </p>
-            <br/>
-            <!-- <lightning-input type="checkbox" label="Check here if you did not work with any other sperm banks"
-                class="slds-m-bottom_medium" checked={noOtherBanks} onchange={handleNoOtherBanksChange} disabled={checkboxStatus}>
-            </lightning-input> -->
-             
-            <span class="textcls">Did you work with any other sperm banks?</span>
-            <lightning-radio-group name="radioGroup"
-                          label=""
-                          options={options}
-                          value={didYouWorkAnyOtherSpermBank}
-                          onchange={handleBankConfirmation}
-                          type="radio"></lightning-radio-group>
-            <p style="color:red;" class="slds-m-top_x-small textcls" if:true={showErrorMsg}>Please select the option.</p>
-
-           
 
             <!-- Delete Confirmation Popup -->
             <div if:true={showDeletePopup}>
@@ -100,79 +123,6 @@
                 </div>
             </div>
 
-            <template if:true={showAdditionalBanks}>
-                <template for:each={additionalBanks} for:item="bank" for:index="index">
-                    <div class="slds-p-bottom_medium slds-p-top_medium spermbank" key={bank.id}>
-                        <div style="display:flex;justify-content:space-between;width:97%">
-                            <h3 class="fontSizeLarge slds-m-bottom_small">
-                                <template if:false={showNumberedHeadings}>
-                                    <template if:false={index}>
-                                        {bank.bankHeading}
-                                    </template>
-                                    <template if:true={index}>
-                                        Sperm Bank #{bank.bankNumber}
-                                    </template>
-                                </template>
-                                <template if:true={showNumberedHeadings}>
-                                    Sperm Bank #{bank.bankNumber}
-                                </template>
-                            </h3>
-                            <template if:true={showNumberedHeadings}>
-                                <span class="delete-icon"  onclick={handleDeleteBank} >
-                                    <lightning-icon icon-name="action:delete" size="small" class=""  data-index={index} data-bankid={bank.bankNumber}  data-spermbankid={bank.spermbankId} data-accountid={bank.accountId}></lightning-icon>
-                                </span>
-                            </template>
-                        </div>
-                        <lightning-input class="slds-m-bottom_small" placeholder="Sperm Bank Name" variant="label-hidden"
-                            value={bank.bankName} data-index={index} data-field="bankName" onchange={handleAdditionalChange}
-                            name={bank.id} onblur={handleInputBlur} disabled={noOtherBanks} maxlength="255"></lightning-input>
-                        <lightning-input class="slds-m-bottom_small" variant="label-hidden"
-                            type="text" value={bank.website} data-index={index} data-field="website" onchange={handleAdditionalChange}
-                            name={bank.id} onblur={handleInputBlur} disabled={noOtherBanks} placeholder="http://www.example.com"></lightning-input>
-                        <lightning-input class="slds-m-bottom_small" placeholder="Sperm Bank Phone" variant="label-hidden"
-                            type="tel" value={bank.phone} data-index={index} data-field="phone" onchange={handleAdditionalChange}
-                           name={bank.id}  onblur={handleInputBlur} disabled={noOtherBanks}  pattern="^\+\d{1,3}(?=\d{10}$)\d{10}$"
-                            message-when-pattern-mismatch="Enter a valid phone number with country code, e.g: +911234567890."></lightning-input>
-                        <lightning-input class="slds-m-bottom_small" placeholder="Sperm Bank Email" variant="label-hidden"
-                            type="email" value={bank.email} data-index={index} data-field="email" onchange={handleAdditionalChange}
-                            name={bank.id} onblur={handleInputBlur} disabled={noOtherBanks}></lightning-input>
-                        <lightning-input class="slds-m-bottom_small" placeholder="Coordinator/Nurse Name" variant="label-hidden"
-                            name={bank.id} type="text" value={bank.coordinator} data-index={index} data-field="coordinator" onchange={handleAdditionalChange}
-                            onblur={handleInputBlur} disabled={noOtherBanks} maxlength="255"></lightning-input>
-                        <br>
-                        <span class="slds-m-top_large slds-m-bottom_large"><b>Do you know your donor code with this bank?</b></span>
-                        <div class="radioinputs">
-                            <lightning-input type="radio" name={bank.id} label="No" data-index={index} value="no"
-                                class="slds-m-top_medium" onchange={handleAdditionalRadioChange} checked={bank.hideDonorCodeInput} disabled={noOtherBanks}></lightning-input>
-                            <lightning-input type="radio" name={bank.id} label="Yes, Please Enter:" data-index={index} value="yes"
-                                class="slds-m-top_medium" onchange={handleAdditionalRadioChange} checked={bank.showDonorCodeInput} disabled={noOtherBanks}></lightning-input>
-                        </div>
-                        <template if:true={bank.showDonorCodeInput}>
-                            <!-- <lightning-input class="slds-m-top_small donorcodeinputcls" placeholder="Enter donor code" variant="label-hidden" 
-                                 pattern="^SDN-\d{6}$"
-                                message-when-pattern-mismatch="Format must be SDN- followed by 6 digits (e.g., SDN-123456)"
-                                name={bank.id} value={bank.donorCode} onchange={handleAdditionalChange} onblur={handleInputBlur} data-index={index} data-field="donorCode"
-                                disabled={noOtherBanks}></lightning-input> -->
-
-                            <lightning-input class="slds-m-top_small donorcodeinputcls" placeholder="Please enter the donor code you were assigned by your sperm bank" variant="label-hidden" 
-                            name={bank.id} value={bank.donorCode} onchange={handleAdditionalChange} onblur={handleInputBlur} data-index={index} data-field="donorCode"
-                            disabled={noOtherBanks}>
-                            </lightning-input>
-                        </template>
-                        <hr class="slds-m-top_medium slds-m-bottom_medium"></hr>
-                    </div>
-                </template>
-                <div class="slds-m-bottom_medium">
-                    <lightning-button-icon icon-name="utility:add"
-                        alternative-text="Add Another Sperm Bank"
-                        title="Add Another Sperm Bank"
-                        onclick={addAnotherBank}
-                        class="slds-m-right_small"
-                        disabled={noOtherBanks}>
-                    </lightning-button-icon>
-                    <span><b>Add Another Sperm Bank</b></span>
-                </div>
-            </template>
             <div class="buttonscls">
                 <div class="backbtn textcls" onclick={handleSpermBankInfoWithSDNBack}>Back</div>
                 <div class="nextbtncls textcls" onclick={handleSpermBankInfoWithSDNNext}>Next</div>

@@ -1,0 +1,14 @@
+.dropodownCLs{
+   border: 1px solid #d8dde6;
+   border-radius: 4px; 
+   background: white;
+   box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+   margin-top: 0.25rem;
+}
+.containerCls{
+    max-height: 200px; 
+    overflow-y: auto;
+}
+.lookupcontainercls{
+    width: 103%;
+}

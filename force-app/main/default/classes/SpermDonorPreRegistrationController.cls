@@ -16,6 +16,8 @@ public without sharing  class SpermDonorPreRegistrationController {
         @AuraEnabled public string spermclinicId;
         @AuraEnabled public boolean showDonorCodeInput;
         @AuraEnabled public boolean hideDonorCodeInput;
+        @AuraEnabled public string coordinatorContactAvailable;
+        @AuraEnabled public boolean primaryConfirmed;
        
     }
     
@@ -121,17 +123,19 @@ public static Response createSpermBankWithSDN(string contactObj) {
     try {
         DonorRegistrationWrapper donor = (DonorRegistrationWrapper) JSON.deserialize(contactObj, DonorRegistrationWrapper.class);
         system.debug('Primary confirmed flag: ' + donor.spermWithSDNBankprimaryConfirmed);
+        system.debug('primaryBanksListFromApex' + donor.spermBanksWithSDN.primaryBanksListFromApex);
         
         // Initialize response wrapper
         ResponseData wrapperData = new ResponseData();
         PrimaryCheckBoxClass primaryCheckBoxesCls = new PrimaryCheckBoxClass();
-        primaryCheckBoxesCls.primaryConfirmed = donor.spermBanksWithSDN.primaryConfirmed;
-        primaryCheckBoxesCls.primaryIncorrect = donor.spermBanksWithSDN.primaryIncorrect;
+        /*primaryCheckBoxesCls.primaryConfirmed = donor.spermBanksWithSDN.primaryConfirmed;
+        primaryCheckBoxesCls.primaryIncorrect = donor.spermBanksWithSDN.primaryIncorrect;*/
         wrapperData.primaryCheckBoxOptions = primaryCheckBoxesCls;
         
-        boolean isAdditionalBanksAvailable = donor.spermBanksWithSDN.noOtherBanks;
-        List<SpermBankWrapper> spermBankList = donor.spermBanksWithSDN.additionalBanks;
+        /*boolean isAdditionalBanksAvailable = false;
+        List<SpermBankWrapper> spermBankList = donor.spermBanksWithSDN.additionalBanks;*/
         list<SpermBankWrapper> autoPopulatedSpermBank = donor.spermBanksWithSDN.primaryBanksListFromApex;
+        
         list<SpermBankWrapper> spermBankResponse = new list<SpermBankWrapper>();
         list<SpermBankWrapper> autoPopulatedSpermBankResponse = new list<SpermBankWrapper>();
         
@@ -143,22 +147,30 @@ public static Response createSpermBankWithSDN(string contactObj) {
         set<Id> agencyRecordIdset = new set<Id>();
         
         // Process primary/auto-populated banks
-        if(donor.spermWithSDNBankprimaryConfirmed != null && donor.spermWithSDNBankprimaryConfirmed && autoPopulatedSpermBank != null) {
+        if(autoPopulatedSpermBank != null) {
             list<Account> upsertAccountList = new list<Account>();
-            
+           
             for(SpermBankWrapper wrapper : autoPopulatedSpermBank) {
-                Account acc = new Account();
-                acc.Name = wrapper.bankName;
-                acc.Website = wrapper.website;
-                acc.Phone = wrapper.phone;
-                acc.d21_Email__c = wrapper.email;
-                acc.d21_Coordinator_Name__c = wrapper.coordinator;
-                acc.RecordTypeId = spermBankRecordTypeId;
-                
-                if(wrapper.spermbankId != null) {
-                    acc.Id = wrapper.spermbankId;
+                if(wrapper.primaryConfirmed != null &&  wrapper.primaryConfirmed == true){
+                    system.debug('>>>' + wrapper.primaryConfirmed);
+                    
+                    Account acc = new Account();
+                    acc.Name = wrapper.bankName;
+                    acc.Website = wrapper.website;
+                    acc.Phone = wrapper.phone;
+                    acc.d21_Email__c = wrapper.email;
+                    acc.d21_Coordinator_Name__c = wrapper.coordinator;
+                    acc.RecordTypeId = spermBankRecordTypeId;
+                    
+                    if(wrapper.spermbankId != null) {
+                        acc.Id = wrapper.spermbankId;
+                    }
+                    
+                    if(wrapper.coordinatorContactAvailable != null && string.IsNotBlank(wrapper.coordinatorContactAvailable)){
+                    }
+                    
+                    upsertAccountList.add(acc);
                 }
-                upsertAccountList.add(acc);
             }
             
             if(!upsertAccountList.isEmpty()) {
@@ -221,7 +233,7 @@ public static Response createSpermBankWithSDN(string contactObj) {
         }
         
         // Process additional banks if they exist
-        if(isAdditionalBanksAvailable == false && spermBankList != null && !spermBankList.isEmpty()) {
+        /*if(isAdditionalBanksAvailable == false && spermBankList != null && !spermBankList.isEmpty()) {
             list<Account> accountList = new list<Account>();
             
             for(SpermBankWrapper record : spermBankList) {
@@ -309,7 +321,7 @@ public static Response createSpermBankWithSDN(string contactObj) {
                 }
             }
             wrapperData.responseList = spermBankResponse;
-        }
+        }*/
         
         return new Response(true, JSON.serialize(wrapperData));
     } catch (Exception e) {
@@ -479,46 +491,48 @@ public static Response createSpermClinicWithSDN(string contactObj){
  	public static Response createSpermClinicWithSDN(String contactObj) {
     try {
         DonorRegistrationWrapper donor = (DonorRegistrationWrapper) JSON.deserialize(contactObj, DonorRegistrationWrapper.class);
-
+		system.debug('donor' + donor);
+        system.debug('donor' + donor.clinicInfoWithSDN.primaryClinicsListFromApex);
         SpermBankWrapperResponse wrapper = new SpermBankWrapperResponse();
-        PrimaryCheckBoxClass primaryCheckBoxesCls = new PrimaryCheckBoxClass();
-        primaryCheckBoxesCls.primaryConfirmed = donor.clinicInfoWithSDN.primaryConfirmed;
-        primaryCheckBoxesCls.primaryIncorrect = donor.clinicInfoWithSDN.primaryIncorrect;
-        boolean isAutoSpermClinicsAllowedToDml = donor.clinicInfoWithSDN.isAutoSpermClinicsAllowedToDml;
-        system.debug(isAutoSpermClinicsAllowedToDml);
-        wrapper.primaryCheckBoxOptions = primaryCheckBoxesCls;
+      
+        //boolean isAutoSpermClinicsAllowedToDml = donor.clinicInfoWithSDN.isAutoSpermClinicsAllowedToDml;
+        //system.debug(isAutoSpermClinicsAllowedToDml);
+        //wrapper.primaryCheckBoxOptions = primaryCheckBoxesCls;
 
-        Boolean isAddionalPrimaryClinic = donor.clinicInfoWithSDN.primaryConfirmed;
-        Boolean isAddionalPrimaryIncorrect = donor.clinicInfoWithSDN.primaryIncorrect;
+        //Boolean isAddionalPrimaryClinic = donor.clinicInfoWithSDN.primaryConfirmed;
+        //Boolean isAddionalPrimaryIncorrect = donor.clinicInfoWithSDN.primaryIncorrect;
 
-        List<SpermBankWrapper> autoPopulatedSpermBanks = donor.clinicInfoWithSDN.primaryBanksListFromApex;
-        Boolean isAddionalClinicsAvailable = donor.clinicInfoWithSDN.noOtherBanks;
-		system.debug('496 >>>' + donor.clinicInfoWithSDN.noOtherBanks);
-        system.debug('496 >>>' + donor.clinicInfoWithSDN);
+        List<SpermBankWrapper> autoPopulatedSpermBanks = donor.clinicInfoWithSDN.primaryClinicsListFromApex;
+        //Boolean isAddionalClinicsAvailable = donor.clinicInfoWithSDN.noOtherBanks;
+
         List<SpermBankWrapper> spermBankList = donor.clinicInfoWithSDN.additionalBanks;
         List<SpermBankWrapper> spermBankResponse = new List<SpermBankWrapper>();
 
         List<Account> accountList = new List<Account>();
         List<Account> upsertAccountList = new List<Account>();
 
-        if(isAutoSpermClinicsAllowedToDml != null && isAutoSpermClinicsAllowedToDml != false){
+        if(autoPopulatedSpermBanks != null){
         // Upsert auto-populated clinic accounts
             for (SpermBankWrapper wrp : autoPopulatedSpermBanks) {
-                Account acc = new Account();
-                acc.Name = wrp.bankName;
-                acc.Website = wrp.website;
-                acc.Phone = wrp.phone;
-                acc.d21_Email__c = wrp.email;
-                acc.d21_Coordinator_Name__c = wrp.coordinator;
-                if (wrp.spermclinicId != null) {
-                    acc.Id = wrp.spermclinicId;
-                }
-                upsertAccountList.add(acc);
+                system.debug('>>>' + wrp.primaryConfirmed);
+                if(wrp.primaryConfirmed != null &&  wrp.primaryConfirmed == true){
+                    Account acc = new Account();
+                    acc.Name = wrp.bankName;
+                    acc.Website = wrp.website;
+                    acc.Phone = wrp.phone;
+                    acc.d21_Email__c = wrp.email;
+                    acc.d21_Coordinator_Name__c = wrp.coordinator;
+                    if (wrp.spermclinicId != null) {
+                        acc.Id = wrp.spermclinicId;
+                    }
+                    upsertAccountList.add(acc);
+                } 
             }
         }
 
         if (!upsertAccountList.isEmpty()) {
             update upsertAccountList;
+            system.debug(upsertAccountList);
 
             // Upsert junctions for auto-populated clinics
             Set<Id> accIds = new Set<Id>();
@@ -558,7 +572,7 @@ public static Response createSpermClinicWithSDN(string contactObj){
         }
 
         // Upsert user-entered additional clinics
-        if (!isAddionalClinicsAvailable) {
+        /*if (!isAddionalClinicsAvailable) {
             for (SpermBankWrapper record : spermBankList) {
                 Account acc = new Account();
                 acc.Name = record.bankName;
@@ -572,7 +586,7 @@ public static Response createSpermClinicWithSDN(string contactObj){
                 }
                 accountList.add(acc);
             }
-        }
+        }*
 
         Map<String, d21_Donor_Fertility_Clinic__c> clinicIdVsCinicJunctionRecordMap = new Map<String, d21_Donor_Fertility_Clinic__c>();
         Set<Id> clinicRecordIdset = new Set<Id>();
@@ -629,10 +643,10 @@ public static Response createSpermClinicWithSDN(string contactObj){
 
             upsert junctions;
             system.debug('junctions' + junctions);
-        }
+        }*/
 
-        wrapper.spermBankList = spermBankResponse;
-        return new Response(true, JSON.serialize(wrapper));
+        //wrapper.spermBankList = spermBankResponse;
+        return new Response(true, '');
 
     } catch (Exception e) {
         return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - ' + e.getLineNumber());
@@ -1353,7 +1367,7 @@ public static SpermBankRecipientResponse createSpermDonorRecipients(String Recip
     }
 
     public class ClinicDetails{
-        @AuraEnabled public List<SpermBankWrapper> primaryBanksListFromApex;
+        @AuraEnabled public List<SpermBankWrapper> primaryClinicsListFromApex;
         @AuraEnabled public SpermBankWrapper primaryBank;
         @AuraEnabled public List<SpermBankWrapper> additionalBanks;
         @AuraEnabled public boolean noOtherBanks;
@@ -1367,6 +1381,8 @@ public static SpermBankRecipientResponse createSpermDonorRecipients(String Recip
         @AuraEnabled public SpermBankWrapper spermBank;
         @AuraEnabled public List<SpermBankWrapper> spermBankList;
         @AuraEnabled public PrimaryCheckBoxClass primaryCheckBoxOptions;
+       
+        
     }
     
     public class PrimaryCheckBoxClass{
