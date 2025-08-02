@@ -44,6 +44,7 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
 
     async connectedCallback() {
         try {
+            this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
             const { donationBasics, isSkipped, agenciesWithCodes = {} } = this.contactObj || {};
             this.totalDonationsCount = donationBasics?.egg?.liveBirths || 0;
 
@@ -81,15 +82,13 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
                             noAgencyChecked: outcome.noAgencyChecked || false,
                             incorrectAgencyChecked: existing.incorrectAgencyChecked || false,
                             primaryConfirmed: existing.primaryConfirmed || false,
-                            showDonorCodeInput: !!outcome.showDonorCodeInput,
-                            hideDonorCodeInput: outcome.hideDonorCodeInput ?? true,
-                            CoordinatorName: outcome.CoordinatorName || '',
+                            showDonorCodeInput: !!existing.showDonorCodeInput,
+                            hideDonorCodeInput: existing.hideDonorCodeInput ?? true,
+                            CoordinatorName: existing.CoordinatorName || '',
                             PMC: outcome.PMC,
-                            Coordinator: outcome.Coordinator || { lastName: '', firstName: '', phone: '', parentId: outcome.agencyId },
-                            openCoordinator: outcome.openCoordinator || false,
-                            filter: {
-                                criteria: [{ fieldPath: 'AccountId', operator: 'eq', value: outcome.agencyId }]
-                            }
+                            disableAddIcon : existing.disableAddIcon || true,
+                            Coordinator: outcome.Coordinator || { lastName: '', firstName: '', phone: '', parentId: outcome.agencyId, coordinatorId: '' },
+                            openCoordinator: outcome.openCoordinator || false
                         };
                     });
                 }
@@ -143,12 +142,18 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
                     console.log('Result deleteCoordinator >>> ' + JSON.stringify(res));
                 }
                 this.donationOutcomesListFromApex[index]['CoordinatorName'] = coordinatorRecord.coordinatorId;
-                this.donationOutcomesListFromApex[index]['Coordinator'] = { lastName: '', firstName: '', phone: '', parentId: coordinatorRecord.parentId };
+                this.donationOutcomesListFromApex[index]['Coordinator']['coordinatorId'] = coordinatorRecord.coordinatorId;
                 this.donationOutcomesListFromApex[index]['openCoordinator'] = false;
             } else {
                 console.log('Result Fail >>> ' + JSON.stringify(result));
             }
         }
+    }
+
+
+    handleAddIcon(event){
+        let index = parseInt(event.target.dataset.index, 10);
+        this.donationOutcomesListFromApex[index]['disableAddIcon'] = event.detail;
     }
 
 
@@ -209,8 +214,6 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
 
             // Update tracked list
             this.donationOutcomesListFromApex = [...updatedOutcomes];
-
-            console.log('this.donationOutcomesListFromApex >>> ' + JSON.stringify(this.donationOutcomesListFromApex));
 
             // Maintain total selected cycles
             this.totalSelectedCycles = isChecked
@@ -321,6 +324,15 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
     }
 
 
+    handleValueSelectedOnAccount(event) {
+        if (event.detail) {
+            let index = parseInt(event.target.dataset.index, 10);
+            this.donationOutcomesListFromApex[index].CoordinatorName = event.detail.id;
+        }
+    }
+
+
+
     handleEggAgencyWithEDNBack() {
         try {
             this.updateContactObj();
@@ -353,14 +365,22 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
                 }
             }
 
-            console.log('this.unselectedCycles >>> ' + JSON.stringify(this.unselectedCycles));
-            console.log('totalSelectedCycles >>> ' + JSON.stringify(this.totalSelectedCycles));
 
             if (this.unselectedCycles.length > 0) {
                 this.handleAgencyMissedCycles(true);
             } else {
                 this.updateContactObj();
-                console.log('this.contactObj 1 >>> ' + JSON.stringify(this.contactObj));
+                let param = {
+                    donorId: this.contactObj.donorId,
+                    agencyData: JSON.stringify(this.contactObj.agenciesWithCodes.donationOutcomesListFromApex)
+                }
+                let result = await updateEggAgenciesWithCodes(param);
+                console.log('Result updateEggAgenciesWithCodes >>> ' + JSON.stringify(result));
+                if (result.isSuccess) {
+                    this.dispatchEvent(new CustomEvent('next', {
+                        detail: this.contactObj
+                    }));
+                }
             }
         } catch (e) {
             console.error(`handleEggAgencyWithEDNNext Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`);
@@ -472,6 +492,7 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
                 totalSelectedCycles: this.totalSelectedCycles,
                 unselectedCycles: this.unselectedCycles
             };
+            console.log('this.contactObj 1 >>> ' + JSON.stringify(this.contactObj));
         } catch (e) {
             console.error(`updateContactObj Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`);
         }

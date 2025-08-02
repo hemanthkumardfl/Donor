@@ -8,42 +8,42 @@
             <!-- Primary Sperm Banks Section -->
             <template if:true={primaryBanksList}>
                 <template for:each={primaryBanksList} for:item="bank">
-                    <div key={bank.index} class="spermbankcls">
+                    <div key={bank.spermbankId} class="spermbankcls">
                         <div class="slds-box slds-theme_shade slds-m-bottom_large slds-m-top_medium" style="background-color: #E8E3DC;">
                             <h3 class="slds-text-heading_medium slds-m-bottom_small"><b>Sperm Bank - {bank.PMC}</b></h3>
                             <lightning-layout multiple-rows="true" class="parentlayoutcls">
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"><b>Bank Name</b></lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
                                     <lightning-input variant="label-hidden" value={bank.bankName} onchange={handlePrimaryInputChange} disabled="true"
-                                      data-spermbankid={bank.spermbankId}  onblur={handleInputBlur} name="bankName" data-index={bank.index} maxlength="255"></lightning-input>
+                                      data-spermbankid={bank.spermbankId}  onblur={handleInputBlur} name="bankName" data-index={bank.spermbankId} maxlength="255"></lightning-input>
                                 </lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"><b>Website</b></lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
                                     <lightning-input variant="label-hidden" type="text" value={bank.website} onchange={handlePrimaryInputChange} disabled="true"
-                                         data-spermbankid={bank.spermbankId} onblur={handleInputBlur} name="website" data-index={bank.index} placeholder="http://www.example.com"></lightning-input>
+                                         data-spermbankid={bank.spermbankId} onblur={handleInputBlur} name="website" data-index={bank.spermbankId} placeholder="http://www.example.com"></lightning-input>
                                 </lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"><b>Phone</b></lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
                                     <lightning-input variant="label-hidden" type="tel" value={bank.phone} onchange={handlePrimaryInputChange} disabled="true"
-                                         data-spermbankid={bank.spermbankId} onblur={handleInputBlur} name="phone" data-index={bank.index} ></lightning-input>
+                                         data-spermbankid={bank.spermbankId} onblur={handleInputBlur} name="phone" data-index={bank.spermbankId} ></lightning-input>
                                 </lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"><b>Coordinator</b></lightning-layout-item>
                                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7" class="coordinatorSectionCls">
-                                    <div class="coordinatorContainerCls" key={bank.coordinator}>
-                                        <!-- <lightning-record-picker
-                                            key={bank.spermbankId}
+                                    <div class="coordinatorContainerCls" key={bank.spermbankId}>
+                                       <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact"
+                                            object-label="Contact" object-api-name="Contact" field-api-name="Name"
+                                            parent-record-id={bank.spermbankId} parent-field-api-name="AccountId"
+                                            selected-record-id = {bank.coordinatorUserInputsObj.coordinatorId}
+                                            selected-record-id-change={bank.coordinatorUserInputsObj.coordinatorId}
+                                            other-field-api-name="Phone"
+                                            onvalueselected={handleValueSelectedOnAccount}
+                                            onlookupdata = {handleLookupData}
                                             class="recordPickerCls"
-                                            label="Coordinator"
-                                            variant="label-hidden"
-                                            placeholder="Search Coordinator..."
-                                            value={bank.coordinator}
-                                            object-api-name="Contact" 
-                                            display-info={displayInfo}
-                                            filter={bank.filter}
-                                            data-spermbankid={bank.spermbankId}
-                                            onchange={handleCoordinator}>
-                                        </lightning-record-picker> -->
-                                        <c-d21_-dynamic-custom-lookup
+                                            data-spermbankid={bank.spermbankId}>
+                                        </c-d21_-dynamic-custom-lookup>
+
+
+                                        <!-- <c-d21_-dynamic-custom-lookup
                                         object-api-name = "Contact"
                                         class="recordPickerCls"
                                         search-key= {bank.coordinatorUserInputsObj.fullName}
@@ -51,8 +51,13 @@
                                         onlookupnodata={handleNoLookUpData}
                                         account-id={bank.spermbankId}
                                         data-spermbankid={bank.spermbankId}>
-                                        </c-d21_-dynamic-custom-lookup>
-                                        <lightning-icon icon-name='utility:add' if:true={bank.showAddIcon} data-spermbankid={bank.spermbankId} size='small' onclick={handleAddCoordinator} class="addIconCls"></lightning-icon>
+                                        </c-d21_-dynamic-custom-lookup> -->
+                                        
+                                        <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add" disabled={bank.disableIcon}
+                                        onclick={handleAddCoordinator} style="cursor:pointer" data-spermbankid={bank.spermbankId}
+                                        class="addIconCls"
+                                        size='medium'></lightning-button-icon>
+
                                     </div>
                                     <div if:true={bank.isAdditionalCoordinators} class="coordinatorInputsContainerCls">
                                         <div class="coordinatorCls">
@@ -74,7 +79,7 @@
                                         </div>
                                         <!-- save coordinator button  -->
                                         <div class="saveCoordinatorBtnCls">
-                                            <div class="savebtnCls textcls" data-spermbankid={bank.spermbankId} onclick={handleCoordinatorSave}>Save Coordinator</div>
+                                            <div class="savebtnCls textcls" data-spermbankid={bank.spermbankId} onclick={handleCoordinatorSave}>Add your Coordinator</div>
                                         </div>
 
                                     </div>
@@ -91,15 +96,15 @@
                             class="slds-m-bottom_medium" checked={primaryIncorrect} onchange={handlePrimaryIncorrectChange}
                             data-index={bank.index}>
                         </lightning-input> -->
-                        <lightning-layout-item size="12" padding="around-small">
+                        <lightning-layout-item size="12" padding="around-small" class="spermBankRadioBtnsCls">
                             <span class="slds-m-top_large slds-m-bottom_large textcls">Did you work with this Sperm Bank?</span>
                             <div class="checkboxcls">
-                                <lightning-input type="radio" name={bank.index} label="Yes" value="primaryConfirmed"
-                                    onchange={handleRadioChange} checked={bank.primaryConfirmed} data-index={bank.index}  data-spermbankid={bank.spermbankId}>
+                                <lightning-input type="radio" name={bank.spermbankId} label="Yes" value="primaryConfirmed"
+                                    onchange={handleRadioChange} checked={bank.primaryConfirmed}   data-spermbankid={bank.spermbankId}>
                                 </lightning-input>
-                                <lightning-input type="radio" name={bank.index} label="No" value="incorrectSpermBankChecked"
+                                <lightning-input type="radio" name={bank.spermbankId} label="No" value="incorrectSpermBankChecked"
                                     onchange={handleRadioChange} checked={bank.incorrectSpermBankChecked}
-                                    data-index={bank.index}  data-spermbankid={bank.spermbankId}>
+                                    data-spermbankid={bank.spermbankId}>
                                 </lightning-input>
                             </div>
                         </lightning-layout-item>

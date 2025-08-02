@@ -1,0 +1,51 @@
+<template>
+    <div class="slds-form-element">
+        <label class="slds-form-element__label" for="lookup">{label}</label>
+        <div class="slds-form-element__control">
+            <div class="slds-combobox_container">
+                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click" aria-expanded={isOpen} aria-haspopup="listbox" role="combobox">
+                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                        <input
+                            type="text"
+                            class="slds-input slds-combobox__input"
+                            placeholder={placeholder}
+                            value={searchKey}
+                            oninput={handleInputChange}
+                            onclick={handleInputClick}
+                            onblur={handleInputBlur}
+                            aria-controls="lookup-listbox"
+                            autocomplete="off"
+                        />
+                        <lightning-icon icon-name="utility:search" size="x-small" class="slds-input__icon slds-input__icon_right"></lightning-icon>
+                    </div>
+                    <lightning-spinner if:true={isLoading} alternative-text="Searching..." size="small"></lightning-spinner>
+                    <div if:true={isOpen} class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
+                        <ul class="slds-listbox" role="presentation">
+                            <template if:true={searchResults.length}>
+                                <template for:each={searchResults} for:item="record">
+                                    <li key={record.Id} role="option" class="slds-listbox__item">
+                                        <div class="slds-listbox__option slds-listbox__option_plain" role="option" onclick={handleSelect} data-id={record.Id} data-name={record.Name}>
+                                            <span>{record.Name}</span>
+                                        </div>
+                                    </li>
+                                </template>
+                            </template>
+                            <template if:false={searchResults.length}>
+                                <li class="slds-listbox__item">
+                                    <div class="slds-listbox__option slds-listbox__option_plain" role="option">
+                                        <span>No results found</span>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <template if:true={showNoResultsMessage}>
+                <div class="slds-text-color_error slds-m-top_x-small">
+                    There is no match record found with these names you can click on + icon
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

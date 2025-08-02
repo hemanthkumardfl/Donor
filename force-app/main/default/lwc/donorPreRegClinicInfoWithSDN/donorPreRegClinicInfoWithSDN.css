@@ -20,7 +20,9 @@
 .spermbank {
     width: 100%;
 }
-
+.clinicRadioBtnsCls{
+    padding: 0;
+}
 .coordinatorSectionCls{
     display: flex;
     flex-direction: column;
@@ -28,9 +30,8 @@
 }
 .recordPickerCls{
     width: 100%;
-    position: relative;
-    right: 0.5em;
-    bottom: 0.5em;
+    position: relative; 
+    bottom: 1.5em;
 }
 
 .coordinatorContainerCls{

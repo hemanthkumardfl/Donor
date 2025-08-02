@@ -41,169 +41,176 @@
         </div>
     </div>
 
-    <!-- Agency with EDN starts here -->
-    <template if:true={donationOutcomesListFromApex} for:each={donationOutcomesListFromApex} for:item="outcome"
-        for:index="index">
-        <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium" key={outcome.index}>
+    <div class="slds-card">
+        <!-- Agency with EDN starts here -->
+        <template if:true={donationOutcomesListFromApex} for:each={donationOutcomesListFromApex} for:item="outcome"
+            for:index="index">
+            <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium" key={outcome.index}>
 
-            <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
-                <span class="textcls headingcls">Agency/Egg Bank - {outcome.PMC}</span>
-                <span class="textcls agencyDescriptionCls">
-                    Based on the EDN code you entered, it seems that you worked with this agency/egg bank:
-                </span>
-            </lightning-layout-item>
+                <lightning-layout-item size="12" padding="around-small" class="headingSectionCls">
+                    <span class="textcls headingcls">Agency/Egg Bank - {outcome.PMC}</span>
+                    <span class="textcls agencyDescriptionCls">
+                        Based on the EDN code you entered, it seems that you worked with this agency/egg bank:
+                    </span>
+                </lightning-layout-item>
 
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
-                padding="around-small">
-                <span class="textcls inputs đấtcls inputfontcls">Agency Name</span>
-            </lightning-layout-item>
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
-                <lightning-input type="text" value={outcome.Name} class="textcls inputscls"
-                    onchange={handleApexInputChange} onblur={handleInputBlur} name="Name" data-index={outcome.index}
-                    maxlength="255" disabled="true">
-                </lightning-input>
-            </lightning-layout-item>
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
+                    padding="around-small">
+                    <span class="textcls inputs đấtcls inputfontcls">Agency Name</span>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
+                    <lightning-input type="text" value={outcome.Name} class="textcls inputscls"
+                        onchange={handleApexInputChange} onblur={handleInputBlur} name="Name" data-index={outcome.index}
+                        maxlength="255" disabled="true">
+                    </lightning-input>
+                </lightning-layout-item>
 
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
-                padding="around-small">
-                <span class="textcls inputscls inputfontcls">Agency Website</span>
-            </lightning-layout-item>
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
-                <lightning-input type="url" value={outcome.Website} class="textcls inputscls"
-                    onchange={handleApexInputChange} onblur={handleInputBlur} name="Website" data-index={outcome.index}
-                    placeholder="http://www.example.com" disabled="true">
-                </lightning-input>
-            </lightning-layout-item>
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
+                    padding="around-small">
+                    <span class="textcls inputscls inputfontcls">Agency Website</span>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
+                    <lightning-input type="url" value={outcome.Website} class="textcls inputscls"
+                        onchange={handleApexInputChange} onblur={handleInputBlur} name="Website"
+                        data-index={outcome.index} placeholder="http://www.example.com" disabled="true">
+                    </lightning-input>
+                </lightning-layout-item>
 
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
-                padding="around-small">
-                <span class="textcls inputscls inputfontcls">Agency Phone</span>
-            </lightning-layout-item>
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
-                <lightning-input type="tel" value={outcome.Phone} class="textcls inputscls"
-                    onchange={handleApexInputChange} onblur={handleInputBlur} name="Phone"
-                    pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
-                    message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
-                    data-index={outcome.index} disabled="true">
-                </lightning-input>
-            </lightning-layout-item>
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
+                    padding="around-small">
+                    <span class="textcls inputscls inputfontcls">Agency Phone</span>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
+                    <lightning-input type="tel" value={outcome.Phone} class="textcls inputscls"
+                        onchange={handleApexInputChange} onblur={handleInputBlur} name="Phone"
+                        pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                        message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                        data-index={outcome.index} disabled="true">
+                    </lightning-input>
+                </lightning-layout-item>
 
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
-                padding="around-small">
-                <span class="textcls inputscls inputfontcls">Coordinator Name</span>
-            </lightning-layout-item>
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7"
-                class="slds-p-top_small">
-                <lightning-layout multiple-rows>
-                    <lightning-layout-item size="11">
-                        <lightning-record-picker label="Coordinator Name" variant="label-hidden"
-                            object-api-name="Contact" value={outcome.CoordinatorName} filter={outcome.filter}>
-                        </lightning-record-picker>
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
+                    padding="around-small">
+                    <span class="textcls inputscls inputfontcls">Coordinator Name</span>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
+                    <lightning-layout multiple-rows horizontal-align="spread">
+                        <lightning-layout-item size="11">
+                            <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact"
+                                object-label="Contact" object-api-name="Contact" field-api-name="Name"
+                                parent-record-id={outcome.agencyId} parent-field-api-name="AccountId"
+                                onlookupdata={handleAddIcon} selected-record-id={outcome.CoordinatorName}
+                                data-index={outcome.index} selected-record-id-change={outcome.CoordinatorName}
+                                other-field-api-name="Phone" onvalueselected={handleValueSelectedOnAccount}>
+                            </c-d21_-dynamic-custom-lookup>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="1" class="slds-p-left_medium slds-p-top_large">
+                            <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add"
+                                disabled={outcome.disableAddIcon} onclick={handleOpenCreateCoordinator}
+                                style="cursor:pointer" data-index={index} size="medium"></lightning-button-icon>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
+                    if:true={outcome.openCoordinator} padding="around-small">
+                </lightning-layout-item>
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7"
+                    if:true={outcome.openCoordinator} class="slds-p-top_small">
+                    <lightning-layout-item size="6">
+                        <lightning-input type="text" name="firstName" data-index={index}
+                            value={outcome.Coordinator.firstName} onchange={handleCoordinatorChange}
+                            variant="label-hidden" maxlength="40" placeholder="First Name"
+                            class="CoordinatorClass"></lightning-input>
                     </lightning-layout-item>
-                    <lightning-layout-item size="1" class="slds-p-left_medium">
-                        <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add"
-                            onclick={handleOpenCreateCoordinator} style="cursor:pointer" data-index={index}
-                            size="medium"></lightning-button-icon>
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-input type="text" name="lastName" data-index={index} variant="label-hidden"
+                            value={outcome.Coordinator.lastName} onchange={handleCoordinatorChange}
+                            placeholder="Last Name" maxlength="80" class="CoordinatorClass"></lightning-input>
                     </lightning-layout-item>
-                </lightning-layout>
-            </lightning-layout-item>
-
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
-                if:true={outcome.openCoordinator} padding="around-small">
-            </lightning-layout-item>
-            <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7"
-                if:true={outcome.openCoordinator} class="slds-p-top_small">
-                <lightning-layout-item size="6" padding="around-small">
-                    <lightning-input type="text" name="firstName" data-index={index}
-                        value={outcome.Coordinator.firstName} onchange={handleCoordinatorChange} variant="label-hidden"
-                        maxlength="40" placeholder="First Name" class="CoordinatorClass"></lightning-input>
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-input variant="label-hidden" name="phone" data-index={index}
+                            value={outcome.Coordinator.phone} onchange={handleCoordinatorChange} placeholder="Phone"
+                            type="tel" pattern="^\+\d{1,3}(?=\d{10}$)\d{10}$" class="CoordinatorClass"
+                            message-when-pattern-mismatch="Enter a valid phone number with country code, e.g: +911234567890."></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" padding="around-small">
+                        <div class="nextbtncls" onclick={handleCreateCoordinator} data-id={outcome.agencyId}
+                            data-index={index}>Save</div>
+                    </lightning-layout-item>
                 </lightning-layout-item>
-                <lightning-layout-item size="6" padding="around-small">
-                    <lightning-input type="text" name="lastName" data-index={index} variant="label-hidden"
-                        value={outcome.Coordinator.lastName} onchange={handleCoordinatorChange} placeholder="Last Name"
-                        maxlength="80" class="CoordinatorClass"></lightning-input>
-                </lightning-layout-item>
-                <lightning-layout-item size="6" padding="around-small">
-                    <lightning-input variant="label-hidden" name="phone" data-index={index}
-                        value={outcome.Coordinator.phone} onchange={handleCoordinatorChange} placeholder="Phone"
-                        type="tel" pattern="^\+\d{1,3}(?=\d{10}$)\d{10}$" class="CoordinatorClass"
-                        message-when-pattern-mismatch="Enter a valid phone number with country code, e.g: +911234567890."></lightning-input>
-                </lightning-layout-item>
-                <lightning-layout-item size="6" padding="around-small">
-                    <div class="nextbtncls" onclick={handleCreateCoordinator} data-id={outcome.agencyId}
-                        data-index={index}>Save</div>
-                </lightning-layout-item>
-            </lightning-layout-item>
 
-            <lightning-layout-item size="12" padding="around-small" class="slds-m-top_medium">
-                <span class="slds-m-top_large slds-m-bottom_large textcls"><b>Do you know your donor code with this
-                        agency?</b></span>
-                <div class="checkboxcls">
-                    <lightning-input type="radio" name="DonorAgencyCode" label="No" value="no"
-                        onchange={handleApexRadioChange} checked={outcome.hideDonorCodeInput}
-                        data-index={outcome.index}>
-                    </lightning-input>
-                    <lightning-input type="radio" name="DonorAgencyCode" label="Yes, please enter:" value="yes"
-                        onchange={handleApexRadioChange} checked={outcome.showDonorCodeInput}
-                        data-index={outcome.index}>
-                    </lightning-input>
-                </div>
-                <template if:true={outcome.showDonorCodeInput}>
-                    <lightning-input class="slds-m-top_small textcls inputscls" placeholder="Enter donor code"
-                        variant="label-hidden" value={outcome.DonorCode} onchange={handleApexInputChange}
-                        onblur={handleInputBlur} name="DonorCode" data-index={outcome.index} maxlength="255"
-                        disabled={outcome.noAgencyChecked}>
-                    </lightning-input>
-                </template>
-            </lightning-layout-item>
-
-            <lightning-layout-item size="12" padding="around-small">
-                <span class="slds-m-top_large slds-m-bottom_large textcls"><b>Do you work with this
-                        agency?</b></span>
-                <div class="checkboxcls">
-                    <lightning-input type="radio" name={outcome.index} label="Yes" value="primaryConfirmed"
-                        onchange={handleRadioChange} checked={outcome.primaryConfirmed} data-index={outcome.index}>
-                    </lightning-input>
-                    <lightning-input type="radio" name={outcome.index} label="No" value="incorrectAgencyChecked"
-                        onchange={handleRadioChange} checked={outcome.incorrectAgencyChecked}
-                        data-index={outcome.index}>
-                    </lightning-input>
-
-                </div>
-            </lightning-layout-item>
-            <hr>
-
-            <lightning-layout-item size="12" padding="around-small" class="cyclesdescriptioncls">
-                <span class="textcls agencyDescriptionCls">You said you did {totalDonationsCount} cycles, which cycles
-                    did you work with this agency?</span>
-            </lightning-layout-item>
-
-            <!-- cycles -->
-            <lightning-layout-item size="12" padding="around-small" class="cyclesCls">
-                <template if:true={outcome.cycles} for:each={outcome.cycles} for:item="cycle">
-                    <div class="cycle slds-p-right_small slds-p-bottom_small" key={cycle.cycleName}>
-                        <lightning-input type="checkbox" class="textcls cycleCheckboxcls" data-name="ApexCycle"
-                            value={cycle.cycleId} checked={cycle.checked} disabled={cycle.disabled}
-                            onchange={handleApexCycleChange} data-index={outcome.index}
-                            data-cycleindex={cycle.index}>
+                <lightning-layout-item size="12" padding="around-small" class="slds-m-top_medium">
+                    <span class="slds-m-top_large slds-m-bottom_large textcls"><b>Do you know your donor code with this
+                            agency?</b></span>
+                    <div class="checkboxcls">
+                        <lightning-input type="radio" name={index} label="No" value="no"
+                            onchange={handleApexRadioChange} checked={outcome.hideDonorCodeInput}
+                            data-index={outcome.index}>
                         </lightning-input>
-                        <span class="textcls checkboxspancls">{cycle.cycleName}</span>
+                        <lightning-input type="radio" name={index} label="Yes, please enter:" value="yes"
+                            onchange={handleApexRadioChange} checked={outcome.showDonorCodeInput}
+                            data-index={outcome.index}>
+                        </lightning-input>
                     </div>
-                </template>
+                    <template if:true={outcome.showDonorCodeInput}>
+                        <lightning-input class="slds-m-top_small textcls inputscls" placeholder="Enter donor code"
+                            variant="label-hidden" value={outcome.DonorCode} onchange={handleApexInputChange} style="width:20%"
+                            onblur={handleInputBlur} name="DonorCode" data-index={outcome.index} maxlength="150"
+                            disabled={outcome.noAgencyChecked}>
+                        </lightning-input>
+                    </template>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small">
+                    <span class="slds-m-top_large slds-m-bottom_large textcls"><b>Do you work with this
+                            agency?</b></span>
+                    <div class="checkboxcls">
+                        <lightning-input type="radio" name={outcome.agencyId} label="Yes" value="primaryConfirmed"
+                            onchange={handleRadioChange} checked={outcome.primaryConfirmed} data-index={outcome.index}>
+                        </lightning-input>
+                        <lightning-input type="radio" name={outcome.agencyId} label="No" value="incorrectAgencyChecked"
+                            onchange={handleRadioChange} checked={outcome.incorrectAgencyChecked}
+                            data-index={outcome.index}>
+                        </lightning-input>
+
+                    </div>
+                </lightning-layout-item>
+                <hr>
+
+                <lightning-layout-item size="12" padding="around-small" class="cyclesdescriptioncls">
+                    <span class="textcls agencyDescriptionCls">You said you did {totalDonationsCount} cycles, which
+                        cycles
+                        did you work with this agency?</span>
+                </lightning-layout-item>
+
+                <!-- cycles -->
+                <lightning-layout-item size="12" padding="around-small" class="cyclesCls">
+                    <template if:true={outcome.cycles} for:each={outcome.cycles} for:item="cycle">
+                        <div class="cycle slds-p-right_small slds-p-bottom_small" key={cycle.cycleName}>
+                            <lightning-input type="checkbox" class="textcls cycleCheckboxcls" data-name="ApexCycle"
+                                value={cycle.cycleId} checked={cycle.checked} disabled={cycle.disabled}
+                                onchange={handleApexCycleChange} data-index={outcome.index}
+                                data-cycleindex={cycle.index}>
+                            </lightning-input>
+                            <span class="textcls checkboxspancls">{cycle.cycleName}</span>
+                        </div>
+                    </template>
+                </lightning-layout-item>
+                <!-- cycles -->
+
+            </lightning-layout>
+            <!-- <div style="min-height:2em;" key={outcome.index}></div> -->
+        </template>
+        <!-- Agency with EDN ends here -->
+        <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium">
+            <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
+                <div class="backbtn textcls" onclick={handleEggAgencyWithEDNBack}>Back</div>
+                <div class="nextbtncls textcls" onclick={handleEggAgencyWithEDNNext}>Next</div>
             </lightning-layout-item>
-            <!-- cycles -->
+            <!-- buttons -->
 
         </lightning-layout>
-        <div style="min-height:2em;" key={outcome.index}></div>
-    </template>
-    <!-- Agency with EDN ends here -->
-    <lightning-layout multiple-rows class="eggagencycls slds-p-around_medium">
-        <lightning-layout-item size="12" class="buttonscls" padding="around-medium">
-            <div class="backbtn textcls" onclick={handleEggAgencyWithEDNBack}>Back</div>
-            <div class="nextbtncls textcls" onclick={handleEggAgencyWithEDNNext}>Next</div>
-        </lightning-layout-item>
-        <!-- buttons -->
-
-    </lightning-layout>
+    </div>
 
 </template>

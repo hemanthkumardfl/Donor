@@ -20,6 +20,9 @@
 .spermbank {
     width: 100%;
 }
+.spermBankRadioBtnsCls{
+    padding: 0;
+}
 
 .labelhiddenCls{
     color:  #E8E3DC;
@@ -37,9 +40,8 @@
 }
 .recordPickerCls{
     width: 100%;
-    position: relative;
-    right: 0.5em;
-    bottom: 0.5em;
+    position: relative; 
+    bottom: 1.5em;
 }
 
 .coordinatorContainerCls{

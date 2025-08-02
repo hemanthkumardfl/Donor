@@ -1,6 +1,7 @@
 import { LightningElement, track, api } from 'lwc';
 import deleteSpermBank from '@salesforce/apex/SpermDonorPreRegistrationController.deleteSpermBank';
-
+import fetchSpermBankRecord from '@salesforce/apex/UtilityClass.fetchSpermBankRecord';
+import createCoordinator from '@salesforce/apex/UtilityClass.createCoordinator';
 
 export default class SpermBankDetails extends LightningElement {
     @track spermBanks = [
@@ -17,10 +18,19 @@ export default class SpermBankDetails extends LightningElement {
             donorCode: '',
             showDonorCodeInput: false,
             accountId : '',
-            junctionId : ''
+            junctionId : '',
+            showNoAccountRecordsErrorMessage :false,
+            disableIcon : true,
+            disableInputs : true,
+            isAdditionalCoordinators : false,
+            coordinatorUserInputsObj : {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : ''},
+            showNoContactRecordsErrorMessage :false,
+            disableAddContactIcon : true,
+            noInputsError : false
         }
     ];
     @track loadSpinner = false;
+    
     //@track showNumberedHeadings = false;
     @track noSpermBankChecked = false;
     @track showDeletePopup = false;
@@ -34,6 +44,192 @@ export default class SpermBankDetails extends LightningElement {
         { label: 'Yes', value: 'Yes' }
     ];
 
+    /***********************custom lookup handle****************************** */
+    async handleValueSelectedOnAccount(event){
+        console.log(JSON.stringify(event.detail));
+        let clinicNumber = event.target.dataset.clinicnumber;
+        let result = await fetchSpermBankRecord({accountId : event.detail.id});
+        if(result){
+            try{
+                console.log(JSON.stringify(result));
+                this.spermBanks = this.spermBanks.map(bank => {
+                    console.log(bank.clinicNumber+'____'+clinicNumber)
+                    if (bank.clinicNumber == clinicNumber){
+                        return { 
+                            ...bank, 
+                            name: result.Name || bank.name,
+                            website :  result.Website || bank.website,
+                            phone : result.Phone || bank.phone,
+                            accountId : result.Id || bank.accountId,
+                            disableInputs : true
+                        };
+                    }
+                    return bank;
+                });
+                this.spermBanks = [...  this.spermBanks];
+                console.log(JSON.stringify(this.spermBanks));
+            }
+            catch(e){
+                console.log(e.stack);
+                console.log(e.message);
+            }
+        }
+    }
+
+    handleLookupData(event) {
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.spermBanks = this.spermBanks.map(bank => {
+            if (bank.clinicNumber == clinicNumber) {
+                if(event.detail == true){
+                    return { 
+                        ...bank, 
+                        showNoAccountRecordsErrorMessage: false,
+                        disableIcon : true  
+                    };
+                }
+                else{
+                    return { 
+                        ...bank, 
+                        showNoAccountRecordsErrorMessage: true,
+                        disableIcon : false 
+                    };
+                }
+                
+            }
+            return bank;
+        });
+        console.log(JSON.stringify(this.spermBanks));
+    }
+
+    handleAddSpermBankDetails(event){
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.spermBanks = this.spermBanks.map(bank => {
+            if (bank.clinicNumber == clinicNumber) {
+                return { 
+                    ...bank, 
+                    disableInputs :  false  
+                };
+            }
+            return bank;
+        });
+         this.spermBanks = [...  this.spermBanks];
+        console.log(JSON.stringify(this.spermBanks));
+    }
+
+    /**************** coordinator starts ******************** */
+    handleValueSelectedOnContact(event){
+        console.log(JSON.stringify(event.detail))
+    }
+
+    handleContactLookupData(event){
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.spermBanks = this.spermBanks.map(bank => {
+            if (bank.clinicNumber == clinicNumber) {
+                if(event.detail == true){
+                    return { 
+                        ...bank, 
+                        showNoContactRecordsErrorMessage: false,
+                        disableAddContactIcon : true  
+                    };
+                }
+                else{
+                    return { 
+                        ...bank, 
+                        showNoContactRecordsErrorMessage: true,
+                        disableAddContactIcon : false 
+                    };
+                }
+                
+            }
+            return bank;
+        });
+        console.log(JSON.stringify(this.spermBanks));
+    }
+
+    
+    handleAddCoordinator(event){
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.spermBanks = this.spermBanks.map(bank => {
+            if (bank.clinicNumber == clinicNumber) {
+                return { ... bank, isAdditionalCoordinators : !bank.isAdditionalCoordinators}
+            }
+            return bank;
+        }); 
+
+        /*let clinicNumber = event.target.dataset.clinicnumber;
+        this.spermBanks = this.spermBanks.map(bank => {
+            if (bank.clinicNumber == clinicNumber) {
+                return { 
+                    ...bank, 
+                    disableInputs :  false  
+                };
+            }
+            return bank;
+        });*/
+        console.log(JSON.stringify(this.spermBanks));
+    }
+    handleCoordinatorInputs(event){
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.spermBanks = this.spermBanks.map(bank => {
+            if (bank.clinicNumber == clinicNumber) {
+                return {
+                    ...bank,
+                    coordinatorUserInputsObj: {
+                        ...bank.coordinatorUserInputsObj,
+                        [event.target.name]: event.target.value,
+                        parentId: bank.accountId
+                    }
+                };
+            }
+            return bank;
+        });
+        console.log(JSON.stringify(this.spermBanks));
+    }
+
+    async handleCoordinatorSave(event){
+        try{
+            let clinicNumber = event.target.dataset.clinicnumber;
+            let coordinatorUserInputs = {};
+            this.spermBanks.forEach(bank => {
+                if (bank.clinicNumber == clinicNumber) {
+                    coordinatorUserInputs = {... bank.coordinatorUserInputsObj};
+                }
+            });
+
+            console.log('  >>> '+JSON.stringify(coordinatorUserInputs))  
+            let result = await createCoordinator({coordinateData : JSON.stringify(coordinatorUserInputs)})
+            if (result.isSuccess) {
+                let response = JSON.parse(result.message)
+
+                this.spermBanks = this.spermBanks.map(bank => {
+                    if (bank.clinicNumber == clinicNumber) {
+                        return {
+                            ...bank,
+                            coordinator: response.coordinatorId,
+                            isAdditionalCoordinators : false,
+                            coordinatorUserInputsObj : {... response},
+                            showAddIcon : false
+                        };
+                    }
+                    return bank;
+                });
+            
+
+                this.spermBanks = [... this.spermBanks];
+
+                console.log(' spermBanks >>> '+JSON.stringify(this.spermBanks))  
+
+            }
+        }
+        catch(e){
+            console.log(e.stack);
+            console.log(e.message);
+        }
+
+    }
+
+    /*************************************************************** */
+
     connectedCallback() {
         this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
         if(this.contactObj &&  this.contactObj['spermBanks'] && this.contactObj['spermBanks'].length > 0){
@@ -41,7 +237,8 @@ export default class SpermBankDetails extends LightningElement {
                 return {
                     ...bank,
                     clinicNumber: index + 1,
-                    knowDonorCode : bank.knowDonorCode
+                    knowDonorCode : bank.knowDonorCode,
+                    noInputsError : false
                 };
             });
             //alert()
@@ -85,6 +282,7 @@ export default class SpermBankDetails extends LightningElement {
 
     handleInputChange(event) {
         const index = parseInt(event.target.dataset.index, 10);
+        let clinicNumber = event.target.dataset.clinicnumber;
         const field = event.target.name;
         this.spermBanks = this.spermBanks.map(bank => 
             bank.id === this.spermBanks[index].id
@@ -96,6 +294,17 @@ export default class SpermBankDetails extends LightningElement {
             input.setCustomValidity('');
             input.reportValidity();
         }
+
+        this.spermBanks = this.spermBanks.map(bank => {
+            if(bank.clinicNumber == clinicNumber) {
+                return {
+                    ...bank, 
+                    noInputsError : false
+                }
+            }
+            return bank;
+        })
+        
     }
 
     handleInputBlur(event) {
@@ -153,7 +362,15 @@ export default class SpermBankDetails extends LightningElement {
             coordinator: '',
             knowDonorCode: '',
             donorCode: '',
-            showDonorCodeInput: false
+            showDonorCodeInput: false,
+            showNoAccountRecordsErrorMessage :false,
+            disableIcon : true,
+            disableInputs : true,
+            isAdditionalCoordinators : false,
+            coordinatorUserInputsObj : {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : ''},
+            showNoContactRecordsErrorMessage :false,
+            disableAddContactIcon : true,
+            noInputsError : false
         });
         /*this.spermBanks = this.spermBanks.map((bank, i) => ({
             ...bank,
@@ -226,17 +443,12 @@ export default class SpermBankDetails extends LightningElement {
             }
 
             let isValid = true;
-            this.template.querySelectorAll('lightning-input').forEach(input => {
+            this.template.querySelectorAll('lightning-input').forEach((input, index) => {
                 const fieldName = input.name;
                 const value = input.value;
                 const fieldsMap = new Map([
                     ['name', 'Please enter sperm bank name'],
                     ['donorCode', 'Please enter donor code']
-                   // ['website', 'Please enter website'],
-                    // ['phone', 'Please enter phone number'],
-                    // ['email', 'Please enter email'],
-                    // ['coordinator', 'Please enter coordinator name'],
-                    // ['donorCode', 'Please enter donor code']
                 ]);
 
                 if (fieldsMap.has(fieldName)) {
@@ -244,6 +456,7 @@ export default class SpermBankDetails extends LightningElement {
                         input.setCustomValidity(fieldsMap.get(fieldName));
                         input.reportValidity();
                         isValid = false;
+                        
                     }
                      else {
                         input.setCustomValidity('');
@@ -270,6 +483,26 @@ export default class SpermBankDetails extends LightningElement {
                 console.log(JSON.stringify(this.contactObj));
                 this.dispatchEvent(new CustomEvent('next', { detail: this.contactObj }));
             }
+            else{
+                 console.log(' else>>> spermBanks >>>' + JSON.stringify(this.spermBanks))
+                this.spermBanks = this.spermBanks.map(bank => {
+                    let nameIsEmpty = !bank.name || bank.name.trim() === '';
+                    if(nameIsEmpty && bank.disableInputs == true){
+                        return {
+                            ...bank, 
+                            noInputsError : true
+                        }
+                    }
+                    else{
+                        return {
+                            ...bank, 
+                            noInputsError : false
+                        }
+                    }
+                })
+            }
+
+            console.log(' >>> spermBanks >>>' + JSON.stringify(this.spermBanks))
 
            
         }

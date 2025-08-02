@@ -83,14 +83,17 @@ public without sharing class EggDonorAgencyWithCodeController {
         try {
             List<RecordWrapper> agencyList = (List<RecordWrapper>)JSON.deserialize(agencyData, List<RecordWrapper>.class);
             List<Account> accList = new List<Account>();
+            set<Id> accIds = new set<Id>();
             Map<string,string> cycleMap = new Map<string,string>();
             list<d21_Cycle__c> cycleList = new list<d21_Cycle__c>();
-            for(d21_Cycle__c cycle : [SELECT Id,Name,d21_Donor__c FROM d21_Cycle__c WHERE d21_Donor__c = :donorId]){
+            list<d21_Donor_Agency__c> donorAgencyList = new list<d21_Donor_Agency__c>();
+
+            for(d21_Cycle__c cycle : [SELECT Id,Name,d21_Donor__c FROM d21_Cycle__c WHERE d21_Donor__c = :donorId WITH SYSTEM_MODE]){
                 cycleMap.put(cycle.Name,cycle.Id);
             }
             
-            
             for(RecordWrapper acc : agencyList){
+                accIds.add(acc.agencyId);
                 for(string cyc : acc.selectedCycles){
                     d21_Cycle__c cycle = new d21_Cycle__c();
                     cycle.Id = cycleMap.get('Cycle '+cyc);
@@ -101,6 +104,26 @@ public without sharing class EggDonorAgencyWithCodeController {
             
             if(!cycleList.isEmpty()){
                 update cycleList;
+            }
+
+            list<d21_Donor_Agency__c> fetchExistingDonorAgencyList = [SELECT Id,d21_Egg_Donor__c,Agency__c 
+                                                                     FROM d21_Donor_Agency__c 
+                                                                     WHERE d21_Egg_Donor__c  =:donorId
+                                                                     WITH SYSTEM_MODE];
+
+            if(!fetchExistingDonorAgencyList.isEmpty()){
+                delete fetchExistingDonorAgencyList;
+            }
+
+            for(Account acc : [SELECT Id FROM Account WHERE Id IN :accIds WITH SYSTEM_MODE]){
+                d21_Donor_Agency__c donorAgency = new d21_Donor_Agency__c();
+                donorAgency.d21_Egg_Donor__c = donorId;
+                donorAgency.Agency__c = acc.Id; 
+                donorAgencyList.add(donorAgency);
+            }
+
+            if(!donorAgencyList.isEmpty()){
+                insert donorAgencyList;
             }
             
             return new Response(true,'');
@@ -120,26 +143,6 @@ public without sharing class EggDonorAgencyWithCodeController {
         }
     }
     
-    public class ClinicResponse{
-        @AuraEnabled public  list<RecordWrapper> responseOneList;
-        @AuraEnabled public  list<RecordWrapper> responseTwoList;
-    }    
-    
-    public class BankDetails{
-        @AuraEnabled public string bankName;
-        @AuraEnabled public string website;
-        @AuraEnabled public string phone;
-        @AuraEnabled public string email;
-        @AuraEnabled public string coordinatorName;
-    }
-    
-    public class SpermClinicDetails{
-        @AuraEnabled public string bankName;
-        @AuraEnabled public string website;
-        @AuraEnabled public string phone;
-        @AuraEnabled public string email;
-        @AuraEnabled public string coordinatorName;
-    }
     
     public class DonorRegistrationWrapper {
         @AuraEnabled public String firstName;
@@ -186,10 +189,6 @@ public without sharing class EggDonorAgencyWithCodeController {
         @AuraEnabled public String clinicId;
     }
     
-    public class AgencyDetails{
-        @AuraEnabled public list<RecordWrapper> donationOutcomesListFromApex;
-        @AuraEnabled public list<RecordWrapper> additionalAgencies;
-    }
     
     public class ClinicDetails{
         @AuraEnabled public list<RecordWrapper> donationOutcomesListFromApex;

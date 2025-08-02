@@ -35,6 +35,50 @@
     align-items: center;
 }
 
+.lookupConainerParentcls{
+	display: flex;
+	gap: 1em;
+	align-items: center;
+}
+
+.addIconCls{
+    cursor: pointer;
+}
+
+.coordinatorSectionCls{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+.recordPickerCls{
+    width: 100%;
+    position: relative;
+}
+
+.coordinatorContainerCls{
+    display: flex;
+    gap: 1em;
+}
+.coordinatorInputsContainerCls{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+.saveCoordinatorBtnCls{
+    display: flex;
+    place-content: center;
+    align-items: center;
+}
+.savebtnCls:active {
+    background-color: #000;
+    box-shadow: 0 0 0 3px white, 0 0 0 6px black;
+    transform: translateY(0);
+}
+
+.savebtnCls{
+    width: 40% !important;
+}
+
 .modalheightdivcls div {
     display: flex;
     flex-direction: column;
@@ -177,7 +221,7 @@
 	cursor: pointer;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
-.nextbtncls{
+.nextbtncls, .savebtnCls{
 	border: 1px solid black;
 	background: black;
 	color: white;

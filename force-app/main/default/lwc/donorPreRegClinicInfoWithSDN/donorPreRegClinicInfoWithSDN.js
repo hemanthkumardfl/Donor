@@ -75,6 +75,7 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
                 clinic['showAddIcon'] = false,
                 clinic['primaryConfirmed'] = false;
                 clinic['incorrectClinicChecked'] = false;
+                clinic['disableIcon'] = true;
             });
 
            if (this.contactObj && this.contactObj.spermClinicsWithSDNrecordsCopy && this.contactObj.spermClinicsWithSDNrecordsCopy.length > 0) {
@@ -94,6 +95,17 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
                     }
                     return bank;
                 });
+
+                //for validating radio buttons
+                this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
+                    if(bank.primaryConfirmed == false){
+                        return {
+                            ...bank,
+                            incorrectClinicChecked: true
+                        };
+                    }
+                    return bank;
+                })
             }
 
             this.primaryClinicsListFromApex = [...this.primaryClinicsListFromApex];
@@ -155,17 +167,56 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
     }
 
      //if there are records from coordinator search this function will handle
-    handleLookupSelection(event) {
+    /*handleLookupSelection(event) {
         const selectedId = event.detail.recordId;
         const selectedName = event.detail.recordName;
         let spermclinicid = event.target.dataset.spermclinicid;
         this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
             if(bank.spermclinicId == spermclinicid){
-                return { ... bank, coordinatorContactAvailable : selectedId}
+                return { ... bank, 
+                        coordinatorContactAvailable : selectedId,
+                        coordinatorUserInputsObj : {
+                            ...bank.coordinatorUserInputsObj, fullName : selectedName
+                        }
+                    }
             }
             return bank;
         });
 
+    }*/
+
+    handleLookupData(event) {
+        console.log('Lookup Data:', JSON.stringify(event.detail));
+        let spermclinicid = event.target.dataset.spermclinicid;
+        this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
+             if(bank.spermclinicId == spermclinicid){
+                return {
+                    ...bank,
+                    disableIcon: event.detail 
+                };
+            }
+            return bank;
+        });
+         console.log('Lookup Data primaryBanksListFromApex:', JSON.stringify(this.primaryBanksListFromApex));
+    }
+
+     handleValueSelectedOnAccount(event) {
+        //this.parentAccountSelectedRecord = event.detail;
+        console.log('parentAccountSelectedRecord >>> ' + JSON.stringify(event.detail));
+        let spermclinicid = event.target.dataset.spermclinicid;
+        this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
+            if(bank.spermclinicId == spermclinicid){
+                return { ... bank, 
+                        coordinatorContactAvailable : event.detail.id,
+                            coordinatorUserInputsObj : {
+                                ...bank.coordinatorUserInputsObj, 
+                                coordinatorId : event.detail.id,
+                                fullName : event.detail.mainField
+                            }
+                        }
+            }
+            return bank;
+        });
     }
 
     //function enables inputs section

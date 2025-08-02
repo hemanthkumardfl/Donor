@@ -4,8 +4,8 @@ import updateGetStarted from '@salesforce/apex/EggDonorPreRegistrationController
 import sendOTPToEmailOrPhone from '@salesforce/apex/EggDonorPreRegistrationController.sendOTPToEmailOrPhone';
 import verifyOTP from '@salesforce/apex/EggDonorPreRegistrationController.verifyOTP';
 import updateDonationBasics from '@salesforce/apex/EggDonorPreRegistrationController.updateDonationBasics';
-import createAgency from '@salesforce/apex/EggDonorPreRegistrationController.createAgency';
-import createEggFertilityClinic from '@salesforce/apex/EggDonorPreRegistrationController.createEggFertilityClinic';
+//import createAgency from '@salesforce/apex/EggDonorPreRegistrationController.createAgency';
+//import createEggFertilityClinic from '@salesforce/apex/EggDonorPreRegistrationController.createEggFertilityClinic';
 import deleteOtp from '@salesforce/apex/EggDonorPreRegistrationController.deleteOtp';
 import resendCode from '@salesforce/apex/EggDonorPreRegistrationController.resendCode';
 import createSpermBank from '@salesforce/apex/SpermDonorPreRegistrationController.createSpermBank';
@@ -486,9 +486,11 @@ export default class parentPreRegistrationMainScreen extends LightningElement {
     async handleSpermBankInfoNext(event) {
         try {
             this.contactObj = JSON.parse(JSON.stringify(event.detail));
+            console.log(' >>> contactObj >>>' + JSON.stringify(this.contactObj));
             let result = await createSpermBank({ donorDetails: JSON.stringify(this.contactObj) })
             if (result.isSuccess) {
                 this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
+                console.log(' >>> contactObj result >>>' + JSON.stringify(this.contactObj));
                 let accMap = {};
                 if (result.clinicNumberToAccountId) {
                     accMap = result.clinicNumberToAccountId;

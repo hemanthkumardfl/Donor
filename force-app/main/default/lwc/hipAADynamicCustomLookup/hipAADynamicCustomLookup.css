@@ -1,0 +1,11 @@
+.slds-dropdown {
+    z-index: 9000;
+    max-height: 200px;
+    overflow-y: auto;
+    display: block !important;
+    position: absolute;
+    width: 100%;
+}
+.slds-combobox_container {
+    position: relative;
+}

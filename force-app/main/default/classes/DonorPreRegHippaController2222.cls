@@ -364,6 +364,33 @@ public without sharing class DonorPreRegHippaController2222 {
         }
     }
     
+  @AuraEnabled
+public static String addlookupSpermBank(String donorId, String spermBankId) {
+    try {
+        if (String.isBlank(donorId) || String.isBlank(spermBankId)) {
+            throw new AuraHandledException('Donor ID and Sperm Bank ID are required.');
+        }
+        List<d21_Donor_Agency__c> existingJunction = [
+            SELECT Id 
+            FROM d21_Donor_Agency__c 
+            WHERE d21_Egg_Donor__c = :donorId AND Agency__c = :spermBankId
+            LIMIT 1
+        ];
+        if (existingJunction.isEmpty()) {
+            d21_Donor_Agency__c newJunction = new d21_Donor_Agency__c(
+                d21_Egg_Donor__c = donorId,
+                Agency__c = spermBankId
+            );
+            insert newJunction;
+            return newJunction.Id;
+        } else {
+            throw new AuraHandledException('Sperm bank already linked to this donor.');
+        }
+    } catch (Exception e) {
+        throw new AuraHandledException('Error adding sperm bank: ' + e.getMessage());
+    }
+}
+    
     @AuraEnabled
     public static void deleteAgency(String donorId, String agencyId) {
         try {

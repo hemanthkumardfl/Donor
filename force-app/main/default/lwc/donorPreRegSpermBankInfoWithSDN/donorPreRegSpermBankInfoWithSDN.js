@@ -79,6 +79,7 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
                 bank['isAdditionalCoordinators'] = this.addCoordinators;
                 bank['coordinator'] = '';
                 bank['showAddIcon'] = false;
+                bank['disableIcon'] = true;
                 bank['primaryConfirmed'] = false;
                 bank['incorrectSpermBankChecked'] = false;
             })
@@ -100,6 +101,16 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
                     }
                     return bank;
                 });
+
+                this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
+                    if(bank.primaryConfirmed == false){
+                        return {
+                            ...bank,
+                            incorrectSpermBankChecked: true
+                        };
+                    }
+                    return bank;
+                })
             }
 
             this.primaryBanksListFromApex = [...this.primaryBanksListFromApex];
@@ -128,6 +139,8 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
     }
     
    handleRadioChange(event){
+    //alert(event.target.dataset.spermbankid);
+
         let spermbankId = event.target.dataset.spermbankid;
         this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
             if(bank.spermbankId == spermbankId){
@@ -145,14 +158,17 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
                 }
                 
             }
+            return bank;
         });
+        console.log('>>>' +JSON.stringify(this.primaryBanksListFromApex));
+       // alert();
     }
     
     /************************Coordinator logic starts*********************/
 
 
     //if there are no records from coordinator search this function will handle
-    handleNoLookUpData(event){
+    /*handleNoLookUpData(event){
         let spermbankId = event.target.dataset.spermbankid;
         this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
             if(bank.spermbankId == spermbankId){
@@ -160,20 +176,62 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
             }
         });
         console.log('lookup >>> ' + event.detail);
-    }
+    }*/
 
      //if there are records from coordinator search this function will handle
-    handleLookupSelection(event) {
+    /*handleLookupSelection(event) {
         const selectedId = event.detail.recordId;
         const selectedName = event.detail.recordName;
         let spermbankId = event.target.dataset.spermbankid;
         this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
             if(bank.spermbankId == spermbankId){
-                return { ... bank, coordinatorContactAvailable : selectedId}
+                return { ... bank, 
+                        coordinatorContactAvailable : selectedId,
+                            coordinatorUserInputsObj : {
+                                ...bank.coordinatorUserInputsObj, fullName : selectedName
+                            }
+                        }
             }
             return bank;
         });
 
+    }*/
+
+
+    //this function tells records available or not.
+    handleLookupData(event) {
+        console.log('Lookup Data:', JSON.stringify(event.detail));
+        const spermbankId = event.target.dataset.spermbankid;
+        this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
+            if (bank.spermbankId == spermbankId) {
+                return {
+                    ...bank,
+                    disableIcon: event.detail 
+                };
+            }
+            return bank;
+        });
+         console.log('Lookup Data primaryBanksListFromApex:', JSON.stringify(this.primaryBanksListFromApex));
+    }
+
+
+    handleValueSelectedOnAccount(event) {
+        //this.parentAccountSelectedRecord = event.detail;
+        console.log('parentAccountSelectedRecord >>> ' + JSON.stringify(event.detail));
+        let spermbankId = event.target.dataset.spermbankid;
+        this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
+            if(bank.spermbankId == spermbankId){
+                return { ... bank, 
+                        coordinatorContactAvailable : event.detail.id,
+                            coordinatorUserInputsObj : {
+                                ...bank.coordinatorUserInputsObj, 
+                                coordinatorId : event.detail.id,
+                                fullName : event.detail.mainField
+                            }
+                        }
+            }
+            return bank;
+        });
     }
 
     //function enables inputs section
@@ -287,25 +345,7 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
         return this.primaryIncorrect;
     }
 
-    handlePrimaryRadioChange(event) {
-        const index = parseInt(event.target.dataset.index, 10);
-        const value = event.target.value;
-        if(value == 'yes'){
-            this.primaryshowDonorCodeInput = true;
-        }
-        else{
-            this.primaryshowDonorCodeInput = false;
-        }
-        /*this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank =>
-            bank.index === index
-                ? {
-                    ...bank,
-                    showDonorCodeInput: value === 'yes',
-                    hideDonorCodeInput: value === 'no'
-                }
-                : bank
-        );*/
-    }
+    
 
     handlePrimaryIncorrectChange(event){
         this.primaryIncorrect = event.target.checked;
@@ -488,6 +528,7 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
         this.contactObj.spermBanksWithSDN['isAutoSpermBanksAllowedToDml'] = true; //this.primaryConfirmed
         
         let result = await createSpermBankWithSDN({ contactObj: JSON.stringify(this.contactObj) })
+        
         
         console.log('result >>> ' + JSON.stringify(result));
         if (result.isSuccess) {
