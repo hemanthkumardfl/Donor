@@ -343,15 +343,16 @@ public without sharing class DonorPreRegHippaController2222 {
     }
     
     @AuraEnabled
-    public static void deleteSpermBank(String donorId, String spermBankId) {
+    public static void deleteSpermBank(String donorId, String recordId) {
+         system.debug('donorId>>>>>>>>>'+donorId+'spermBankId>>>>>>>>>>>'+recordId);
         try {
-            if (String.isBlank(donorId) || String.isBlank(spermBankId)) {
+            if (String.isBlank(donorId) || String.isBlank(recordId)) {
                 throw new AuraHandledException('Donor ID and Sperm Bank ID are required.');
             }
             List<d21_Donor_Agency__c> junction = [
                 SELECT Id 
                 FROM d21_Donor_Agency__c 
-                WHERE d21_Egg_Donor__c = :donorId AND Agency__c = :spermBankId
+                WHERE d21_Egg_Donor__c = :donorId AND Agency__c = :recordId
                 LIMIT 1
             ];
             if (!junction.isEmpty()) {
@@ -366,6 +367,7 @@ public without sharing class DonorPreRegHippaController2222 {
     
   @AuraEnabled
 public static String addlookupSpermBank(String donorId, String spermBankId) {
+    system.debug('donorId>>>>>>>>>'+donorId+'spermBankId>>>>>>>>>>>'+spermBankId);
     try {
         if (String.isBlank(donorId) || String.isBlank(spermBankId)) {
             throw new AuraHandledException('Donor ID and Sperm Bank ID are required.');
@@ -392,15 +394,15 @@ public static String addlookupSpermBank(String donorId, String spermBankId) {
 }
     
     @AuraEnabled
-    public static void deleteAgency(String donorId, String agencyId) {
+    public static void deleteAgency(String donorId, String recordId) {
         try {
-            if (String.isBlank(donorId) || String.isBlank(agencyId)) {
+            if (String.isBlank(donorId) || String.isBlank(recordId)) {
                 throw new AuraHandledException('Donor ID and Agency ID are required.');
             }
             List<d21_Donor_Agency__c> junction = [
                 SELECT Id 
                 FROM d21_Donor_Agency__c 
-                WHERE d21_Egg_Donor__c = :donorId AND Agency__c = :agencyId
+                WHERE d21_Egg_Donor__c = :donorId AND Agency__c = :recordId
                 LIMIT 1
             ];
             if (!junction.isEmpty()) {
@@ -414,15 +416,15 @@ public static String addlookupSpermBank(String donorId, String spermBankId) {
     }
     
     @AuraEnabled
-    public static void deleteClinic(String donorId, String clinicId) {
+    public static void deleteClinic(String donorId, String recordId) {
         try {
-            if (String.isBlank(donorId) || String.isBlank(clinicId)) {
+            if (String.isBlank(donorId) || String.isBlank(recordId)) {
                 throw new AuraHandledException('Donor ID and Clinic ID are required.');
             }
             List<d21_Donor_Fertility_Clinic__c> junction = [
                 SELECT Id 
                 FROM d21_Donor_Fertility_Clinic__c 
-                WHERE d21_Donor__c = :donorId AND d21_Clinic__c = :clinicId
+                WHERE d21_Donor__c = :donorId AND d21_Clinic__c = :recordId
                 LIMIT 1
             ];
             if (!junction.isEmpty()) {
@@ -436,15 +438,15 @@ public static String addlookupSpermBank(String donorId, String spermBankId) {
     }
     
     @AuraEnabled
-    public static void deleteAttorney(String donorId, String attorneyId) {
+    public static void deleteAttorney(String donorId, String recordId) {
         try {
-            if (String.isBlank(donorId) || String.isBlank(attorneyId)) {
+            if (String.isBlank(donorId) || String.isBlank(recordId)) {
                 throw new AuraHandledException('Donor ID and Attorney ID are required.');
             }
             List<d21_Donor_Fertility_Attorney__c> junction = [
                 SELECT Id 
                 FROM d21_Donor_Fertility_Attorney__c 
-                WHERE d21_Donor__c = :donorId AND d21_Attorney__c = :attorneyId
+                WHERE d21_Donor__c = :donorId AND d21_Attorney__c = :recordId
                 LIMIT 1
             ];
             if (!junction.isEmpty()) {
@@ -458,15 +460,15 @@ public static String addlookupSpermBank(String donorId, String spermBankId) {
     }
     
     @AuraEnabled
-    public static void deleteRecipient(String donorId, String recipientId) {
+    public static void deleteRecipient(String donorId, String recordId) {
         try {
-            if (String.isBlank(donorId) || String.isBlank(recipientId)) {
+            if (String.isBlank(donorId) || String.isBlank(recordId)) {
                 throw new AuraHandledException('Donor ID and Recipient ID are required.');
             }
             List<d21_Donor_Recipient__c> junction = [
                 SELECT Id 
                 FROM d21_Donor_Recipient__c 
-                WHERE d21_Contact__c = :donorId AND d21_Recipient__c = :recipientId
+                WHERE d21_Contact__c = :donorId AND d21_Recipient__c = :recordId
                 LIMIT 1
             ];
             if (!junction.isEmpty()) {

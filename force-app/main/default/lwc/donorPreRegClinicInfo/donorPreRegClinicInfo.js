@@ -1,5 +1,7 @@
 import { LightningElement, track, api } from 'lwc';
-import deleteSpermBank from '@salesforce/apex/SpermDonorPreRegistrationController.deleteSpermBank';
+import deleteSpermClinic from '@salesforce/apex/SpermDonorPreRegistrationController.deleteSpermClinic';
+import fetchSpermBankRecord from '@salesforce/apex/UtilityClass.fetchSpermBankRecord';
+import createCoordinator from '@salesforce/apex/UtilityClass.createCoordinator';
 
 export default class DonorPreRegClinicInfo extends LightningElement {
     @track clinics = [
@@ -15,7 +17,15 @@ export default class DonorPreRegClinicInfo extends LightningElement {
             cityState: '',
             coordinator: '',
              accountId : '',
-            junctionId : ''
+            junctionId : '',
+            showNoAccountRecordsErrorMessage :false,
+            disableIcon : true,
+            disableInputs : true,
+            isAdditionalCoordinators : false,
+            coordinatorUserInputsObj : {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : '', isAllow : false, 'isCoordinatorFirstNameBlank' : false},
+            showNoContactRecordsErrorMessage :false,
+            disableAddContactIcon : true,
+            noInputsError : false
         }
     ];
     //@track showNumberedHeadings = false;
@@ -25,6 +35,226 @@ export default class DonorPreRegClinicInfo extends LightningElement {
     @track deleteClinicNumber = null;
     @api clinicUserInputWithoutSDN;
     @api contactObj;
+    @track loadSpinner = false
+
+
+    /********************************custom lookups starts here********************************************** */
+    handleLookupData(event){
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.clinics = this.clinics.map(clinic => {
+            if (clinic.clinicNumber == clinicNumber) {
+                if(event.detail == true){
+                    return { 
+                        ...clinic, 
+                        showNoAccountRecordsErrorMessage: false,
+                        disableIcon : true  
+                    };
+                }
+                else{
+                    return { 
+                        ...clinic, 
+                        showNoAccountRecordsErrorMessage: true,
+                        disableIcon : false 
+                    };
+                }
+                
+            }
+            return clinic;
+        });
+        console.log(JSON.stringify(this.clinics));
+    }
+
+    async handleValueSelectedOnAccount(event){
+        console.log(JSON.stringify(event.detail));
+        let clinicNumber = event.target.dataset.clinicnumber;
+        let result = await fetchSpermBankRecord({accountId : event.detail.id});
+        if(result){
+            try{
+                console.log(JSON.stringify(result));
+                this.clinics = this.clinics.map(clinic => {
+                    console.log(clinic.clinicNumber+'____'+clinicNumber)
+                    if (clinic.clinicNumber == clinicNumber){
+                        return { 
+                            ...clinic, 
+                            name: result.Name || clinic.name,
+                            website :  result.Website || clinic.website,
+                            phone : result.Phone || clinic.phone,
+                            accountId : result.Id || clinic.accountId,
+                            disableInputs : true
+                        };
+                    }
+                    return clinic;
+                });
+                this.clinics = [...  this.clinics];
+                console.log(JSON.stringify(this.clinics));
+            }
+            catch(e){
+                console.log(e.stack);
+                console.log(e.message);
+            }
+        }
+    }
+
+    handleAddSpermBankDetails(event){
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.clinics = this.clinics.map(clinic => {
+            if (clinic.clinicNumber == clinicNumber) {
+                return { 
+                    ...clinic, 
+                    disableInputs :  false  
+                };
+            }
+            return clinic;
+        });
+         this.clinics = [...  this.clinics];
+        console.log(JSON.stringify(this.clinics));
+    }
+
+
+    /****************************************************************************************************** */
+    /*****************************************Coordinator lookup starts here******************************* */
+
+    handleValueSelectedOnContact(event){
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.clinics = this.clinics.map(clinic => {
+            if (clinic.clinicNumber == clinicNumber) {
+                return { ... clinic,
+                        isAdditionalCoordinators : false,
+                        coordinatorUserInputsObj : {
+                                ...clinic.coordinatorUserInputsObj, 
+                                coordinatorId : event.detail.id,
+                                fullName : event.detail.mainField,
+                                isAllow : true
+                            }
+                        }
+            }
+            return clinic;
+        }); 
+        console.log('>>> clinics >>> ' + JSON.stringify(this.clinics))
+
+    }
+
+    handleContactLookupData(event){
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.clinics = this.clinics.map(clinic => {
+            if (clinic.clinicNumber == clinicNumber) {
+                if(event.detail == true){
+                    return { 
+                        ...clinic, 
+                        showNoContactRecordsErrorMessage: false,
+                        disableAddContactIcon : true  
+                    };
+                }
+                else{
+                    return { 
+                        ...clinic, 
+                        showNoContactRecordsErrorMessage: true,
+                        disableAddContactIcon : false 
+                    };
+                }
+                
+            }
+            return clinic;
+        });
+        console.log(JSON.stringify(this.clinics));
+    }
+
+    handleAddCoordinator(event){
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.clinics = this.clinics.map(clinic => {
+            if (clinic.clinicNumber == clinicNumber) {
+                return { ... clinic, isAdditionalCoordinators : !clinic.isAdditionalCoordinators}
+            }
+            return clinic;
+        });  
+        console.log(JSON.stringify(this.clinics));
+    }
+
+    handleCoordinatorInputs(event){
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.clinics = this.clinics.map(clinic => {
+            if (clinic.clinicNumber == clinicNumber) {
+                return {
+                    ...clinic,
+                    coordinatorUserInputsObj: {
+                        ...clinic.coordinatorUserInputsObj,
+                        [event.target.name]: event.target.value,
+                        parentId: clinic.accountId,
+                        isAllow : false,
+                        isCoordinatorFirstNameBlank : false
+                    }
+                };
+            }
+            return clinic;
+        });
+        console.log(JSON.stringify(this.clinics));
+    }
+
+    async handleCoordinatorSave(event){
+        try{
+            let clinicNumber = event.target.dataset.clinicnumber;
+            let coordinatorUserInputs = {};
+            this.clinics.forEach(clinic => {
+                if (clinic.clinicNumber == clinicNumber) {
+                    coordinatorUserInputs = {... clinic.coordinatorUserInputsObj};
+                }
+            });
+            if(coordinatorUserInputs.firstName != null && coordinatorUserInputs.firstName.trim() != ''){
+                this.loadSpinner = true;
+                console.log('  >>> '+JSON.stringify(coordinatorUserInputs))  
+                let result = await createCoordinator({coordinateData : JSON.stringify(coordinatorUserInputs)})
+                if (result.isSuccess) {
+                    let response = JSON.parse(result.message)
+
+                    this.clinics = this.clinics.map(clinic => {
+                        if (clinic.clinicNumber == clinicNumber) {
+                            return {
+                                ...clinic,
+                                coordinator: response.coordinatorId,
+                                isAdditionalCoordinators : false,
+                                coordinatorUserInputsObj : {... response, isAllow : true},
+                                showAddIcon : false
+                            };
+                        }
+                        return clinic;
+                    });
+
+                    this.clinics = [... this.clinics];
+            
+
+                    console.log(' clinics >>> '+JSON.stringify(this.clinics))  
+
+                }
+                setTimeout(() => {
+                    this.loadSpinner = false
+                }, 3000)
+            }
+            else{
+                this.clinics = this.clinics.map(clinic => {
+                    if (clinic.clinicNumber == clinicNumber) {
+                       return {
+                            ... clinic,
+                            coordinatorUserInputsObj : {
+                               ...clinic.coordinatorUserInputsObj,
+                                isCoordinatorFirstNameBlank : true
+                            }
+                       }
+                    }
+                    return clinic
+                });
+            }
+        }
+        catch(e){
+            console.log(e.stack);
+            console.log(e.message);
+            setTimeout(() => {
+                this.loadSpinner = false
+            }, 3000)
+        }
+
+    }
+
+    /******************************************************************************************************** */
 
      connectedCallback() {
         this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
@@ -32,7 +262,9 @@ export default class DonorPreRegClinicInfo extends LightningElement {
             this.clinics = this.contactObj['clinics'].map((clinic, index) => {
                 return {
                     ...clinic,
-                    clinicNumber: index + 1
+                    clinicNumber: index + 1,
+                    noInputsError : false,
+                    disableInputs : true
                 };
             });
             this.noClinicChecked = this.clinics[0]['noClinicCheckedDisableInputs'];
@@ -121,6 +353,7 @@ export default class DonorPreRegClinicInfo extends LightningElement {
 
     handleAddAnotherClick() {
         //this.showNumberedHeadings = true;
+        this.loadSpinner = true;
         this.noClinicChecked = false;
         this.clinics.push({
             id: Date.now(),
@@ -132,13 +365,26 @@ export default class DonorPreRegClinicInfo extends LightningElement {
             phone: '',
             email: '',
             cityState: '',
-            coordinator: ''
+            coordinator: '',
+            accountId : '',
+            junctionId : '',
+            showNoAccountRecordsErrorMessage :false,
+            disableIcon : true,
+            disableInputs : true,
+            isAdditionalCoordinators : false,
+            coordinatorUserInputsObj : {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : '', isAllow : false, 'isCoordinatorFirstNameBlank' : false},
+            showNoContactRecordsErrorMessage :false,
+            disableAddContactIcon : true,
+            noInputsError : false
         });
         this.clinics = this.clinics.map((clinic, i) => ({
             ...clinic,
             clinicNumber: i + 1,
             clinicHeading: ''
         }));
+        setTimeout(()=>{
+            this.loadSpinner = false;
+        }, 3000)
     }
 
     handleDeleteConfirm(event) {
@@ -152,7 +398,7 @@ export default class DonorPreRegClinicInfo extends LightningElement {
     async handleDeleteYes() {
         const index = this.deleteIndex;
          if(this.clinics[index].accountId){
-            let resultData = await deleteSpermBank({ spermbankId: this.clinics[index].accountId }); 
+            let resultData = await deleteSpermClinic({ spermbankId: this.clinics[index].accountId }); 
             //alert('Delete Clinic >>> ' + JSON.stringify(resultData));
             
         }
@@ -217,6 +463,24 @@ export default class DonorPreRegClinicInfo extends LightningElement {
             this.clinics[0]['noClinicCheckedDisableInputs'] = this.noClinicChecked;
             this.contactObj['clinics'] = this.clinics
             this.dispatchEvent(new CustomEvent('next', { detail: this.contactObj }));
+        }
+        else{
+            console.log(' else>>> clinics >>>' + JSON.stringify(this.clinics))
+            this.clinics = this.clinics.map(clinic => {
+                let nameIsEmpty = !clinic.name || clinic.name.trim() === '';
+                if(nameIsEmpty && clinic.disableInputs == true){
+                    return {
+                        ...clinic, 
+                        noInputsError : true
+                    }
+                }
+                else{
+                    return {
+                        ...clinic, 
+                        noInputsError : false
+                    }
+                }
+            })
         }
     }
 

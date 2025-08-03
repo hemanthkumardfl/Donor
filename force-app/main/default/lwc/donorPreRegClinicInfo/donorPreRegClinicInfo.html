@@ -17,6 +17,8 @@
             </div>
         </lightning-layout-item>
 
+        <c-d21_-custom-spinner load-spinner = {loadSpinner} style=""></c-d21_-custom-spinner>
+
         <!-- Delete Confirmation Popup -->
         <div if:true={showDeletePopup}>
             <div class="modalBackdrop">
@@ -67,6 +69,37 @@
                 </div>
             </lightning-layout-item>
 
+             <lightning-layout-item if:true={clinic.noInputsError} size="12" padding="around-small" key={clinic.id} class="inputParentCls">
+                  <span class="textcls" style="color:red;">Please Provide Clinic Info To Proceed...</span>
+            </lightning-layout-item>
+
+             <lightning-layout-item size="12" padding="around-small" key={clinic.id} class="inputParentCls">
+                <div class="lookupConainerParentcls">
+                    <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact"
+                        object-label="Account" object-api-name="Account" field-api-name="Name"
+                        other-field-api-name="Phone"
+                        selected-record-id = {clinic.accountId}
+                        selected-record-id-change={clinic.accountId}
+                        record-type-name = "Clinic"
+                        onvalueselected={handleValueSelectedOnAccount}
+                        onlookupdata = {handleLookupData}
+                        class="recordPickerCls"
+                        lookup-placeholder="Search your Clinic..."
+                        is-disabled={noClinicChecked}
+                        data-clinicnumber={clinic.clinicNumber}>
+                    </c-d21_-dynamic-custom-lookup>
+
+                    <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add" disabled={clinic.disableIcon}
+                        onclick={handleAddSpermBankDetails} style="cursor:pointer" data-clinicnumber={clinic.clinicNumber}
+                        class="addIconCls slds-p-top_medium"
+                        size='medium'>
+                    </lightning-button-icon>
+
+                </div>
+
+                <p if:true={clinic.showNoAccountRecordsErrorMessage} class="textcls" style="color:red;font-size:13px;fomt-size:13px">No Clincs Are Found With Your Search You Can Click On Add Icon Button To Add Clinic Manually...</p>
+             </lightning-layout-item>
+
             <lightning-layout-item size="12" padding="around-small" key={clinic.id} class="inputParentCls">
                 <span class="textcls agencyDescriptionCls inputscls">Clinic Name</span>
                 <lightning-input 
@@ -77,7 +110,7 @@
                     onblur={handleInputBlur} 
                     name="name" 
                     data-index={index}
-                    disabled={noClinicChecked}
+                    disabled={clinic.disableInputs}
                     class="textcls">
                 </lightning-input>
             </lightning-layout-item>
@@ -91,7 +124,7 @@
                     onblur={handleInputBlur} 
                     name="doctorName" 
                     data-index={index}
-                    disabled={noClinicChecked}
+                   disabled={clinic.disableInputs}
                     class="textcls">
                 </lightning-input>
             </lightning-layout-item>
@@ -105,7 +138,7 @@
                     onblur={handleInputBlur} 
                     name="website" 
                     data-index={index}
-                    disabled={noClinicChecked}
+                    disabled={clinic.disableInputs}
                     class="textcls">
                 </lightning-input>
             </lightning-layout-item>
@@ -119,7 +152,7 @@
                     onblur={handleInputBlur} 
                     name="cityState" 
                     data-index={index}
-                    disabled={noClinicChecked}
+                    disabled={clinic.disableInputs}
                     class="textcls">
                 </lightning-input>
             </lightning-layout-item>
@@ -133,7 +166,7 @@
                     onblur={handleInputBlur} 
                     name="phone" 
                     data-index={index}
-                    disabled={noClinicChecked}
+                    disabled={clinic.disableInputs}
                     pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
                     message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
                     class="textcls">
@@ -149,14 +182,14 @@
                     onblur={handleInputBlur} 
                     name="email" 
                     data-index={index}
-                    disabled={noClinicChecked}
+                    disabled={clinic.disableInputs}
                     class="textcls">
                 </lightning-input>
             </lightning-layout-item>
 
             <lightning-layout-item size="12" padding="around-small" key={clinic.id} class="inputParentCls">
                 <span class="textcls inputscls">Coordinator/Nurse Name</span>
-                <lightning-input 
+                <!-- <lightning-input 
                     type="text" 
                     value={clinic.coordinator}
                     onchange={handleInputChange} 
@@ -165,7 +198,55 @@
                     data-index={index}
                     disabled={noClinicChecked}
                     class="textcls">
-                </lightning-input>
+                </lightning-input> -->
+                <div class="lookupConainerParentcls">
+                    <c-d21_-dynamic-custom-lookup
+                        label="" selected-icon-name="standard:contact"
+                        object-label="Contact" object-api-name="Contact" field-api-name="Name"
+                        parent-record-id={clinic.accountId} parent-field-api-name="AccountId"
+                        selected-record-id = {clinic.coordinatorUserInputsObj.coordinatorId}
+                        selected-record-id-change={clinic.coordinatorUserInputsObj.coordinatorId}
+                        selected-coordinator-record-name = {clinic.coordinatorUserInputsObj}
+                        lookup-placeholder="Search your co-ordinator..."
+                        other-field-api-name="Phone"
+                        onvalueselected={handleValueSelectedOnContact}
+                        onlookupdata = {handleContactLookupData}
+                        class="recordPickerCls"
+                        is-disabled={noClinicChecked}
+                        data-clinicnumber={clinic.clinicNumber}>
+                    </c-d21_-dynamic-custom-lookup>
+
+                    <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add" disabled={clinic.disableAddContactIcon}
+                        onclick={handleAddCoordinator} style="cursor:pointer" data-clinicnumber={clinic.clinicNumber}
+                        class="addIconCls slds-p-top_medium"
+                        size='medium'>
+                    </lightning-button-icon>
+
+                </div>
+                 <p if:true={clinic.showNoContactRecordsErrorMessage} class="textcls" style="color:red;font-size:13px">No Coordinators Are Found With Your Search You Can Click On Add Icon Button To Add Coordinator Manually...</p>
+                <!-- coordinator inputs section-->
+                <div if:true={clinic.isAdditionalCoordinators} class="coordinatorInputsContainerCls">
+                    <div class="coordinatorFirstNameCls" style="">
+                        <lightning-input type="text" placeholder="FirstName"
+                                    name="firstName" value={clinic.coordinatorUserInputsObj.firstName}
+                                    data-clinicnumber={clinic.clinicNumber} onchange={handleCoordinatorInputs}></lightning-input>
+                        <span if:true={clinic.coordinatorUserInputsObj.isCoordinatorFirstNameBlank} class="textcls" style="color:red;font-size:13px">Please enter the first name</span>
+                    </div>
+                     <lightning-input type="text" placeholder="LastName"
+                                name="lastName" value={clinic.coordinatorUserInputsObj.lastName}
+                                data-clinicnumber={clinic.clinicNumber} onchange={handleCoordinatorInputs}></lightning-input>
+                     <lightning-input type="tel" placeholder="Phone"
+                                pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                                message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                                name="phone" value={clinic.coordinatorUserInputsObj.phone}
+                                data-clinicnumber={clinic.clinicNumber} onchange={handleCoordinatorInputs}></lightning-input>
+                    <!-- save coordinator button  -->
+                    <div class="saveCoordinatorBtnCls">
+                        <div class="savebtnCls textcls" data-clinicnumber={clinic.clinicNumber} onclick={handleCoordinatorSave}>Add your Coordinator</div>
+                    </div>
+
+                </div>
+                <!-- coordinator inputs section ends -->
             </lightning-layout-item>
         </template>
 

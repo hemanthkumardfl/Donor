@@ -16,8 +16,15 @@ public without sharing class UtilityClass {
             Coordinator coordinatorRecord = (Coordinator)JSON.deserialize(coordinateData, Coordinator.class);  
             system.debug('coordinatorRecord' + coordinatorRecord);
             Contact con = new Contact();
-            con.LastName = coordinatorRecord.lastName;
-            con.FirstName = coordinatorRecord.firstName;
+            if(coordinatorRecord.lastName != null && string.isNotBlank(coordinatorRecord.lastName)){
+                con.LastName = coordinatorRecord.lastName;
+            	con.FirstName = coordinatorRecord.firstName;
+            }
+            else{
+                con.LastName = coordinatorRecord.firstName;
+            	//con.FirstName = coordinatorRecord.firstName;
+            }
+            
             if(coordinatorRecord.parentId != null && string.IsNotBlank(coordinatorRecord.parentId)){
                 con.AccountId = coordinatorRecord.parentId;
             }
@@ -61,7 +68,7 @@ public without sharing class UtilityClass {
     } 
     
     @AuraEnabled
-    public static List<ResultWrapper> fetchRecords(SearchWrapper inputWrapper) {
+    public static List<ResultWrapper> fetchRecords(SearchWrapper inputWrapper, string recordTypeName) {
         try {
             if(inputWrapper != null){
                 String fieldsToQuery = 'SELECT Id, ';
@@ -76,17 +83,20 @@ public without sharing class UtilityClass {
                     }
                 }
                 String query = fieldsToQuery + ' FROM '+ inputWrapper.objectApiName;
+                query += ' WHERE RecordType.Name = \'' + String.escapeSingleQuotes(recordTypeName) + '\'';
                 system.debug('query >>>' + query);
                 String filterCriteria = inputWrapper.fieldApiName + ' LIKE ' + '\'' + String.escapeSingleQuotes(inputWrapper.searchString.trim()) + '%\' LIMIT 10';
                 if(String.isNotBlank(inputWrapper.selectedRecordId)) {
-                    query += ' WHERE Id = \''+ inputWrapper.selectedRecordId + '\'';
+                    query += ' AND Id = \''+ inputWrapper.selectedRecordId + '\'';
                 }else if(String.isNotBlank(inputWrapper.parentFieldApiName) && String.isNotBlank(inputWrapper.parentRecordId)){
-                    query += ' WHERE '+ inputWrapper.parentFieldApiName+ ' = \''+ inputWrapper.parentRecordId + '\'';
+                    query += ' AND '+ inputWrapper.parentFieldApiName+ ' = \''+ inputWrapper.parentRecordId + '\'';
                     query += ' AND ' + filterCriteria;
                 } 
                 else {
-                    query += ' WHERE '+ filterCriteria;
+                    query += ' AND '+ filterCriteria;
                 }
+                system.debug(query);
+                system.debug(Database.query(query));
                 List<ResultWrapper> returnWrapperList = new List<ResultWrapper>();
                 for(SObject s : Database.query(query)) {
                     ResultWrapper wrap = new ResultWrapper();

@@ -16,7 +16,7 @@
                 <span lang="en" class="textcls agencyDescriptionCls">Check here if you did not work with any sperm banks</span>
             </div>
         </lightning-layout-item>
-        <c-d21_-custom-spinner load-spinner = {loadSpinner}></c-d21_-custom-spinner>
+        <c-d21_-custom-spinner load-spinner = {loadSpinner} style=""></c-d21_-custom-spinner>
 
         <!-- Delete Confirmation Popup -->
         <div if:true={showDeletePopup}>
@@ -69,7 +69,7 @@
             </lightning-layout-item>
 
             <lightning-layout-item if:true={spermBank.noInputsError} size="12" padding="around-small" key={spermBank.id} class="inputParentCls">
-                  <span class="textcls" style="color:red;font-size:13px">Please Provide Sperm Bank Info To Proceed...</span>
+                  <span class="textcls" style="color:red;">Please Provide Sperm Bank Info To Proceed...</span>
             </lightning-layout-item>
             
              <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputParentCls">
@@ -79,6 +79,7 @@
                         other-field-api-name="Phone"
                         selected-record-id = {spermBank.accountId}
                         selected-record-id-change={spermBank.accountId}
+                        record-type-name = "Sperm Bank"
                         onvalueselected={handleValueSelectedOnAccount}
                         onlookupdata = {handleLookupData}
                         class="recordPickerCls"
@@ -201,19 +202,23 @@
                  <p if:true={spermBank.showNoContactRecordsErrorMessage} class="textcls" style="color:red;font-size:13px">No Coordinators Are Found With Your Search You Can Click On Add Icon Button To Add Coordinator Manually...</p>
                 <!-- coordinator inputs section-->
                 <div if:true={spermBank.isAdditionalCoordinators} class="coordinatorInputsContainerCls">
-                    <lightning-input type="text" placeholder="FirstName"
-                                name="firstName" value={spermBank.coordinatorUserInputsObj.firstName}
-                                data-clinicnumber={spermBank.clinicNumber} onchange={handleCoordinatorInputs}></lightning-input>
+                    <div class="coordinatorFirstNameCls" style="">
+                        <lightning-input type="text" placeholder="FirstName"
+                                    name="firstName" value={spermBank.coordinatorUserInputsObj.firstName}
+                                    data-clinicnumber={spermBank.clinicNumber} onchange={handleCoordinatorInputs}></lightning-input>
+                        <span if:true={spermBank.coordinatorUserInputsObj.isCoordinatorFirstNameBlank} class="textcls" style="color:red;font-size:13px">Please enter the first name</span>
+                    </div>
                      <lightning-input type="text" placeholder="LastName"
                                 name="lastName" value={spermBank.coordinatorUserInputsObj.lastName}
                                 data-clinicnumber={spermBank.clinicNumber} onchange={handleCoordinatorInputs}></lightning-input>
+                              
                      <lightning-input type="tel" placeholder="Phone"
                                 pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
                                 message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
                                 name="phone" value={spermBank.coordinatorUserInputsObj.phone}
                                 data-clinicnumber={spermBank.clinicNumber} onchange={handleCoordinatorInputs}></lightning-input>
                     <!-- save coordinator button  -->
-                    <div class="saveCoordinatorBtnCls">
+                    <div class="saveCoordinatorBtnCls slds-p-top_medium">
                         <div class="savebtnCls textcls" data-clinicnumber={spermBank.clinicNumber} onclick={handleCoordinatorSave}>Add your Coordinator</div>
                     </div>
 

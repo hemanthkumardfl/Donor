@@ -29,8 +29,9 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
     @track showErrorMsg = false;
     @track addCoordinators = false;
     //for coordinator user input
-    @track coordinatorUserInputsObj = {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : ''} 
+    @track coordinatorUserInputsObj = {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : '', isAllow : false, 'isCoordinatorFirstNameBlank' : false} 
     @track showAddIcon = false;
+    @track loadSpinner = false;
     
     get options() {
         return [
@@ -82,6 +83,7 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
                 bank['disableIcon'] = true;
                 bank['primaryConfirmed'] = false;
                 bank['incorrectSpermBankChecked'] = false;
+                bank['showNoContactRecordsErrorMessage'] = false;
             })
 
             if (this.contactObj && this.contactObj.spermBanksWithSDNrecordsCopy && this.contactObj.spermBanksWithSDNrecordsCopy.length > 0) {
@@ -96,7 +98,7 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
                             ...bank,
                             primaryConfirmed: clonedBank.primaryConfirmed,
                             incorrectSpermBankChecked: clonedBank.incorrectSpermBankChecked,
-                            coordinatorUserInputsObj: clonedBank.coordinatorUserInputsObj
+                            coordinatorUserInputsObj: clonedBank.coordinatorUserInputsObj,
                         };
                     }
                     return bank;
@@ -106,7 +108,8 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
                     if(bank.primaryConfirmed == false){
                         return {
                             ...bank,
-                            incorrectSpermBankChecked: true
+                            incorrectSpermBankChecked: true,
+                            showNoContactRecordsErrorMessage : false
                         };
                     }
                     return bank;
@@ -204,10 +207,20 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
         const spermbankId = event.target.dataset.spermbankid;
         this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
             if (bank.spermbankId == spermbankId) {
-                return {
-                    ...bank,
-                    disableIcon: event.detail 
-                };
+                if(event.detail == true){
+                    return {
+                        ...bank,
+                        disableIcon: event.detail,
+                         showNoContactRecordsErrorMessage: false, 
+                    };
+                }
+                else{
+                     return {
+                        ...bank,
+                        disableIcon: event.detail,
+                         showNoContactRecordsErrorMessage: true, 
+                    };
+                }
             }
             return bank;
         });
@@ -226,7 +239,8 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
                             coordinatorUserInputsObj : {
                                 ...bank.coordinatorUserInputsObj, 
                                 coordinatorId : event.detail.id,
-                                fullName : event.detail.mainField
+                                fullName : event.detail.mainField,
+                                isAllow : true
                             }
                         }
             }
@@ -255,7 +269,9 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
                     coordinatorUserInputsObj: {
                         ...bank.coordinatorUserInputsObj,
                         [event.target.name]: event.target.value,
-                        parentId: spermbankId
+                        parentId: spermbankId,
+                         isAllow : false,
+                         isCoordinatorFirstNameBlank : false
                     }
                 };
             }
@@ -266,37 +282,65 @@ export default class DonorPreRegSpermBankInfoWithSDN extends LightningElement {
 
     //this function will save additional coordinator record
     async handleCoordinatorSave(event){
-        let spermbankId = event.target.dataset.spermbankid;
-        let coordinatorUserInputs = {};
-        this.primaryBanksListFromApex.forEach(bank => {
-            if(bank.spermbankId == spermbankId){
-                coordinatorUserInputs = {... bank.coordinatorUserInputsObj};
-            }
-        });
-
-        console.log('  >>> '+JSON.stringify(this.primaryBanksListFromApex))  
-        let result = await createCoordinator({coordinateData : JSON.stringify(coordinatorUserInputs)})
-        if (result.isSuccess) {
-            let response = JSON.parse(result.message)
-
-            this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
-                if (bank.spermbankId == spermbankId) {
-                    return {
-                        ...bank,
-                        coordinator: response.coordinatorId,
-                        isAdditionalCoordinators : false,
-                        coordinatorUserInputsObj : {... response},
-                        showAddIcon : false
-                    };
+        try{
+            let spermbankId = event.target.dataset.spermbankid;
+            let coordinatorUserInputs = {};
+            this.primaryBanksListFromApex.forEach(bank => {
+                if(bank.spermbankId == spermbankId){
+                    coordinatorUserInputs = {... bank.coordinatorUserInputsObj};
                 }
-                return bank;
             });
-           
+            if(coordinatorUserInputs.firstName != null && coordinatorUserInputs.firstName.trim() != ''){
+                console.log('  >>> '+JSON.stringify(this.primaryBanksListFromApex))  
+                let result = await createCoordinator({coordinateData : JSON.stringify(coordinatorUserInputs)})
+                if (result.isSuccess) {
+                    this.loadSpinner = true;
+                    let response = JSON.parse(result.message)
 
-            this.primaryBanksListFromApex = [... this.primaryBanksListFromApex];
+                    this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
+                        if (bank.spermbankId == spermbankId) {
+                            return {
+                                ...bank,
+                                coordinator: response.coordinatorId,
+                                isAdditionalCoordinators : false,
+                                coordinatorUserInputsObj : {... response,  isAllow : true},
+                                showAddIcon : false
+                            };
+                        }
+                        return bank;
+                    });
+                
 
-            console.log(' primaryBanksListFromApex >>> '+JSON.stringify(this.primaryBanksListFromApex))  
+                    this.primaryBanksListFromApex = [... this.primaryBanksListFromApex];
 
+                    console.log(' primaryBanksListFromApex >>> '+JSON.stringify(this.primaryBanksListFromApex))  
+
+                }
+                setTimeout(() => {
+                    this.loadSpinner = false
+                }, 3000)
+            }
+            else{
+                this.primaryBanksListFromApex = this.primaryBanksListFromApex.map(bank => {
+                    if(bank.spermbankId == spermbankId){
+                        return {
+                            ... bank,
+                            coordinatorUserInputsObj : {
+                                ...bank.coordinatorUserInputsObj,
+                                isCoordinatorFirstNameBlank : true
+                            }
+                        }
+                    }
+                    return bank
+                });
+            }
+        }
+        catch(e){
+            console.log(e.stack)
+            console.log(e.message)
+            setTimeout(() => {
+                this.loadSpinner = false
+            }, 3000)
         }
     }
 

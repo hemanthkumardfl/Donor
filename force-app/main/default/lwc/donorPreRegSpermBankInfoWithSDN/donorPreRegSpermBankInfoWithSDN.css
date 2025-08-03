@@ -23,6 +23,10 @@
 .spermBankRadioBtnsCls{
     padding: 0;
 }
+.coordinatorFirstNameCls{
+    display: flex;
+    flex-direction: column;
+}
 
 .labelhiddenCls{
     color:  #E8E3DC;
@@ -30,18 +34,19 @@
 
 .addIconCls{
     cursor: pointer;
-    padding-top: 1%;
+    position: relative;
+    bottom: 0.3em;
 }
 
 .coordinatorSectionCls{
     display: flex;
     flex-direction: column;
-    gap: 1em;
+    /* gap: 1em; */
 }
 .recordPickerCls{
     width: 100%;
     position: relative; 
-    bottom: 1.5em;
+    bottom: 0.7em;
 }
 
 .coordinatorContainerCls{
@@ -51,7 +56,9 @@
 .coordinatorInputsContainerCls{
     display: flex;
     flex-direction: column;
-    gap: 1em;
+    position: relative;
+    bottom: 2em;
+    /* gap: 1em; */
 }
 .saveCoordinatorBtnCls{
     display: flex;
@@ -172,7 +179,7 @@
 }
 
 .savebtnCls{
-    width: 40% !important;
+    width: 50% !important;
 }
 
 .parentlayoutcls{

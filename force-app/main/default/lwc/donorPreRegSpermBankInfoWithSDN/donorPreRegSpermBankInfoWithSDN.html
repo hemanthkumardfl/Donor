@@ -5,6 +5,7 @@
             <p class="slds-m-bottom_medium slds-m-top_medium">
                 Based on the SDN code you entered, it seems that you worked with this sperm bank:
             </p>
+            <c-d21_-custom-spinner load-spinner = {loadSpinner} style=""></c-d21_-custom-spinner>
             <!-- Primary Sperm Banks Section -->
             <template if:true={primaryBanksList}>
                 <template for:each={primaryBanksList} for:item="bank">
@@ -27,14 +28,15 @@
                                     <lightning-input variant="label-hidden" type="tel" value={bank.phone} onchange={handlePrimaryInputChange} disabled="true"
                                          data-spermbankid={bank.spermbankId} onblur={handleInputBlur} name="phone" data-index={bank.spermbankId} ></lightning-input>
                                 </lightning-layout-item>
-                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"><b>Coordinator</b></lightning-layout-item>
-                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7" class="coordinatorSectionCls">
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4" class="slds-p-top_x-small"><b>Coordinator</b></lightning-layout-item>
+                                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7" class="coordinatorSectionCls slds-p-top_x-small">
                                     <div class="coordinatorContainerCls" key={bank.spermbankId}>
                                        <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact"
                                             object-label="Contact" object-api-name="Contact" field-api-name="Name"
                                             parent-record-id={bank.spermbankId} parent-field-api-name="AccountId"
                                             selected-record-id = {bank.coordinatorUserInputsObj.coordinatorId}
                                             selected-record-id-change={bank.coordinatorUserInputsObj.coordinatorId}
+                                            selected-coordinator-record-name={bank.coordinatorUserInputsObj}
                                             other-field-api-name="Phone"
                                             onvalueselected={handleValueSelectedOnAccount}
                                             onlookupdata = {handleLookupData}
@@ -59,27 +61,24 @@
                                         size='medium'></lightning-button-icon>
 
                                     </div>
+                                     <p if:true={bank.showNoContactRecordsErrorMessage} class="textcls slds-p-bottom_x-large" style="color:red;font-size:13px">No Coordinators Are Found With Your Search You Can Click On Add Icon Button To Add Coordinator Manually...</p>
                                     <div if:true={bank.isAdditionalCoordinators} class="coordinatorInputsContainerCls">
-                                        <div class="coordinatorCls">
-                                            <!-- <span class="textcls">FirstName</span> -->
+                                        <div class="coordinatorFirstNameCls" style="">
                                             <lightning-input type="text" placeholder="FirstName" name="firstName" value={bank.coordinatorUserInputsObj.firstName}
-                                             data-spermbankid={bank.spermbankId} onchange={handleCoordinatorInputs}></lightning-input>
+                                                data-spermbankid={bank.spermbankId} onchange={handleCoordinatorInputs}></lightning-input>
+                                            <span if:true={bank.coordinatorUserInputsObj.isCoordinatorFirstNameBlank} class="textcls" style="color:red;font-size:13px">Please enter the first name</span>
                                         </div>
-                                        <div class="coordinatorCls">
-                                            <!-- <span class="textcls">LastName</span> -->
-                                            <lightning-input type="text" placeholder="LastName" name="lastName"  value={bank.coordinatorUserInputsObj.lastName} 
+
+                                        <lightning-input type="text" placeholder="LastName" name="lastName"  value={bank.coordinatorUserInputsObj.lastName} 
                                             data-spermbankid={bank.spermbankId} onchange={handleCoordinatorInputs}></lightning-input>
-                                        </div>
-                                        <div class="coordinatorCls">
-                                            <!-- <span class="textcls">Phone</span> -->
-                                            <lightning-input type="tel"  name="phone"  data-spermbankid={bank.spermbankId} placeholder="Phone" value={bank.coordinatorUserInputsObj.phone}
-                                             pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
-                                            message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
-                                            onchange={handleCoordinatorInputs}></lightning-input>
-                                        </div>
+
+                                        <lightning-input type="tel"  name="phone"  data-spermbankid={bank.spermbankId} placeholder="Phone" value={bank.coordinatorUserInputsObj.phone}
+                                            pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                                        message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                                        onchange={handleCoordinatorInputs}></lightning-input>
                                         <!-- save coordinator button  -->
-                                        <div class="saveCoordinatorBtnCls">
-                                            <div class="savebtnCls textcls" data-spermbankid={bank.spermbankId} onclick={handleCoordinatorSave}>Add your Coordinator</div>
+                                        <div class="saveCoordinatorBtnCls slds-p-top_small">
+                                            <div class="savebtnCls textcls" data-spermbankid={bank.spermbankId} onclick={handleCoordinatorSave}>Add Coordinator</div>
                                         </div>
 
                                     </div>

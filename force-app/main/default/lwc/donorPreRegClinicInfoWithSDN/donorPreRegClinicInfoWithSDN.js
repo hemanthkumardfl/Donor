@@ -27,8 +27,9 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
     @track didYouWorkAnyOtherClinic = null;
     @track showErrorMsg = false;
     @track addCoordinators = false;
+    @track loadSpinner = false;
     //for coordinator user input
-    @track coordinatorUserInputsObj = {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : ''} 
+    @track coordinatorUserInputsObj = {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : '', isAllow : false, 'isCoordinatorFirstNameBlank' : false} 
 
     get options() {
         return [
@@ -76,6 +77,7 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
                 clinic['primaryConfirmed'] = false;
                 clinic['incorrectClinicChecked'] = false;
                 clinic['disableIcon'] = true;
+                clinic['showNoContactRecordsErrorMessage'] = false;
             });
 
            if (this.contactObj && this.contactObj.spermClinicsWithSDNrecordsCopy && this.contactObj.spermClinicsWithSDNrecordsCopy.length > 0) {
@@ -101,7 +103,8 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
                     if(bank.primaryConfirmed == false){
                         return {
                             ...bank,
-                            incorrectClinicChecked: true
+                            incorrectClinicChecked: true,
+                            showNoContactRecordsErrorMessage : false
                         };
                     }
                     return bank;
@@ -190,10 +193,20 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
         let spermclinicid = event.target.dataset.spermclinicid;
         this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
              if(bank.spermclinicId == spermclinicid){
-                return {
-                    ...bank,
-                    disableIcon: event.detail 
-                };
+                if(event.detail == true){
+                    return {
+                        ...bank,
+                        showNoContactRecordsErrorMessage: false,
+                        disableIcon: event.detail 
+                    };
+                }
+                else{
+                    return {
+                        ...bank,
+                        showNoContactRecordsErrorMessage: true,
+                        disableIcon: event.detail 
+                    };
+                }
             }
             return bank;
         });
@@ -211,7 +224,8 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
                             coordinatorUserInputsObj : {
                                 ...bank.coordinatorUserInputsObj, 
                                 coordinatorId : event.detail.id,
-                                fullName : event.detail.mainField
+                                fullName : event.detail.mainField,
+                                isAllow : true
                             }
                         }
             }
@@ -240,7 +254,9 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
                     coordinatorUserInputsObj: {
                         ...bank.coordinatorUserInputsObj,
                         [event.target.name]: event.target.value,
-                        parentId: spermclinicid
+                        parentId: spermclinicid,
+                        isAllow : false,
+                        isCoordinatorFirstNameBlank : false
                     }
                 };
             }
@@ -251,37 +267,65 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
 
     //this function will save additional coordinator record
     async handleCoordinatorSave(event){
-        let spermclinicid = event.target.dataset.spermclinicid;
-        let coordinatorUserInputs = {};
-        this.primaryClinicsListFromApex.forEach(bank => {
-            if(bank.spermclinicId == spermclinicid){
-                coordinatorUserInputs = {... bank.coordinatorUserInputsObj};
-            }
-        });
-
-        console.log('  >>> '+JSON.stringify(this.primaryClinicsListFromApex))  
-        let result = await createCoordinator({coordinateData : JSON.stringify(coordinatorUserInputs)})
-        if (result.isSuccess) {
-            let response = JSON.parse(result.message)
-
-            this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
-                if (bank.spermclinicId == spermclinicid) {
-                    return {
-                        ...bank,
-                        coordinator: response.coordinatorId,
-                        isAdditionalCoordinators : false,
-                        coordinatorUserInputsObj : {... response},
-                        showAddIcon : false
-                    };
+        try{
+            let spermclinicid = event.target.dataset.spermclinicid;
+            let coordinatorUserInputs = {};
+            this.primaryClinicsListFromApex.forEach(bank => {
+                if(bank.spermclinicId == spermclinicid){
+                    coordinatorUserInputs = {... bank.coordinatorUserInputsObj};
                 }
-                return bank;
             });
-           
+            if(coordinatorUserInputs.firstName != null && coordinatorUserInputs.firstName.trim() != ''){
+                console.log('  >>> '+JSON.stringify(this.primaryClinicsListFromApex))  
+                let result = await createCoordinator({coordinateData : JSON.stringify(coordinatorUserInputs)})
+                if (result.isSuccess) {
+                    this.loadSpinner = true;
+                    let response = JSON.parse(result.message)
 
-            this.primaryClinicsListFromApex = [... this.primaryClinicsListFromApex];
+                    this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
+                        if (bank.spermclinicId == spermclinicid) {
+                            return {
+                                ...bank,
+                                coordinator: response.coordinatorId,
+                                isAdditionalCoordinators : false,
+                                coordinatorUserInputsObj : {... response, isAllow : true},
+                                showAddIcon : false
+                            };
+                        }
+                        return bank;
+                    });
+                
 
-            console.log(' primaryClinicsListFromApex >>> '+JSON.stringify(this.primaryClinicsListFromApex))  
+                    this.primaryClinicsListFromApex = [... this.primaryClinicsListFromApex];
 
+                    console.log(' primaryClinicsListFromApex >>> '+JSON.stringify(this.primaryClinicsListFromApex))  
+
+                }
+                setTimeout(() =>{
+                    this.loadSpinner = false;
+                }, 3000)
+            }
+            else{
+                this.primaryClinicsListFromApex = this.primaryClinicsListFromApex.map(bank => {
+                   if(bank.spermclinicId == spermclinicid){
+                        return {
+                            ... bank,
+                            coordinatorUserInputsObj : {
+                                ...bank.coordinatorUserInputsObj,
+                                isCoordinatorFirstNameBlank : true
+                            }
+                        }
+                    }
+                    return bank
+                });
+            }
+        }
+        catch(e){
+            console.log(e.stack);
+            consol.log(e.message);
+            setTimeout(() =>{
+                this.loadSpinner = false;
+            }, 3000)
         }
     }
 
@@ -391,6 +435,7 @@ export default class DonorPreRegClinicInfoWithSDN extends LightningElement {
 
 
     handleClinicInfoWithSDNBack() {
+         this.contactObj = JSON.parse(JSON.stringify(this.contactObj))
         console.log('Back start');
         console.log('contact back @@@ >>>>' + JSON.stringify(this.contactObj));
         this.updateContactObj();

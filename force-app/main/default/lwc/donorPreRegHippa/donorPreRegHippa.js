@@ -98,7 +98,6 @@ export default class DonorPreRegHippa extends LightningElement {
     @track showAgencyPlusButton = false;
     @track selectedAgencyId = '';
     @track selectedAgency = null;
-    @track isDisabled = false;
 
     get isAddButtonDisabled() {
         return !this.selectedSpermBankId;
@@ -144,207 +143,114 @@ export default class DonorPreRegHippa extends LightningElement {
         return this.isEditingRecipient ? 'Save' : 'Add';
     }
 
-   /* connectedCallback() {
-        this.donorId = '003QL00000xXfiNYAS';
-        this.showagencySection = true;
-        this.showSpermBankSection = true;
-        this.showclinicSection = true;
-        this.showattorneySection = false;
-        this.showrecipientSection = true;
-        spermDonor({ donorId: this.donorId })
-            .then(result => {
-                if (result.parentdetails) {
-                    this.legalNamesri.firstName = result.parentdetails.fristName || '';
-                    this.legalNamesri.lastName = result.parentdetails.lastName || '';
-                    this.dob = result.parentdetails.dob || '';
-                    this.address.state = result.parentdetails.state || '';
-                    this.address.city = result.parentdetails.city || '';
-                    this.address.street = result.parentdetails.street || '';
-                    this.address.pincode = result.parentdetails.pincode || '';
-                    this.address.additionalInfo = result.parentdetails.additionalInfo || '';
-                }
-                if (result.spermlist) {
-                    this.sperms = result.spermlist.map(item => ({
-                        id: item.Id,
-                        spermBankName: item.Name,
-                        spermBankPhone: item.Phone || '',
-                        coordinatorName: item.coordinatorName || '',
-                        spermBankWebsite: item.website || '',
-                        spermBankEmail: item.email || '',
-                        pmcNumber: item.pmcNumber || '',
-                        isEditable: item.isEditable && !item.pmcNumber
-                    }));
-                }
-                if (result.Agencylist) {
-                    this.agencies = result.Agencylist.map(item => ({
-                        id: item.Id,
-                        agencyName: item.Name,
-                        phone: item.Phone || '',
-                        coordinatorName: item.coordinatorName || '',
-                        website: item.website || '',
-                        cityState: item.cityState || '',
-                        coordinatorEmail: item.email || '',
-                        pmcNumber: item.pmcNumber || '',
-                        isEditable: item.isEditable || false
-                    }));
-                }
-                if (result.Cliniclist) {
-                    this.clinics = result.Cliniclist.map(item => ({
-                        id: item.Id,
-                        clinicName: item.Name,
-                        phone: item.Phone || '',
-                        coordinatorName: item.coordinatorName || '',
-                        website: item.website || '',
-                        cityState: item.cityState || '',
-                        coordinatorEmail: item.email || '',
-                        pmcNumber: item.pmcNumber || '',
-                        isEditable: item.isEditable || false
-                    }));
-                }
-                if (result.Attorneylist) {
-                    this.attorneys = result.Attorneylist.map(item => ({
-                        id: item.Id,
-                        attorneyName: item.Name,
-                        phone: item.Phone || '',
-                        lawFirm: item.coordinatorName || '',
-                        website: item.website || '',
-                        cityState: item.cityState || '',
-                        email: item.email || '',
-                        isEditable: item.isEditable || false
-                    }));
-                }
-                if (result.Recipientlist) {
-                    this.recipients = result.Recipientlist.map(item => ({
-                        id: item.Id,
-                        firstName: item.fristName,
-                        lastName: item.lastName,
-                        Name: (item.fristName || '') + ' ' + (item.lastName || ''),
-                        phone: item.Phone || '',
-                        email: item.email || '',
-                        additionalInfo: item.additionalInfo || ''
-                    }));
-                }
-            })
-            .catch(error => {
-                this.showToast('Error', 'Failed to load donor data: ' + error.body.message, 'error');
-            });
-    }*/
+    async connectedCallback() {
+        try {
+            this.contactObj = JSON.parse(JSON.stringify(this.contactObj || {}));
+            this.donorId = this.contactObj.donorId || '003QL00000xXfiNYAS';
+            this.showagencySection = this.contactObj.donorType === 'egg';
+            this.showSpermBankSection = this.contactObj.donorType !== 'egg';
+            this.showclinicSection = true;
+            this.showattorneySection = this.contactObj.donorType === 'egg';
+            this.showrecipientSection = true;
 
-     connectedCallback() {
-        this.contactObj = JSON.parse(JSON.stringify(this.contactObj || {}));
-        this.donorId = this.contactObj.donorId || '003QL00000xXfiNYAS';
-        if (this.contactObj.donorType === 'egg') {
-            this.showagencySection = true;
-            this.showclinicSection = true;
-            this.showSpermBankSection = false;
-            this.showattorneySection = true;
-            this.showrecipientSection = true;
-        } else {
-            this.showagencySection = false;
-            this.showSpermBankSection = true;
-            this.showclinicSection = true;
-            this.showattorneySection = false;
-            this.showrecipientSection = true;
+            this.legalNamesri = {
+                firstName: this.contactObj.firstName || '',
+                lastName: this.contactObj.lastName || ''
+            };
+            this.legalName = { ...this.legalNamesri };
+            this.dob = this.contactObj.dob || '';
+            this.address = {
+                state: this.contactObj.state || '',
+                city: this.contactObj.city || '',
+                street: this.contactObj.street || '',
+                pincode: this.contactObj.pincode || '',
+                additionalInfo: this.contactObj.additionalInfo || ''
+            };
+
+            const result = await spermDonor({ donorId: this.donorId });
+            console.log('spermDonor result:', JSON.stringify(result));
+
+            if (result.parentdetails) {
+                this.legalNamesri = {
+                    firstName: result.parentdetails.fristName || this.legalNamesri.firstName,
+                    lastName: result.parentdetails.lastName || this.legalNamesri.lastName
+                };
+                this.legalName = { ...this.legalNamesri };
+                this.dob = result.parentdetails.dob || this.dob;
+                this.address = {
+                    state: result.parentdetails.state || this.address.state,
+                    city: result.parentdetails.city || this.address.city,
+                    street: result.parentdetails.street || this.address.street,
+                    pincode: result.parentdetails.pincode || this.address.pincode,
+                    additionalInfo: result.parentdetails.additionalInfo || this.address.additionalInfo
+                };
+            }
+
+            this.agencies = Array.isArray(result.Agencylist) ? result.Agencylist.map(item => ({
+                id: item.Id || `agency_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+                agencyName: item.Name || '',
+                phone: item.Phone || '',
+                coordinatorName: item.coordinatorName || '',
+                website: item.website || '',
+                cityState: item.cityState || '',
+                coordinatorEmail: item.email || '',
+                pmcNumber: item.pmcNumber || '',
+                isEditable: item.isEditable !== false,
+                isFromPrimaryBanks: item.isEditable === false
+            })) : [];
+
+            this.sperms = Array.isArray(result.spermlist) ? result.spermlist.map(item => ({
+                id: item.Id || `sperm_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+                spermBankName: item.Name || '',
+                spermBankPhone: item.Phone || '',
+                coordinatorName: item.coordinatorName || '',
+                spermBankWebsite: item.website || '',
+                spermBankEmail: item.email || '',
+                pmcNumber: item.pmcNumber || '',
+                isEditable: item.isEditable !== false,
+                isFromPrimaryBanks: item.isEditable === false
+            })) : [];
+
+            this.clinics = Array.isArray(result.Cliniclist) ? result.Cliniclist.map(item => ({
+                id: item.Id || `clinic_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+                clinicName: item.Name || '',
+                phone: item.Phone || '',
+                coordinatorName: item.coordinatorName || '',
+                website: item.website || '',
+                cityState: item.cityState || '',
+                coordinatorEmail: item.email || '',
+                pmcNumber: item.pmcNumber || '',
+                isEditable: item.isEditable !== false,
+                isFromPrimaryBanks: item.isEditable === false
+            })) : [];
+
+            this.attorneys = Array.isArray(result.Attorneylist) ? result.Attorneylist.map(item => ({
+                id: item.Id || `attorney_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+                attorneyName: item.Name || '',
+                phone: item.Phone || '',
+                lawFirm: item.lawFirm || item.coordinatorName || '',
+                website: item.website || '',
+                cityState: item.cityState || '',
+                email: item.email || '',
+                isEditable: item.isEditable !== false,
+                isFromPrimaryBanks: item.isEditable === false
+            })) : [];
+
+            this.recipients = Array.isArray(result.Recipientlist) ? result.Recipientlist.map(item => ({
+                id: item.Id || `recipient_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+                firstName: item.firstName || '',
+                lastName: item.lastName || '',
+                Name: `${item.firstName || ''} ${item.lastName || ''}`.trim(),
+                phone: item.Phone || '',
+                email: item.email || '',
+                additionalInfo: item.additionalInfo || '',
+                isEditable: item.isEditable !== false,
+                isFromPrimaryBanks: item.isEditable === false
+            })) : [];
+        } catch (error) {
+            console.error('Error loading donor data:', error);
+            this.showToast('Error', `Failed to load donor data: ${error.body?.message || error.message}`, 'error');
         }
-
-        this.legalNamesri.firstName = this.contactObj.firstName || '';
-        this.legalNamesri.lastName = this.contactObj.lastName || '';
-        this.legalName.firstName = this.contactObj.firstName || '';
-        this.legalName.lastName = this.contactObj.lastName || '';
-        this.dob = this.contactObj.dob || '';
-        this.address.state = this.contactObj.state || '';
-        this.address.city = this.contactObj.city || '';
-        this.address.street = this.contactObj.street || '';
-        this.address.pincode = this.contactObj.pincode || '';
-        this.address.additionalInfo = this.contactObj.additionalInfo || '';
-
-        spermDonor({ donorId: this.donorId })
-            .then(result => {
-                console.log('spermDonor result:', JSON.stringify(result));
-                if (result.parentdetails) {
-                    this.legalNamesri.firstName = result.parentdetails.fristName || this.legalNamesri.firstName;
-                    this.legalNamesri.lastName = result.parentdetails.lastName || this.legalNamesri.lastName;
-                    this.legalName.firstName = result.parentdetails.fristName || this.legalName.firstName;
-                    this.legalName.lastName = result.parentdetails.lastName || this.legalName.lastName;
-                    this.dob = result.parentdetails.dob || this.dob;
-                    this.address.state = result.parentdetails.state || this.address.state;
-                    this.address.city = result.parentdetails.city || this.address.city;
-                    this.address.street = result.parentdetails.street || this.address.street;
-                    this.address.pincode = result.parentdetails.pincode || this.address.pincode;
-                    this.address.additionalInfo = result.parentdetails.additionalInfo || this.address.additionalInfo;
-                }
-                if (result.Agencylist) {
-                    this.agencies = result.Agencylist.map(item => ({
-                        id: item.Id,
-                        agencyName: item.Name,
-                        phone: item.Phone || '',
-                        coordinatorName: item.coordinatorName || '',
-                        website: item.website || '',
-                        cityState: item.cityState || '',
-                        coordinatorEmail: item.email || '',
-                        pmcNumber: item.pmcNumber || '',
-                        isEditable: item.isEditable !== false,
-                        isFromPrimaryBanks: item.isEditable === false
-                    }));
-                }
-                if (result.spermlist) {
-                    this.sperms = result.spermlist.map(item => ({
-                        id: item.Id,
-                        spermBankName: item.Name,
-                        spermBankPhone: item.Phone || '',
-                        coordinatorName: item.coordinatorName || '',
-                        spermBankWebsite: item.website || '',
-                        spermBankEmail: item.email || '',
-                        pmcNumber: item.pmcNumber || '',
-                        isEditable: item.isEditable !== false,
-                        isFromPrimaryBanks: item.isEditable === false
-                    }));
-                }
-                if (result.Cliniclist) {
-                    this.clinics = result.Cliniclist.map(item => ({
-                        id: item.Id,
-                        clinicName: item.Name,
-                        phone: item.Phone || '',
-                        coordinatorName: item.coordinatorName || '',
-                        website: item.website || '',
-                        cityState: item.cityState || '',
-                        coordinatorEmail: item.email || '',
-                        pmcNumber: item.pmcNumber || '',
-                        isEditable: item.isEditable !== false,
-                        isFromPrimaryBanks: item.isEditable === false
-                    }));
-                }
-                if (result.Attorneylist) {
-                    this.attorneys = result.Attorneylist.map(item => ({
-                        id: item.Id,
-                        attorneyName: item.Name,
-                        phone: item.Phone || '',
-                        lawFirm: item.lawFirm || item.coordinatorName || '',
-                        website: item.website || '',
-                        cityState: item.cityState || '',
-                        email: item.email || '',
-                        isEditable: item.isEditable !== false,
-                        isFromPrimaryBanks: item.isEditable === false
-                    }));
-                }
-                if (result.Recipientlist) {
-                    this.recipients = result.Recipientlist.map(item => ({
-                        id: item.Id,
-                        firstName: item.firstName || '',
-                        lastName: item.lastName || '',
-                        Name: (item.firstName || '') + ' ' + (item.lastName || ''),
-                        phone: item.Phone || '',
-                        email: item.email || '',
-                        additionalInfo: item.additionalInfo || '',
-                        isEditable: item.isEditable !== false,
-                        isFromPrimaryBanks: item.isEditable === false
-                    }));
-                }
-            })
-            .catch(error => {
-                console.error('Error loading donor data:', error);
-                this.showToast('Error', 'Failed to load donor data: ' + (error.body?.message || error.message), 'error');
-            });
     }
 
     handleAddAgencyClick() {
@@ -359,7 +265,7 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     async handleAgencySelect(event) {
-        console.log(JSON.stringify(event.detail));
+        console.log('Agency select:', JSON.stringify(event.detail));
         this.selectedAgencyId = event.detail.id || '';
         if (this.selectedAgencyId) {
             try {
@@ -399,8 +305,8 @@ export default class DonorPreRegHippa extends LightningElement {
                     this.showAgencyPlusButton = false;
                 }
             } catch (error) {
-                console.log('Error fetching agency:', error.stack);
-                this.showToast('Error', 'Error fetching agency details: ' + (error.body?.message || error.message), 'error');
+                console.error('Error fetching agency:', error);
+                this.showToast('Error', `Error fetching agency details: ${error.body?.message || error.message}`, 'error');
                 this.selectedAgencyId = '';
                 this.selectedAgency = null;
                 this.showAgencyForm = false;
@@ -417,7 +323,7 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     handleNoAgencyData(event) {
-        console.log('No agency data event received:', event.detail);
+        console.log('No agency data:', event.detail);
         this.showToast('Info', event.detail || 'No agencies found.', 'info');
         this.showAgencyAddButton = false;
         this.showAgencyPlusButton = true;
@@ -439,7 +345,28 @@ export default class DonorPreRegHippa extends LightningElement {
             this.showToast('Error', 'Please ensure all required fields are filled.', 'error');
             return;
         }
-        if (this.selectedAgency) {
+        if (this.isEditingAgency) {
+            editAgency({
+                accountId: this.newAgency.id,
+                agencyName: this.newAgency.agencyName,
+                phone: this.newAgency.phone,
+                coordinatorName: this.newAgency.coordinatorName,
+                website: this.newAgency.website,
+                cityState: this.newAgency.cityState,
+                email: this.newAgency.coordinatorEmail
+            })
+                .then(() => {
+                    this.agencies = this.agencies.map(agency =>
+                        agency.id === this.newAgency.id ? { ...this.newAgency, isEditable: true } : agency
+                    );
+                    this.showToast('Success', 'Agency updated successfully', 'success');
+                    this.handleCancelAgency();
+                })
+                .catch(error => {
+                    console.error('Error updating agency:', error);
+                    this.showToast('Error', `Error updating agency: ${error.body?.message || error.message}`, 'error');
+                });
+        } else if (this.selectedAgency) {
             addlookupAgency({ donorId: this.donorId, agencyId: this.selectedAgencyId })
                 .then(() => {
                     this.agencies = [...this.agencies, {
@@ -450,19 +377,15 @@ export default class DonorPreRegHippa extends LightningElement {
                         website: this.newAgency.website || '',
                         cityState: this.newAgency.cityState || '',
                         coordinatorEmail: this.newAgency.coordinatorEmail || '',
-                        isEditable: true
+                        isEditable: true,
+                        isFromPrimaryBanks: this.newAgency.disableInputs
                     }];
                     this.showToast('Success', 'Agency added successfully', 'success');
-                    this.selectedAgencyId = '';
-                    this.selectedAgency = null;
-                    this.showAgencyForm = false;
-                    this.showAgencyAddButton = false;
-                    this.showAgencyPlusButton = false;
-                    this.newAgency = { id: '', agencyName: '', phone: '', coordinatorName: '', website: '', cityState: '', coordinatorEmail: '', disableInputs: false };
+                    this.handleCancelAgency();
                 })
                 .catch(error => {
-                    console.log('Error adding agency:', error);
-                    this.showToast('Error', 'Error adding agency: ' + (error.body?.message || error.message), 'error');
+                    console.error('Error adding agency:', error);
+                    this.showToast('Error', `Error adding agency: ${error.body?.message || error.message}`, 'error');
                 });
         } else {
             addAgency({
@@ -475,20 +398,26 @@ export default class DonorPreRegHippa extends LightningElement {
                 email: this.newAgency.coordinatorEmail
             })
                 .then(result => {
-                    this.agencies = [...this.agencies, { ...this.newAgency, id: result, isEditable: true }];
+                    this.agencies = [...this.agencies, { ...this.newAgency, id: result, isEditable: true, isFromPrimaryBanks: false }];
                     this.showToast('Success', 'Agency added successfully', 'success');
                     this.handleCancelAgency();
                 })
                 .catch(error => {
-                    this.showToast('Error', 'Error adding agency: ' + error.body.message, 'error');
+                    console.error('Error adding agency:', error);
+                    this.showToast('Error', `Error adding agency: ${error.body?.message || error.message}`, 'error');
                 });
         }
     }
 
     handleEditAgency(event) {
-        const index = event.target.dataset.index;
+        const index = parseInt(event.target.dataset.index, 10);
+        const agency = this.agencies[index];
+        if (!agency || !agency.isEditable) {
+            this.showToast('Error', 'This agency cannot be edited.', 'error');
+            return;
+        }
         this.isEditingAgency = true;
-        this.newAgency = { ...this.agencies[index] };
+        this.newAgency = { ...agency };
         this.showAgencyForm = true;
         this.showAgencyPicker = false;
         this.showAgencyAddButton = true;
@@ -496,12 +425,18 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     handleDeleteAgency(event) {
-        const index = event.target.dataset.index;
+        const index = parseInt(event.target.dataset.index, 10);
+        const agency = this.agencies[index];
+        if (!agency) {
+            this.showToast('Error', 'Invalid agency selected for deletion.', 'error');
+            return;
+        }
+        console.log('Preparing to delete agency:', { index, agencyId: agency.id, donorId: this.donorId });
         this.showDeletePopup = true;
         this.deleteItemType = 'Agency';
         this.deleteItemIndex = index;
-        this.deleteItemName = this.agencies[index].agencyName;
-        this.deleteItemId = this.agencies[index].id;
+        this.deleteItemName = agency.agencyName;
+        this.deleteItemId = agency.id;
     }
 
     handleAgencyFieldChange(event) {
@@ -520,194 +455,6 @@ export default class DonorPreRegHippa extends LightningElement {
         this.showAgencyPlusButton = false;
     }
 
-    handleSaveAgency() {
-        if (!this.newAgency.agencyName) {
-            this.showToast('Error', 'Agency Name is required', 'error');
-            return;
-        }
-        if (this.isEditingAgency) {
-            editAgency({
-                accountId: this.newAgency.id,
-                agencyName: this.newAgency.agencyName,
-                phone: this.newAgency.phone,
-                coordinatorName: this.newAgency.coordinatorName,
-                website: this.newAgency.website,
-                cityState: this.newAgency.cityState,
-                email: this.newAgency.coordinatorEmail
-            })
-                .then(() => {
-                    const updatedAgencies = [...this.agencies];
-                    updatedAgencies[this.agencies.findIndex(a => a.id === this.newAgency.id)] = { ...this.newAgency };
-                    this.agencies = updatedAgencies;
-                    this.showToast('Success', 'Agency updated successfully', 'success');
-                    this.handleCancelAgency();
-                })
-                .catch(error => {
-                    this.showToast('Error', 'Error updating agency: ' + error.body.message, 'error');
-                });
-        } else {
-            addAgency({
-                donorId: this.donorId,
-                agencyName: this.newAgency.agencyName,
-                phone: this.newAgency.phone,
-                coordinatorName: this.newAgency.coordinatorName,
-                website: this.newAgency.website,
-                cityState: this.newAgency.cityState,
-                email: this.newAgency.coordinatorEmail
-            })
-                .then(result => {
-                    this.agencies = [...this.agencies, { ...this.newAgency, id: result, isEditable: true }];
-                    this.showToast('Success', 'Agency added successfully', 'success');
-                    this.handleCancelAgency();
-                })
-                .catch(error => {
-                    this.showToast('Error', 'Error adding agency: ' + error.body.message, 'error');
-                });
-        }
-    }
-
-    handlePlusIconClick() {
-        this.showSpermForm = true;
-        this.showSpermPicker = false;
-        this.showAddButton = true;
-        this.showPlusButton = false;
-        this.newSperm = { id: '', spermBankName: '', spermBankPhone: '', coordinatorName: '', spermBankWebsite: '', spermBankEmail: '', disableInputs: false };
-        this.isEditingSperm = false;
-        this.selectedSpermBankId = '';
-        this.searchKey = '';
-        this.selectedSpermBank = null;
-    }
-
-    handleSpermBankChange(event) {
-        this.nameConfirmation = event.target.value;
-        this.isYesChecked = this.nameConfirmation === 'Yes';
-        this.isNoChecked = this.nameConfirmation === 'No';
-        this.isDisabled = this.isYesChecked;
-        if (this.isYesChecked) {
-            this.legalName = { firstName: this.legalNamesri.firstName, lastName: this.legalNamesri.lastName };
-        }
-    }
-
-    handleLegalNameChange(event) {
-        const field = event.target.name;
-        this.legalName = { ...this.legalName, [field]: event.target.value };
-        updateDonorName({
-            donorId: this.donorId,
-            firstName: this.legalName.firstName,
-            lastName: this.legalName.lastName,
-            dob: this.dob,
-            state: this.address.state,
-            city: this.address.city,
-            street: this.address.street,
-            pincode: this.address.pincode,
-            additionalInfo: this.address.additionalInfo
-        })
-            .then(() => {
-                this.legalNamesri = { ...this.legalName };
-                this.showToast('Success', 'Donor name updated successfully', 'success');
-            })
-            .catch(error => {
-                this.showToast('Error', 'Error updating donor name: ' + error.body.message, 'error');
-            });
-    }
-
-    handleAddressChange(event) {
-        const field = event.target.dataset.field;
-        this.address = { ...this.address, [field]: event.target.value };
-    }
-
-    handleDobChange(event) {
-        const dobValue = event.target.value;
-        const today = new Date('2025-08-02T13:59:00+05:30');
-        const inputDate = new Date(dobValue);
-        const ageDiff = today.getFullYear() - inputDate.getFullYear();
-        const monthDiff = today.getMonth() - inputDate.getMonth();
-        const dayDiff = today.getDate() - inputDate.getDate();
-        const isAdult = ageDiff > 18 || (ageDiff === 18 && (monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0)));
-        if (inputDate > today) {
-            this.dobError = 'Date of Birth cannot be in the future.';
-            this.dob = '';
-        } else if (!isAdult) {
-            this.dobError = 'Donor must be at least 18 years old.';
-            this.dob = '';
-        } else {
-            this.dobError = '';
-            this.dob = dobValue;
-            updateDonorName({
-                donorId: this.donorId,
-                firstName: this.legalNamesri.firstName,
-                lastName: this.legalNamesri.lastName,
-                dob: this.dob,
-                state: this.address.state,
-                city: this.address.city,
-                street: this.address.street,
-                pincode: this.address.pincode,
-                additionalInfo: this.address.additionalInfo
-            })
-                .then(() => {
-                    this.showToast('Success', 'Date of Birth updated successfully', 'success');
-                })
-                .catch(error => {
-                    this.showToast('Error', 'Error updating Date of Birth: ' + error.body.message, 'error');
-                });
-        }
-    }
-
-    handleNoAgencyChange(event) {
-        this.noAgencyChecked = event.target.checked;
-        if (this.noAgencyChecked) {
-            this.agencies = [];
-            this.newAgency = { id: '', agencyName: '', phone: '', coordinatorName: '', website: '', cityState: '', coordinatorEmail: '', disableInputs: false };
-            this.showagencySection = false;
-        } else {
-            this.showagencySection = true;
-        }
-    }
-
-    handleNoSpermChange(event) {
-        this.noSpermChecked = event.target.checked;
-        if (this.noSpermChecked) {
-            this.sperms = [];
-            this.newSperm = { id: '', spermBankName: '', spermBankPhone: '', coordinatorName: '', spermBankWebsite: '', spermBankEmail: '', disableInputs: false };
-            this.showSpermBankSection = false;
-        } else {
-            this.showSpermBankSection = true;
-        }
-    }
-
-    handleNoClinicChange(event) {
-        this.noClinicChecked = event.target.checked;
-        if (this.noClinicChecked) {
-            this.clinics = [];
-            this.newClinic = { id: '', clinicName: '', phone: '', coordinatorName: '', website: '', cityState: '', coordinatorEmail: '', disableInputs: false };
-            this.showclinicSection = false;
-        } else {
-            this.showclinicSection = true;
-        }
-    }
-
-    handleNoAttorneyChange(event) {
-        this.noAttorneyChecked = event.target.checked;
-        if (this.noAttorneyChecked) {
-            this.attorneys = [];
-            this.newAttorney = { id: '', attorneyName: '', phone: '', lawFirm: '', website: '', cityState: '', email: '', disableInputs: false };
-            this.showattorneySection = false;
-        } else {
-            this.showattorneySection = true;
-        }
-    }
-
-    handleNoRecipientChange(event) {
-        this.noRecipientChecked = event.target.checked;
-        if (this.noRecipientChecked) {
-            this.recipients = [];
-            this.newRecipient = { id: '', firstName: '', lastName: '', phone: '', email: '', additionalInfo: '', disableInputs: false };
-            this.showrecipientSection = false;
-        } else {
-            this.showrecipientSection = true;
-        }
-    }
-
     handleAddSpermClick() {
         this.showSpermPicker = true;
         this.showSpermForm = true;
@@ -721,7 +468,7 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     async handleSpermBankSelect(event) {
-        console.log(JSON.stringify(event.detail));
+        console.log('Sperm bank select:', JSON.stringify(event.detail));
         this.selectedSpermBankId = event.detail.id || '';
         this.searchKey = event.detail.Name || '';
         if (this.selectedSpermBankId) {
@@ -740,9 +487,9 @@ export default class DonorPreRegHippa extends LightningElement {
                     };
                     this.selectedSpermBank = result;
                     this.showSpermForm = true;
-                    this.showSpermPicker = false;
+                    this.showSpermPicker = true;
                     this.showAddButton = true;
-                    this.showPlusButton = false;
+                    this.showPlusButton = true;
                     this.isEditingSperm = false;
                 } else {
                     this.newSperm = {
@@ -762,8 +509,8 @@ export default class DonorPreRegHippa extends LightningElement {
                     this.isEditingSperm = false;
                 }
             } catch (error) {
-                console.log('Error fetching sperm bank:', error.stack);
-                this.showToast('Error', 'Error fetching sperm bank details: ' + (error.body?.message || error.message), 'error');
+                console.error('Error fetching sperm bank:', error);
+                this.showToast('Error', `Error fetching sperm bank details: ${error.body?.message || error.message}`, 'error');
                 this.selectedSpermBankId = '';
                 this.searchKey = '';
                 this.selectedSpermBank = null;
@@ -781,10 +528,22 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     handleNoData(event) {
-        console.log('No data event received:', event.detail);
+        console.log('No sperm bank data:', event.detail);
         this.showToast('Info', event.detail || 'No sperm banks found.', 'info');
         this.showAddButton = false;
         this.showPlusButton = true;
+    }
+
+    handlePlusIconClick() {
+        this.showSpermForm = true;
+        this.showSpermPicker = false;
+        this.showAddButton = true;
+        this.showPlusButton = false;
+        this.newSperm = { id: '', spermBankName: '', spermBankPhone: '', coordinatorName: '', spermBankWebsite: '', spermBankEmail: '', disableInputs: false };
+        this.isEditingSperm = false;
+        this.selectedSpermBankId = '';
+        this.searchKey = '';
+        this.selectedSpermBank = null;
     }
 
     handleAddNewSpermBankClick() {
@@ -792,8 +551,28 @@ export default class DonorPreRegHippa extends LightningElement {
             this.showToast('Error', 'Please ensure all required fields are filled.', 'error');
             return;
         }
-        if (this.selectedSpermBank) {
-            addlookupSpermBank({ donorId: this.donorId, spermBankId: this.selectedSpermBankId })
+        if (this.isEditingSperm) {
+            editSpermBank({
+                accountId: this.newSperm.id,
+                spermBankName: this.newSperm.spermBankName,
+                phone: this.newSperm.spermBankPhone,
+                coordinatorName: this.newSperm.coordinatorName,
+                website: this.newSperm.spermBankWebsite,
+                email: this.newSperm.spermBankEmail
+            })
+                .then(() => {
+                    this.sperms = this.sperms.map(sperm =>
+                        sperm.id === this.newSperm.id ? { ...this.newSperm, isEditable: true } : sperm
+                    );
+                    this.showToast('Success', 'Sperm Bank updated successfully', 'success');
+                    this.handleCancelSperm();
+                })
+                .catch(error => {
+                    console.error('Error updating sperm bank:', error);
+                    this.showToast('Error', `Error updating sperm bank: ${error.body?.message || error.message}`, 'error');
+                });
+        } else if (this.selectedSpermBank) {
+            addlookupSpermBank({ donorId: this.donorId, spermBankId: this.selectedSpermBankId})
                 .then(() => {
                     this.sperms = [...this.sperms, {
                         id: this.selectedSpermBankId,
@@ -802,63 +581,48 @@ export default class DonorPreRegHippa extends LightningElement {
                         coordinatorName: this.newSperm.coordinatorName || '',
                         spermBankWebsite: this.newSperm.spermBankWebsite || '',
                         spermBankEmail: this.newSperm.spermBankEmail || '',
-                        isEditable: false
-                        
+                        pmcNumber: '',
+                        isEditable: true,
+                        isFromPrimaryBanks: this.newSperm.disableInputs
                     }];
                     this.showToast('Success', 'Sperm Bank added successfully', 'success');
-                    this.selectedSpermBankId = '';
-                    this.selectedSpermBank = null;
-                    this.searchKey = '';
-                    this.showSpermForm = false;
-                    this.showAddButton = false;
-                    this.showPlusButton = false;
-                    this.newSperm = { id: '', spermBankName: '', spermBankPhone: '', coordinatorName: '', spermBankWebsite: '', spermBankEmail: '', disableInputs: false };
+                    this.handleCancelSperm();
                 })
                 .catch(error => {
-                    console.log('Error adding sperm bank:', error);
-                    this.showToast('Error', 'Error adding sperm bank: ' + (error.body?.message || error.message), 'error');
+                    console.error('Error adding sperm bank:', error);
+                    this.showToast('Error', `Error adding sperm bank: ${error.body?.message || error.message}`, 'error');
                 });
         } else {
             addSpermBank({
                 donorId: this.donorId,
                 spermBankName: this.newSperm.spermBankName,
-                phone: this.newSperm.spermBankPhone || '',
-                coordinatorName: this.newSperm.coordinatorName || '',
-                website: this.newSperm.spermBankWebsite || '',
-                email: this.newSperm.spermBankEmail || '',
-                accountId: this.newSperm.id || '',
-                isEditable: true
+                phone: this.newSperm.spermBankPhone,
+                coordinatorName: this.newSperm.coordinatorName,
+                website: this.newSperm.spermBankWebsite,
+                email: this.newSperm.spermBankEmail
             })
-                .then(resultId => {
+                .then(result => {
                     this.sperms = [...this.sperms, {
-                        id: resultId,
-                        spermBankName: this.newSperm.spermBankName,
-                        spermBankPhone: this.newSperm.spermBankPhone || '',
-                        coordinatorName: this.newSperm.coordinatorName || '',
-                        spermBankWebsite: this.newSperm.spermBankWebsite || '',
-                        spermBankEmail: this.newSperm.spermBankEmail || '',
-                        isEditable: true
+                        ...this.newSperm,
+                        id: result,
+                        pmcNumber: '',
+                        isEditable: true,
+                        isFromPrimaryBanks: false
                     }];
                     this.showToast('Success', 'Sperm Bank added successfully', 'success');
-                    this.selectedSpermBankId = '';
-                    this.selectedSpermBank = null;
-                    this.searchKey = '';
-                    this.showSpermForm = false;
-                    this.showAddButton = false;
-                    this.showPlusButton = false;
-                    this.newSperm = { id: '', spermBankName: '', spermBankPhone: '', coordinatorName: '', spermBankWebsite: '', spermBankEmail: '', disableInputs: false };
+                    this.handleCancelSperm();
                 })
                 .catch(error => {
-                    console.log('Error adding sperm bank:', error);
-                    this.showToast('Error', 'Error adding sperm bank: ' + (error.body?.message || error.message), 'error');
+                    console.error('Error adding sperm bank:', error);
+                    this.showToast('Error', `Error adding sperm bank: ${error.body?.message || error.message}`, 'error');
                 });
         }
     }
 
     handleEditSperm(event) {
-        const index = event.target.dataset.index;
+        const index = parseInt(event.target.dataset.index, 10);
         const sperm = this.sperms[index];
-        if (!sperm.isEditable) {
+        if (!sperm || !sperm.isEditable) {
             this.showToast('Error', 'This sperm bank cannot be edited.', 'error');
             return;
         }
@@ -871,12 +635,18 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     handleDeleteSperm(event) {
-        const index = event.target.dataset.index;
+        const index = parseInt(event.target.dataset.index, 10);
+        const sperm = this.sperms[index];
+        if (!sperm) {
+            this.showToast('Error', 'Invalid sperm bank selected for deletion.', 'error');
+            return;
+        }
+        console.log('Preparing to delete sperm bank:', { index, spermBankId: sperm.id, donorId: this.donorId });
         this.showDeletePopup = true;
         this.deleteItemType = 'Sperm';
         this.deleteItemIndex = index;
-        this.deleteItemName = this.sperms[index].spermBankName;
-        this.deleteItemId = this.sperms[index].id;
+        this.deleteItemName = sperm.spermBankName;
+        this.deleteItemId = sperm.id;
     }
 
     handleSpermFieldChange(event) {
@@ -896,62 +666,9 @@ export default class DonorPreRegHippa extends LightningElement {
         this.showPlusButton = false;
     }
 
-    handleSaveSperm() {
-        if (!this.newSperm.spermBankName) {
-            this.showToast('Error', 'Sperm Bank Name is required', 'error');
-            return;
-        }
-        if (this.isEditingSperm) {
-            editSpermBank({
-                accountId: this.newSperm.id,
-                spermBankName: this.newSperm.spermBankName,
-                phone: this.newSperm.spermBankPhone,
-                coordinatorName: this.newSperm.coordinatorName,
-                website: this.newSperm.spermBankWebsite,
-                email: this.newSperm.spermBankEmail
-            })
-                .then(() => {
-                    const updatedSperms = [...this.sperms];
-                    updatedSperms[this.sperms.findIndex(s => s.id === this.newSperm.id)] = {
-                        ...this.newSperm,
-                        isEditable: true
-                    };
-                    this.sperms = updatedSperms;
-                    this.showToast('Success', 'Sperm Bank updated successfully', 'success');
-                    this.handleCancelSperm();
-                })
-                .catch(error => {
-                    this.showToast('Error', 'Error updating sperm bank: ' + error.body.message, 'error');
-                });
-        } else {
-            addSpermBank({
-                donorId: this.donorId,
-                spermBankName: this.newSperm.spermBankName,
-                phone: this.newSperm.spermBankPhone,
-                coordinatorName: this.newSperm.coordinatorName,
-                website: this.newSperm.spermBankWebsite,
-                email: this.newSperm.spermBankEmail,
-                accountId: this.newSperm.id || ''
-            })
-                .then(result => {
-                    this.sperms = [...this.sperms, {
-                        ...this.newSperm,
-                        id: result,
-                        pmcNumber: '',
-                        isEditable: true
-                    }];
-                    this.showToast('Success', 'Sperm Bank added successfully', 'success');
-                    this.handleCancelSperm();
-                })
-                .catch(error => {
-                    this.showToast('Error', 'Error adding sperm bank: ' + error.body.message, 'error');
-                });
-        }
-    }
-
     handleAddClinicClick() {
         this.showClinicPicker = true;
-        this.showClinicForm = true ;
+        this.showClinicForm = true;
         this.isEditingClinic = false;
         this.newClinic = { id: '', clinicName: '', phone: '', coordinatorName: '', website: '', cityState: '', coordinatorEmail: '', disableInputs: false };
         this.selectedClinicId = '';
@@ -961,7 +678,7 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     async handleClinicSelect(event) {
-        console.log(JSON.stringify(event.detail));
+        console.log('Clinic select:', JSON.stringify(event.detail));
         this.selectedClinicId = event.detail.id || '';
         if (this.selectedClinicId) {
             try {
@@ -1001,8 +718,8 @@ export default class DonorPreRegHippa extends LightningElement {
                     this.showClinicPlusButton = false;
                 }
             } catch (error) {
-                console.log('Error fetching clinic:', error.stack);
-                this.showToast('Error', 'Error fetching clinic details: ' + (error.body?.message || error.message), 'error');
+                console.error('Error fetching clinic:', error);
+                this.showToast('Error', `Error fetching clinic details: ${error.body?.message || error.message}`, 'error');
                 this.selectedClinicId = '';
                 this.selectedClinic = null;
                 this.showClinicForm = false;
@@ -1019,7 +736,7 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     handleNoClinicData(event) {
-        console.log('No clinic data event received:', event.detail);
+        console.log('No clinic data:', event.detail);
         this.showToast('Info', event.detail || 'No clinics found.', 'info');
         this.showClinicAddButton = false;
         this.showClinicPlusButton = true;
@@ -1041,7 +758,28 @@ export default class DonorPreRegHippa extends LightningElement {
             this.showToast('Error', 'Please ensure all required fields are filled.', 'error');
             return;
         }
-        if (this.selectedClinic) {
+        if (this.isEditingClinic) {
+            editClinic({
+                accountId: this.newClinic.id,
+                clinicName: this.newClinic.clinicName,
+                phone: this.newClinic.phone,
+                coordinatorName: this.newClinic.coordinatorName,
+                website: this.newClinic.website,
+                cityState: this.newClinic.cityState,
+                email: this.newClinic.coordinatorEmail
+            })
+                .then(() => {
+                    this.clinics = this.clinics.map(clinic =>
+                        clinic.id === this.newClinic.id ? { ...this.newClinic, isEditable: true } : clinic
+                    );
+                    this.showToast('Success', 'Clinic updated successfully', 'success');
+                    this.handleCancelClinic();
+                })
+                .catch(error => {
+                    console.error('Error updating clinic:', error);
+                    this.showToast('Error', `Error updating clinic: ${error.body?.message || error.message}`, 'error');
+                });
+        } else if (this.selectedClinic) {
             addlookupClinic({ donorId: this.donorId, spermBankId: this.selectedClinicId })
                 .then(() => {
                     this.clinics = [...this.clinics, {
@@ -1051,19 +789,16 @@ export default class DonorPreRegHippa extends LightningElement {
                         coordinatorName: this.newClinic.coordinatorName || '',
                         website: this.newClinic.website || '',
                         cityState: this.newClinic.cityState || '',
-                        coordinatorEmail: this.newClinic.coordinatorEmail || ''
+                        coordinatorEmail: this.newClinic.coordinatorEmail || '',
+                        isEditable: true,
+                        isFromPrimaryBanks: this.newClinic.disableInputs
                     }];
                     this.showToast('Success', 'Clinic added successfully', 'success');
-                    this.selectedClinicId = '';
-                    this.selectedClinic = null;
-                    this.showClinicForm = false;
-                    this.showClinicAddButton = false;
-                    this.showClinicPlusButton = false;
-                    this.newClinic = { id: '', clinicName: '', phone: '', coordinatorName: '', website: '', cityState: '', coordinatorEmail: '', disableInputs: false };
+                    this.handleCancelClinic();
                 })
                 .catch(error => {
-                    console.log('Error adding clinic:', error);
-                    this.showToast('Error', 'Error adding clinic: ' + (error.body?.message || error.message), 'error');
+                    console.error('Error adding clinic:', error);
+                    this.showToast('Error', `Error adding clinic: ${error.body?.message || error.message}`, 'error');
                 });
         } else {
             addClinic({
@@ -1076,20 +811,26 @@ export default class DonorPreRegHippa extends LightningElement {
                 email: this.newClinic.coordinatorEmail
             })
                 .then(result => {
-                    this.clinics = [...this.clinics, { ...this.newClinic, id: result, isEditable: true }];
+                    this.clinics = [...this.clinics, { ...this.newClinic, id: result, isEditable: true, isFromPrimaryBanks: false }];
                     this.showToast('Success', 'Clinic added successfully', 'success');
                     this.handleCancelClinic();
                 })
                 .catch(error => {
-                    this.showToast('Error', 'Error adding clinic: ' + error.body.message, 'error');
+                    console.error('Error adding clinic:', error);
+                    this.showToast('Error', `Error adding clinic: ${error.body?.message || error.message}`, 'error');
                 });
         }
     }
 
     handleEditClinic(event) {
-        const index = event.target.dataset.index;
+        const index = parseInt(event.target.dataset.index, 10);
+        const clinic = this.clinics[index];
+        if (!clinic || !clinic.isEditable) {
+            this.showToast('Error', 'This clinic cannot be edited.', 'error');
+            return;
+        }
         this.isEditingClinic = true;
-        this.newClinic = { ...this.clinics[index] };
+        this.newClinic = { ...clinic };
         this.showClinicForm = true;
         this.showClinicPicker = false;
         this.showClinicAddButton = true;
@@ -1097,12 +838,18 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     handleDeleteClinic(event) {
-        const index = event.target.dataset.index;
+        const index = parseInt(event.target.dataset.index, 10);
+        const clinic = this.clinics[index];
+        if (!clinic) {
+            this.showToast('Error', 'Invalid clinic selected for deletion.', 'error');
+            return;
+        }
+        console.log('Preparing to delete clinic:', { index, clinicId: clinic.id, donorId: this.donorId });
         this.showDeletePopup = true;
         this.deleteItemType = 'Clinic';
         this.deleteItemIndex = index;
-        this.deleteItemName = this.clinics[index].clinicName;
-        this.deleteItemId = this.clinics[index].id;
+        this.deleteItemName = clinic.clinicName;
+        this.deleteItemId = clinic.id;
     }
 
     handleClinicFieldChange(event) {
@@ -1133,7 +880,7 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     async handleAttorneySelect(event) {
-        console.log(JSON.stringify(event.detail));
+        console.log('Attorney select:', JSON.stringify(event.detail));
         this.selectedAttorneyId = event.detail.id || '';
         if (this.selectedAttorneyId) {
             try {
@@ -1144,10 +891,10 @@ export default class DonorPreRegHippa extends LightningElement {
                         id: result.Id,
                         attorneyName: result.Name || '',
                         phone: result.Phone || '',
-                        lawFirm: result.d21_Coordinator_Name__c || '',
+                        lawFirm: result.d21_Law_Firm__c || '',
                         website: result.Website || '',
                         cityState: result.City__c || '',
-                        email: result.d21_Email__c || '',
+                        email: result.Email || '',
                         disableInputs: true
                     };
                     this.selectedAttorney = result;
@@ -1173,8 +920,8 @@ export default class DonorPreRegHippa extends LightningElement {
                     this.showAttorneyPlusButton = false;
                 }
             } catch (error) {
-                console.log('Error fetching attorney:', error.stack);
-                this.showToast('Error', 'Error fetching attorney details: ' + (error.body?.message || error.message), 'error');
+                console.error('Error fetching attorney:', error);
+                this.showToast('Error', `Error fetching attorney details: ${error.body?.message || error.message}`, 'error');
                 this.selectedAttorneyId = '';
                 this.selectedAttorney = null;
                 this.showAttorneyForm = false;
@@ -1191,7 +938,7 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     handleNoAttorneyData(event) {
-        console.log('No attorney data event received:', event.detail);
+        console.log('No attorney data:', event.detail);
         this.showToast('Info', event.detail || 'No attorneys found.', 'info');
         this.showAttorneyAddButton = false;
         this.showAttorneyPlusButton = true;
@@ -1213,7 +960,28 @@ export default class DonorPreRegHippa extends LightningElement {
             this.showToast('Error', 'Please ensure all required fields are filled.', 'error');
             return;
         }
-        if (this.selectedAttorney) {
+        if (this.isEditingAttorney) {
+            editAttorney({
+                contactId: this.newAttorney.id,
+                attorneyName: this.newAttorney.attorneyName,
+                phone: this.newAttorney.phone,
+                lawFirm: this.newAttorney.lawFirm,
+                website: this.newAttorney.website,
+                cityState: this.newAttorney.cityState,
+                email: this.newAttorney.email
+            })
+                .then(() => {
+                    this.attorneys = this.attorneys.map(attorney =>
+                        attorney.id === this.newAttorney.id ? { ...this.newAttorney, isEditable: true } : attorney
+                    );
+                    this.showToast('Success', 'Attorney updated successfully', 'success');
+                    this.handleCancelAttorney();
+                })
+                .catch(error => {
+                    console.error('Error updating attorney:', error);
+                    this.showToast('Error', `Error updating attorney: ${error.body?.message || error.message}`, 'error');
+                });
+        } else if (this.selectedAttorney) {
             addlookupAttorney({ donorId: this.donorId, spermBankId: this.selectedAttorneyId })
                 .then(() => {
                     this.attorneys = [...this.attorneys, {
@@ -1223,19 +991,16 @@ export default class DonorPreRegHippa extends LightningElement {
                         lawFirm: this.newAttorney.lawFirm || '',
                         website: this.newAttorney.website || '',
                         cityState: this.newAttorney.cityState || '',
-                        email: this.newAttorney.email || ''
+                        email: this.newAttorney.email || '',
+                        isEditable: true,
+                        isFromPrimaryBanks: this.newAttorney.disableInputs
                     }];
                     this.showToast('Success', 'Attorney added successfully', 'success');
-                    this.selectedAttorneyId = '';
-                    this.selectedAttorney = null;
-                    this.showAttorneyForm = false;
-                    this.showAttorneyAddButton = false;
-                    this.showAttorneyPlusButton = false;
-                    this.newAttorney = { id: '', attorneyName: '', phone: '', lawFirm: '', website: '', cityState: '', email: '', disableInputs: false };
+                    this.handleCancelAttorney();
                 })
                 .catch(error => {
-                    console.log('Error adding attorney:', error);
-                    this.showToast('Error', 'Error adding attorney: ' + (error.body?.message || error.message), 'error');
+                    console.error('Error adding attorney:', error);
+                    this.showToast('Error', `Error adding attorney: ${error.body?.message || error.message}`, 'error');
                 });
         } else {
             addAttorney({
@@ -1248,20 +1013,26 @@ export default class DonorPreRegHippa extends LightningElement {
                 email: this.newAttorney.email
             })
                 .then(result => {
-                    this.attorneys = [...this.attorneys, { ...this.newAttorney, id: result, isEditable: true }];
+                    this.attorneys = [...this.attorneys, { ...this.newAttorney, id: result, isEditable: true, isFromPrimaryBanks: false }];
                     this.showToast('Success', 'Attorney added successfully', 'success');
                     this.handleCancelAttorney();
                 })
                 .catch(error => {
-                    this.showToast('Error', 'Error adding attorney: ' + error.body.message, 'error');
+                    console.error('Error adding attorney:', error);
+                    this.showToast('Error', `Error adding attorney: ${error.body?.message || error.message}`, 'error');
                 });
         }
     }
 
     handleEditAttorney(event) {
-        const index = event.target.dataset.index;
+        const index = parseInt(event.target.dataset.index, 10);
+        const attorney = this.attorneys[index];
+        if (!attorney || !attorney.isEditable) {
+            this.showToast('Error', 'This attorney cannot be edited.', 'error');
+            return;
+        }
         this.isEditingAttorney = true;
-        this.newAttorney = { ...this.attorneys[index] };
+        this.newAttorney = { ...attorney };
         this.showAttorneyForm = true;
         this.showAttorneyPicker = false;
         this.showAttorneyAddButton = true;
@@ -1269,12 +1040,18 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     handleDeleteAttorney(event) {
-        const index = event.target.dataset.index;
+        const index = parseInt(event.target.dataset.index, 10);
+        const attorney = this.attorneys[index];
+        if (!attorney) {
+            this.showToast('Error', 'Invalid attorney selected for deletion.', 'error');
+            return;
+        }
+        console.log('Preparing to delete attorney:', { index, attorneyId: attorney.id, donorId: this.donorId });
         this.showDeletePopup = true;
         this.deleteItemType = 'Attorney';
         this.deleteItemIndex = index;
-        this.deleteItemName = this.attorneys[index].attorneyName;
-        this.deleteItemId = this.attorneys[index].id;
+        this.deleteItemName = attorney.attorneyName;
+        this.deleteItemId = attorney.id;
     }
 
     handleAttorneyFieldChange(event) {
@@ -1305,7 +1082,7 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     async handleRecipientSelect(event) {
-        console.log(JSON.stringify(event.detail));
+        console.log('Recipient select:', JSON.stringify(event.detail));
         this.selectedRecipientId = event.detail.id || '';
         if (this.selectedRecipientId) {
             try {
@@ -1317,7 +1094,7 @@ export default class DonorPreRegHippa extends LightningElement {
                         firstName: result.FirstName || '',
                         lastName: result.LastName || '',
                         phone: result.Phone || '',
-                        email: result.d21_Email__c || '',
+                        email: result.Email || '',
                         additionalInfo: result.d21_Additional_Information__c || '',
                         disableInputs: true
                     };
@@ -1343,8 +1120,8 @@ export default class DonorPreRegHippa extends LightningElement {
                     this.showRecipientPlusButton = false;
                 }
             } catch (error) {
-                console.log('Error fetching recipient:', error.stack);
-                this.showToast('Error', 'Error fetching recipient details: ' + (error.body?.message || error.message), 'error');
+                console.error('Error fetching recipient:', error);
+                this.showToast('Error', `Error fetching recipient details: ${error.body?.message || error.message}`, 'error');
                 this.selectedRecipientId = '';
                 this.selectedRecipient = null;
                 this.showRecipientForm = false;
@@ -1361,7 +1138,7 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     handleNoRecipientData(event) {
-        console.log('No recipient data event received:', event.detail);
+        console.log('No recipient data:', event.detail);
         this.showToast('Info', event.detail || 'No recipients found.', 'info');
         this.showRecipientAddButton = false;
         this.showRecipientPlusButton = true;
@@ -1383,29 +1160,50 @@ export default class DonorPreRegHippa extends LightningElement {
             this.showToast('Error', 'Please ensure all required fields are filled.', 'error');
             return;
         }
-        if (this.selectedRecipient) {
+        if (this.isEditingRecipient) {
+            editRecipient({
+                contactId: this.newRecipient.id,
+                firstName: this.newRecipient.firstName,
+                lastName: this.newRecipient.lastName,
+                phone: this.newRecipient.phone,
+                email: this.newRecipient.email,
+                additionalInfo: this.newRecipient.additionalInfo
+            })
+                .then(() => {
+                    this.recipients = this.recipients.map(recipient =>
+                        recipient.id === this.newRecipient.id ? {
+                            ...this.newRecipient,
+                            Name: `${this.newRecipient.firstName || ''} ${this.newRecipient.lastName || ''}`.trim(),
+                            isEditable: true
+                        } : recipient
+                    );
+                    this.showToast('Success', 'Recipient updated successfully', 'success');
+                    this.handleCancelRecipient();
+                })
+                .catch(error => {
+                    console.error('Error updating recipient:', error);
+                    this.showToast('Error', `Error updating recipient: ${error.body?.message || error.message}`, 'error');
+                });
+        } else if (this.selectedRecipient) {
             addlookupRecipient({ donorId: this.donorId, spermBankId: this.selectedRecipientId })
                 .then(() => {
                     this.recipients = [...this.recipients, {
                         id: this.selectedRecipientId,
-                        firstName: this.newRecipient.firstName,
+                        firstName: this.newRecipient.firstName || '',
                         lastName: this.newRecipient.lastName,
-                        Name: (this.newRecipient.firstName || '') + ' ' + (this.newRecipient.lastName || ''),
+                        Name: `${this.newRecipient.firstName || ''} ${this.newRecipient.lastName || ''}`.trim(),
                         phone: this.newRecipient.phone || '',
                         email: this.newRecipient.email || '',
-                        additionalInfo: this.newRecipient.additionalInfo || ''
+                        additionalInfo: this.newRecipient.additionalInfo || '',
+                        isEditable: true,
+                        isFromPrimaryBanks: this.newRecipient.disableInputs
                     }];
                     this.showToast('Success', 'Recipient added successfully', 'success');
-                    this.selectedRecipientId = '';
-                    this.selectedRecipient = null;
-                    this.showRecipientForm = false;
-                    this.showRecipientAddButton = false;
-                    this.showRecipientPlusButton = false;
-                    this.newRecipient = { id: '', firstName: '', lastName: '', phone: '', email: '', additionalInfo: '', disableInputs: false };
+                    this.handleCancelRecipient();
                 })
                 .catch(error => {
-                    console.log('Error adding recipient:', error);
-                    this.showToast('Error', 'Error adding recipient: ' + (error.body?.message || error.message), 'error');
+                    console.error('Error adding recipient:', error);
+                    this.showToast('Error', `Error adding recipient: ${error.body?.message || error.message}`, 'error');
                 });
         } else {
             addRecipient({
@@ -1420,22 +1218,29 @@ export default class DonorPreRegHippa extends LightningElement {
                     this.recipients = [...this.recipients, {
                         ...this.newRecipient,
                         id: result,
-                        Name: (this.newRecipient.firstName || '') + ' ' + (this.newRecipient.lastName || ''),
-                        isEditable: true
+                        Name: `${this.newRecipient.firstName || ''} ${this.newRecipient.lastName || ''}`.trim(),
+                        isEditable: true,
+                        isFromPrimaryBanks: false
                     }];
                     this.showToast('Success', 'Recipient added successfully', 'success');
                     this.handleCancelRecipient();
                 })
                 .catch(error => {
-                    this.showToast('Error', 'Error adding recipient: ' + error.body.message, 'error');
+                    console.error('Error adding recipient:', error);
+                    this.showToast('Error', `Error adding recipient: ${error.body?.message || error.message}`, 'error');
                 });
         }
     }
 
     handleEditRecipient(event) {
-        const index = event.target.dataset.index;
+        const index = parseInt(event.target.dataset.index, 10);
+        const recipient = this.recipients[index];
+        if (!recipient || !recipient.isEditable) {
+            this.showToast('Error', 'This recipient cannot be edited.', 'error');
+            return;
+        }
         this.isEditingRecipient = true;
-        this.newRecipient = { ...this.recipients[index] };
+        this.newRecipient = { ...recipient };
         this.showRecipientForm = true;
         this.showRecipientPicker = false;
         this.showRecipientAddButton = true;
@@ -1443,12 +1248,18 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     handleDeleteRecipient(event) {
-        const index = event.target.dataset.index;
+        const index = parseInt(event.target.dataset.index, 10);
+        const recipient = this.recipients[index];
+        if (!recipient) {
+            this.showToast('Error', 'Invalid recipient selected for deletion.', 'error');
+            return;
+        }
+        console.log('Preparing to delete recipient:', { index, recipientId: recipient.id, donorId: this.donorId });
         this.showDeletePopup = true;
         this.deleteItemType = 'Recipient';
         this.deleteItemIndex = index;
-        this.deleteItemName = this.recipients[index].Name;
-        this.deleteItemId = this.recipients[index].id;
+        this.deleteItemName = recipient.Name;
+        this.deleteItemId = recipient.id;
     }
 
     handleRecipientFieldChange(event) {
@@ -1467,48 +1278,87 @@ export default class DonorPreRegHippa extends LightningElement {
         this.showRecipientPlusButton = false;
     }
 
+    handleSpermBankChange(event) {
+        this.nameConfirmation = event.target.value;
+        this.isYesChecked = this.nameConfirmation === 'Yes';
+        this.isNoChecked = this.nameConfirmation === 'No';
+        this.isDisabled = this.isYesChecked;
+        this.legalName = this.isYesChecked ? { ...this.legalNamesri } : { firstName: '', lastName: '' };
+    }
+
+    handleLegalNameChange(event) {
+        const field = event.target.name;
+        this.legalName = { ...this.legalName, [field]: event.target.value };
+    }
+
+    handleDobChange(event) {
+        this.dob = event.target.value;
+        const dobDate = new Date(this.dob);
+        const today = new Date();
+        let age = today.getFullYear() - dobDate.getFullYear();
+        const monthDiff = today.getMonth() - dobDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
+            age--;
+        }
+        this.dobError = dobDate > today ? 'Date of birth cannot be in the future.' : age < 18 ? 'You must be at least 18 years old.' : '';
+    }
+
+    handleAddressChange(event) {
+        const field = event.target.dataset.field;
+        this.address = { ...this.address, [field]: event.target.value };
+    }
+
     handleConfirmationChange(event) {
         this.isConfirmed = event.target.checked;
     }
 
-   handleDeleteYes() {
-    console.log(`Attempting to delete ${this.deleteItemType} with ID: ${this.deleteItemId}, Index: ${this.deleteItemIndex}, Donor ID: ${this.donorId}`);
-    const deletePromise = this.deleteItemType === 'Sperm' ? deleteSpermBank({ donorId: this.donorId, spermBankId: this.deleteItemId }) :
-                         this.deleteItemType === 'Agency' ? deleteAgency({ donorId: this.donorId, agencyId: this.deleteItemId }) :
-                         this.deleteItemType === 'Clinic' ? deleteClinic({ donorId: this.donorId, clinicId: this.deleteItemId }) :
-                         this.deleteItemType === 'Attorney' ? deleteAttorney({ donorId: this.donorId, contactId: this.deleteItemId }) :
-                         this.deleteItemType === 'Recipient' ? deleteRecipient({ donorId: this.donorId, contactId: this.deleteItemId }) :
-                         Promise.reject(new Error('Invalid delete item type'));
+    async handleDeleteYes() {
+        const deleteMethods = {
+            'Agency': deleteAgency,
+            'Sperm': deleteSpermBank,
+            'Clinic': deleteClinic,
+            'Attorney': deleteAttorney,
+            'Recipient': deleteRecipient
+        };
+        const arrayMap = {
+            'Agency': 'agencies',
+            'Sperm': 'sperms',
+            'Clinic': 'clinics',
+            'Attorney': 'attorneys',
+            'Recipient': 'recipients'
+        };
+        const deleteMethod = deleteMethods[this.deleteItemType];
+        const arrayName = arrayMap[this.deleteItemType];
 
-    deletePromise
-        .then(() => {
-            console.log(`Successfully deleted ${this.deleteItemType}`);
-            if (this.deleteItemType === 'Sperm') {
-                this.sperms = this.sperms.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-            } else if (this.deleteItemType === 'Agency') {
-                this.agencies = this.agencies.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-            } else if (this.deleteItemType === 'Clinic') {
-                this.clinics = this.clinics.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-            } else if (this.deleteItemType === 'Attorney') {
-                this.attorneys = this.attorneys.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-            } else if (this.deleteItemType === 'Recipient') {
-                this.recipients = this.recipients.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-            }
+        if (!deleteMethod || !this.deleteItemId || !this.donorId) {
+            console.error('Invalid deletion parameters:', {
+                deleteItemType: this.deleteItemType,
+                deleteItemId: this.deleteItemId,
+                donorId: this.donorId
+            });
+            this.showToast('Error', 'Invalid deletion request. Missing required parameters.', 'error');
+            this.handleDeleteNo();
+            return;
+        }
+
+        try {
+            console.log(`Calling ${this.deleteItemType} deletion with donorId: ${this.donorId}, recordId: ${this.deleteItemId}`);
+            await deleteMethod({ donorId: this.donorId, recordId: this.deleteItemId });
+            this[arrayName] = this[arrayName].filter((_, index) => index !== this.deleteItemIndex);
             this.showToast('Success', `${this.deleteItemType} deleted successfully`, 'success');
-            this.closeDeletePopup();
-        })
-        .catch(error => {
-            console.error(`Error deleting ${this.deleteItemType} with ID ${this.deleteItemId}:`, error);
+            this.handleDeleteNo();
+        } catch (error) {
+            console.error(`Error deleting ${this.deleteItemType}:`, {
+                error: error.body?.message || error.message,
+                donorId: this.donorId,
+                recordId: this.deleteItemId
+            });
             this.showToast('Error', `Error deleting ${this.deleteItemType}: ${error.body?.message || error.message}`, 'error');
-            this.closeDeletePopup();
-        });
-}
-
-    handleDeleteNo() {
-        this.closeDeletePopup();
+            this.handleDeleteNo();
+        }
     }
 
-    closeDeletePopup() {
+    handleDeleteNo() {
         this.showDeletePopup = false;
         this.deleteItemType = '';
         this.deleteItemIndex = -1;
@@ -1520,35 +1370,48 @@ export default class DonorPreRegHippa extends LightningElement {
         this.dispatchEvent(new CustomEvent('back'));
     }
 
-    handleDonorHippaNext() {
+    async handleDonorHippaNext() {
+        if (!this.legalName.firstName || !this.legalName.lastName) {
+            this.showToast('Error', 'Please enter both first and last name.', 'error');
+            return;
+        }
+        if (!this.dob) {
+            this.showToast('Error', 'Please enter your date of birth.', 'error');
+            return;
+        }
+        if (this.dobError) {
+            this.showToast('Error', this.dobError, 'error');
+            return;
+        }
+        if (!this.address.state || !this.address.city) {
+            this.showToast('Error', 'Please enter both state and city.', 'error');
+            return;
+        }
         if (!this.isConfirmed) {
             this.showToast('Error', 'Please confirm that the information is accurate.', 'error');
             return;
         }
-        if (!this.dob || !this.address.state || !this.address.city) {
-            this.showToast('Error', 'Please fill in all required fields.', 'error');
-            return;
-        }
-        this.dispatchEvent(new CustomEvent('next', {
-            detail: {
-                legalName: this.legalNamesri,
+        try {
+            await updateDonorName({
+                donorId: this.donorId,
+                firstName: this.legalName.firstName,
+                lastName: this.legalName.lastName,
                 dob: this.dob,
-                address: this.address,
-                agencies: this.agencies,
-                sperms: this.sperms,
-                clinics: this.clinics,
-                attorneys: this.attorneys,
-                recipients: this.recipients
-            }
-        }));
+                state: this.address.state,
+                city: this.address.city,
+                street: this.address.street,
+                pincode: this.address.pincode,
+                additionalInfo: this.address.additionalInfo
+            });
+            this.showToast('Success', 'Donor information updated successfully', 'success');
+            this.dispatchEvent(new CustomEvent('next', { detail: { donorId: this.donorId } }));
+        } catch (error) {
+            console.error('Error updating donor:', error);
+            this.showToast('Error', `Error updating donor information: ${error.body?.message || error.message}`, 'error');
+        }
     }
 
     showToast(title, message, variant) {
-        const evt = new ShowToastEvent({
-            title: title,
-            message: message,
-            variant: variant
-        });
-        this.dispatchEvent(evt);
+        this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
     }
 }

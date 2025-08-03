@@ -11,6 +11,7 @@ export default class D21_DynamicCustomLookup extends LightningElement {
     @api objectLabel = "Account";
     @api lookupPlaceholder;
     @api isDisabled;
+    @api recordTypeName;
 
     recordsList = [];
     selectedRecordName;
@@ -83,7 +84,7 @@ export default class D21_DynamicCustomLookup extends LightningElement {
     //call the apex method
     fetchSobjectRecords(loadEvent) {
         fetchRecords({
-            inputWrapper: this.methodInput
+            inputWrapper: this.methodInput, recordTypeName : this.recordTypeName
         }).then(result => {
             if (loadEvent && result) {
                 this.selectedRecordName = result[0].mainField;

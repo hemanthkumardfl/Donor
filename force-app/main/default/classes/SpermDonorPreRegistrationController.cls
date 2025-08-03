@@ -844,6 +844,7 @@ public static Response createSpermClinicWithSDN(string contactObj){
         @AuraEnabled public boolean noClinicChecked;
         @AuraEnabled public String accountId; 
         @AuraEnabled public String junctionId; 
+        @AuraEnabled public CoordinatorWrapper coordinatorUserInputsObj;
     }
     
     /*@AuraEnabled
@@ -944,6 +945,7 @@ return new SpermBankResponse(false, e.getStackTraceString() + ' - ' + e.getMessa
         // Deserialize JSON into list of wrapper objects
         list<SpermDonorClinicInfoWrapper> spermDonorClinics = donor.clinics;
         system.debug(spermDonorClinics);
+        system.debug(spermDonorClinics[0].coordinatorUserInputsObj);
         
         //Holds clinic record type accounts
         List<Account> clinicAccounts = new List<Account>();
@@ -960,6 +962,9 @@ return new SpermBankResponse(false, e.getStackTraceString() + ' - ' + e.getMessa
         try{
             // if Check here if you did not work with any clinics "not selected"
             if(spermDonorClinics[0].noClinicChecked == false){
+                list<contact> clinicCoordinatorsList = new list<contact>();//this list holds coordinators related to clinics
+                Map<string, account> coordinatorMap = new Map<string, account>();//this map holds coordinator record Id and clinic instance for coordinator update purpose.
+                
                 for (SpermDonorClinicInfoWrapper clinic : spermDonorClinics) {
                     //intiating clinic
                     Account acc = new Account();
@@ -977,10 +982,28 @@ return new SpermBankResponse(false, e.getStackTraceString() + ' - ' + e.getMessa
                     acc.RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Clinic').getRecordTypeId();
                     //adding clinic details
                     clinicAccounts.add(acc);
+                    if(clinic.coordinatorUserInputsObj != null && clinic.coordinatorUserInputsObj.coordinatorId != null &&  string.isNotBlank(clinic.coordinatorUserInputsObj.coordinatorId)){
+                        contact coordinator = new contact();
+                        coordinator.Id = clinic.coordinatorUserInputsObj.coordinatorId;
+                        //coordinator.RecordTypeId = Schema.SObjectType.Contact.getRecordTypeInfosByName().get('Sperm Bank').getRecordTypeId();
+                        coordinatorMap.put(coordinator.Id, acc);
+                        clinicCoordinatorsList.add(coordinator);
+                    }
                 }
                 //create/update clinic details
                 upsert clinicAccounts;
                 system.debug(clinicAccounts);
+                
+                //iterating over coordinators to update or assign accountId 
+                for(contact c : clinicCoordinatorsList){
+                    if(coordinatorMap.containsKey(c.Id)){
+                        c.AccountId = coordinatorMap.get(c.Id).Id;
+                    }
+                }
+                
+                //update coordinators
+                update clinicCoordinatorsList;
+                system.debug(clinicCoordinatorsList);
                 
                 //iterating over clinic Accounts
                 for (Integer i = 0; i < clinicAccounts.size(); i++) {
@@ -999,9 +1022,10 @@ return new SpermBankResponse(false, e.getStackTraceString() + ' - ' + e.getMessa
                     }
                     //initiating values for these d21_Sperm_Bank__c, d21_Sperm_Donor__c at first time only
                     else{
-                        link.d21_Clinic__c = acc.Id;
+                        //link.d21_Clinic__c = acc.Id;
                         link.d21_Donor__c = donor.donorId;
                     }
+                    link.d21_Clinic__c = acc.Id;
                     link.d21_Worked_With_Program__c = true;
                     //adding junction objects to list
                     junctions.add(link);
@@ -1022,6 +1046,20 @@ return new SpermBankResponse(false, e.getStackTraceString() + ' - ' + e.getMessa
                 return new SpermBankResponse(true, 'Agency Records Created/Updated Successfully.', clinicNumberToAccountId, clinicNumberToJunctionId);
             }
             else{
+                set<string> contactRecordIdset = new set<string>();
+                 if(!spermDonorClinics.isEmpty()){
+                    for (SpermDonorClinicInfoWrapper clinic : spermDonorClinics) {
+                        if(clinic.coordinatorUserInputsObj != null && clinic.coordinatorUserInputsObj.coordinatorId != null &&  string.isNotBlank(clinic.coordinatorUserInputsObj.coordinatorId)){
+                            contactRecordIdset.add(clinic.coordinatorUserInputsObj.coordinatorId);
+                        }
+                        
+                    } 
+                }
+                list<contact> coordinatorsList = [SELECT Id FROM Contact WHERE Id =: contactRecordIdset];
+                system.debug(coordinatorsList);
+                if(!coordinatorsList.isEmpty()){
+                    delete coordinatorsList;
+                }
                 return new SpermBankResponse(true, 'Agency skipped.');
             }
         }
@@ -1511,6 +1549,16 @@ public static Response updateEggCycleDontionOutcomes(String cyclesData) {
         system.debug(agencySpermBank);
         delete agencySpermBank;
         system.debug('agencySpermBank');
+        return 'success';
+    }
+    
+     @AuraEnabled
+    public static string deleteSpermClinic(string spermbankId){
+        system.debug('spermbankId' + spermbankId);
+        d21_Donor_Fertility_Clinic__c clinicJunction = [SELECT Id FROM d21_Donor_Fertility_Clinic__c WHERE d21_Clinic__c =: spermbankId];
+        system.debug(clinicJunction);
+        delete clinicJunction;
+        system.debug('clinicJunction');
         return 'success';
     }
     

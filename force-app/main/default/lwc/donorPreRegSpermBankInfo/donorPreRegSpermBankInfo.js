@@ -23,7 +23,7 @@ export default class SpermBankDetails extends LightningElement {
             disableIcon : true,
             disableInputs : true,
             isAdditionalCoordinators : false,
-            coordinatorUserInputsObj : {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : '', isAllow : false},
+            coordinatorUserInputsObj : {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : '', isAllow : false, 'isCoordinatorFirstNameBlank' : false},
             showNoContactRecordsErrorMessage :false,
             disableAddContactIcon : true,
             noInputsError : false
@@ -195,7 +195,8 @@ export default class SpermBankDetails extends LightningElement {
                         ...bank.coordinatorUserInputsObj,
                         [event.target.name]: event.target.value,
                         parentId: bank.accountId,
-                        isAllow : false
+                        isAllow : false,
+                        isCoordinatorFirstNameBlank : false
                     }
                 };
             }
@@ -214,35 +215,55 @@ export default class SpermBankDetails extends LightningElement {
                 }
             });
 
-            console.log('  >>> '+JSON.stringify(coordinatorUserInputs))  
-            let result = await createCoordinator({coordinateData : JSON.stringify(coordinatorUserInputs)})
-            if (result.isSuccess) {
-                let response = JSON.parse(result.message)
+            if(coordinatorUserInputs.firstName != null && coordinatorUserInputs.firstName.trim() != ''){
+                this.loadSpinner = true;
+                console.log('  >>> '+JSON.stringify(coordinatorUserInputs))  
+                let result = await createCoordinator({coordinateData : JSON.stringify(coordinatorUserInputs)})
+                if (result.isSuccess) {
+                    let response = JSON.parse(result.message)
 
+                    this.spermBanks = this.spermBanks.map(bank => {
+                        if (bank.clinicNumber == clinicNumber) {
+                            return {
+                                ...bank,
+                                coordinator: response.coordinatorId,
+                                isAdditionalCoordinators : false,
+                                coordinatorUserInputsObj : {... response, isAllow : true},
+                                showAddIcon : false
+                            };
+                        }
+                        return bank;
+                    });
+                    this.spermBanks = [... this.spermBanks];
+                    console.log(' spermBanks >>> '+JSON.stringify(this.spermBanks))  
+
+                }
+                setTimeout(() => {
+                    this.loadSpinner = false;
+                }, 3000)
+            }
+            else{
                 this.spermBanks = this.spermBanks.map(bank => {
                     if (bank.clinicNumber == clinicNumber) {
-                        return {
-                            ...bank,
-                            coordinator: response.coordinatorId,
-                            isAdditionalCoordinators : false,
-                            coordinatorUserInputsObj : {... response, isAllow : true},
-                            showAddIcon : false
-                        };
+                       return {
+                            ... bank,
+                            coordinatorUserInputsObj : {
+                               ...bank.coordinatorUserInputsObj,
+                                isCoordinatorFirstNameBlank : true
+                            }
+                       }
                     }
-                    return bank;
+                    return bank
                 });
-            
-                //alert();
-                this.spermBanks = [... this.spermBanks];
-               // alert()
-
-                console.log(' spermBanks >>> '+JSON.stringify(this.spermBanks))  
-
             }
+           
         }
         catch(e){
             console.log(e.stack);
             console.log(e.message);
+            setTimeout(() => {
+                this.loadSpinner = false;
+            }, 3000)
         }
 
     }
@@ -369,7 +390,7 @@ export default class SpermBankDetails extends LightningElement {
     }
 
     handleAddAnotherClick() {
-        this.loadSpinner = false;
+        this.loadSpinner = true;
         //this.showNumberedHeadings = true;
         this.noSpermBankChecked = false;
         this.spermBanks.push({
@@ -388,7 +409,7 @@ export default class SpermBankDetails extends LightningElement {
             disableIcon : true,
             disableInputs : true,
             isAdditionalCoordinators : false,
-            coordinatorUserInputsObj : {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : '', isAllow : false},
+            coordinatorUserInputsObj : {'firstName' : '', 'lastName' : '', 'phone' : '', 'coordinatorId' : '', 'parentId' : '', 'fullName' : '', isAllow : false, 'isCoordinatorFirstNameBlank' : false},
             showNoContactRecordsErrorMessage :false,
             disableAddContactIcon : true,
             noInputsError : false
@@ -400,9 +421,9 @@ export default class SpermBankDetails extends LightningElement {
         }));*/
         this.spermBanks = [... this.spermBanks];
         console.log(JSON.stringify(this.spermBanks))
-        /*setTimeout(() => {
+        setTimeout(() => {
             this.loadSpinner = false;
-        }, 3000);*/
+        }, 3000);
     }
 
     handleDeleteConfirm(event) {
