@@ -69,7 +69,7 @@
             </lightning-layout-item>
 
             <lightning-layout-item if:true={spermBank.noInputsError} size="12" padding="around-small" key={spermBank.id} class="inputParentCls">
-                  <span class="textcls" style="color:red">Please Provide Sperm Bank Info To Proceed...</span>
+                  <span class="textcls" style="color:red;font-size:13px">Please Provide Sperm Bank Info To Proceed...</span>
             </lightning-layout-item>
             
              <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputParentCls">
@@ -77,9 +77,13 @@
                     <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact"
                         object-label="Account" object-api-name="Account" field-api-name="Name"
                         other-field-api-name="Phone"
+                        selected-record-id = {spermBank.accountId}
+                        selected-record-id-change={spermBank.accountId}
                         onvalueselected={handleValueSelectedOnAccount}
                         onlookupdata = {handleLookupData}
                         class="recordPickerCls"
+                        lookup-placeholder="Search your Sperm bank..."
+                        is-disabled={noSpermBankChecked}
                         data-clinicnumber={spermBank.clinicNumber}>
                     </c-d21_-dynamic-custom-lookup>
 
@@ -91,7 +95,7 @@
 
                 </div>
 
-                <p if:true={spermBank.showNoAccountRecordsErrorMessage} class="textcls" style="color:red">No Sperm Banks Are Found With Your Search You Can Click On Add Icon Button To Add Sperm Bank Manually...</p>
+                <p if:true={spermBank.showNoAccountRecordsErrorMessage} class="textcls" style="color:red;font-size:13px;fomt-size:13px">No Sperm Banks Are Found With Your Search You Can Click On Add Icon Button To Add Sperm Bank Manually...</p>
              </lightning-layout-item>
 
             <lightning-layout-item size="12" padding="around-small" key={spermBank.id} class="inputParentCls">
@@ -171,15 +175,19 @@
                     class="textcls">
                 </lightning-input> -->
                 <div class="lookupConainerParentcls">
-                    <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact"
+                    <c-d21_-dynamic-custom-lookup
+                        label="" selected-icon-name="standard:contact"
                         object-label="Contact" object-api-name="Contact" field-api-name="Name"
                         parent-record-id={spermBank.accountId} parent-field-api-name="AccountId"
                         selected-record-id = {spermBank.coordinatorUserInputsObj.coordinatorId}
                         selected-record-id-change={spermBank.coordinatorUserInputsObj.coordinatorId}
+                        selected-coordinator-record-name = {spermBank.coordinatorUserInputsObj}
+                        lookup-placeholder="Search your co-ordinator..."
                         other-field-api-name="Phone"
                         onvalueselected={handleValueSelectedOnContact}
                         onlookupdata = {handleContactLookupData}
                         class="recordPickerCls"
+                        is-disabled={noSpermBankChecked}
                         data-clinicnumber={spermBank.clinicNumber}>
                     </c-d21_-dynamic-custom-lookup>
 
@@ -190,7 +198,7 @@
                     </lightning-button-icon>
 
                 </div>
-                 <p if:true={spermBank.showNoContactRecordsErrorMessage} class="textcls" style="color:red">No Coordinators Are Found With Your Search You Can Click On Add Icon Button To Add Coordinator Manually...</p>
+                 <p if:true={spermBank.showNoContactRecordsErrorMessage} class="textcls" style="color:red;font-size:13px">No Coordinators Are Found With Your Search You Can Click On Add Icon Button To Add Coordinator Manually...</p>
                 <!-- coordinator inputs section-->
                 <div if:true={spermBank.isAdditionalCoordinators} class="coordinatorInputsContainerCls">
                     <lightning-input type="text" placeholder="FirstName"

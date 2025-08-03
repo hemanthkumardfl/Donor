@@ -69,9 +69,14 @@ public without sharing class UtilityClass {
                     fieldsToQuery = fieldsToQuery + inputWrapper.fieldApiName;
                 }
                 if(string.isNotBlank(inputWrapper.otherFieldApiName)){
-                    fieldsToQuery = fieldsToQuery + ', ' + inputWrapper.otherFieldApiName;
+                    if (inputWrapper.objectApiName == 'Contact' && inputWrapper.otherFieldApiName == 'Industry') {
+                    }
+                    else{
+                        fieldsToQuery = fieldsToQuery + ', ' + inputWrapper.otherFieldApiName;
+                    }
                 }
                 String query = fieldsToQuery + ' FROM '+ inputWrapper.objectApiName;
+                system.debug('query >>>' + query);
                 String filterCriteria = inputWrapper.fieldApiName + ' LIKE ' + '\'' + String.escapeSingleQuotes(inputWrapper.searchString.trim()) + '%\' LIMIT 10';
                 if(String.isNotBlank(inputWrapper.selectedRecordId)) {
                     query += ' WHERE Id = \''+ inputWrapper.selectedRecordId + '\'';

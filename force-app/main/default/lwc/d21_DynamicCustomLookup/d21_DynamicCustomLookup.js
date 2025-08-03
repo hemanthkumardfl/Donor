@@ -9,6 +9,9 @@ export default class D21_DynamicCustomLookup extends LightningElement {
     @api required;
     @api selectedIconName = "standard:account";
     @api objectLabel = "Account";
+    @api lookupPlaceholder;
+    @api isDisabled;
+
     recordsList = [];
     selectedRecordName;
 
@@ -41,9 +44,25 @@ export default class D21_DynamicCustomLookup extends LightningElement {
         return this.recordsList.length > 0;
     }
 
+    @api
+    set selectedCoordinatorRecordName(value) {
+        console.log('recordIdUpdateValueFromParent >>>' + JSON.stringify(value))
+        let recordIdUpdateValueFromParent = value.coordinatorId;
+        if (recordIdUpdateValueFromParent && value.isAllow == true) {
+            this.selectedRecordId = recordIdUpdateValueFromParent;
+            this.fetchSobjectRecords(true);
+        }
+    }
+    get selectedCoordinatorRecordName(){
+        return this.selectedRecordId;
+    }
+
+
 
     @api
     set selectedRecordIdChange(value) {
+        console.log('>>>' + JSON.stringify(value))
+         console.log(JSON.stringify(value))
         if (value) {
             this.selectedRecordId = value;
             this.fetchSobjectRecords(true);

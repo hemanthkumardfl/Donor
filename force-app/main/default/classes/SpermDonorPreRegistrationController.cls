@@ -749,10 +749,11 @@ public static Response createSpermClinicWithSDN(string contactObj){
                     //initiating values for these d21_Sperm_Bank__c, d21_Sperm_Donor__c at first time only
                     else{
                         //link.d21_Sperm_Bank__c = acc.Id;
-                        link.Agency__c = acc.Id;
+                        //link.Agency__c = acc.Id;
                         //link.d21_Sperm_Donor__c = donor.donorId;
                         link.d21_Egg_Donor__c = donor.donorId;
                     }
+                    link.Agency__c = acc.Id;
                     
                     //link.d21_Donor_Code__c = bank.donorCode;
                     link.d21_Worked_With_Program__c = true;
@@ -1506,10 +1507,10 @@ public static Response updateEggCycleDontionOutcomes(String cyclesData) {
       @AuraEnabled
     public static string deleteSpermBank(string spermbankId){
         system.debug('spermbankId' + spermbankId);
-        Account spermBank = [SELECT Id FROM Account WHERE ID =: spermbankId];
-        system.debug(spermBank);
-        delete spermBank;
-        system.debug('spermBank');
+        d21_Donor_Agency__c agencySpermBank = [SELECT Id FROM d21_Donor_Agency__c WHERE Agency__c =: spermbankId];
+        system.debug(agencySpermBank);
+        delete agencySpermBank;
+        system.debug('agencySpermBank');
         return 'success';
     }
     

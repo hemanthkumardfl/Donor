@@ -166,7 +166,7 @@
                         <div key={sperm.id} class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
                             <span>{sperm.spermBankName} <template if:true={sperm.pmcNumber}>({sperm.pmcNumber})</template></span>
                             <div>
-                                <template if:true={sperm.isEditable}>
+                                <template if:true={sperm.isFromPrimaryBanks}>
                                     <lightning-button-icon icon-name="utility:edit" variant="bare" onclick={handleEditSperm} data-index={index} class="slds-m-right_x-small" title="Edit Sperm Bank"></lightning-button-icon>
                                 </template>
                                 <lightning-button-icon icon-name="action:delete" variant="bare" onclick={handleDeleteSperm} data-index={index} title="Delete Sperm Bank" class="delete-icon"></lightning-button-icon>
@@ -227,9 +227,9 @@
                                 <lightning-layout-item size="12" padding="around-small">
                                     <div class="buttonscls">
                                         <div class="backbtn textcls" style="place-content: center;" onclick={handleCancelSperm}>Cancel</div>
-                                        <template if:true={showAddButton}>
+                                       <!-- <template if:true={showAddButton}>-->
                                             <div class="nextbtncls textcls" style="place-content: center;" onclick={handleAddNewSpermBankClick}>Add</div>
-                                        </template>
+                                       
                                     </div>
                                 </lightning-layout-item>
                             </lightning-layout>
@@ -311,9 +311,9 @@
                                 <lightning-layout-item size="12" padding="around-small">
                                     <div class="buttonscls">
                                         <div class="backbtn textcls" style="place-content: center;" onclick={handleCancelClinic}>Cancel</div>
-                                        <template if:true={showClinicAddButton}>
+                                        <!-- <template if:true={showClinicAddButton}> -->
                                             <div class="nextbtncls textcls" style="place-content: center;" onclick={handleAddNewClinicClick}>Add</div>
-                                        </template>
+                                        
                                     </div>
                                 </lightning-layout-item>
                             </lightning-layout>
@@ -393,9 +393,9 @@
                                 <lightning-layout-item size="12" padding="around-small">
                                     <div class="buttonscls">
                                         <div class="backbtn textcls" style="place-content: center;" onclick={handleCancelAttorney}>Cancel</div>
-                                        <template if:true={showAttorneyAddButton}>
+                                        <!-- <template if:true={showAttorneyAddButton}> -->
                                             <div class="nextbtncls textcls" style="place-content: center;" onclick={handleAddNewAttorneyClick}>Add</div>
-                                        </template>
+                                        
                                     </div>
                                 </lightning-layout-item>
                             </lightning-layout>
@@ -473,9 +473,9 @@
                                 <lightning-layout-item size="12" padding="around-small">
                                     <div class="buttonscls">
                                         <div class="backbtn savebtnCls textcls" style="place-content: center;" onclick={handleCancelRecipient}>Cancel</div>
-                                        <template if:true={showRecipientAddButton}>
+                                        <!-- <template if:true={showRecipientAddButton}> -->
                                             <div class="nextbtncls savebtnCls textcls" style="place-content: center;" onclick={handleAddNewRecipientClick}>Add</div>
-                                        </template>
+                                       
                                     </div>
                                 </lightning-layout-item>
                             </lightning-layout>

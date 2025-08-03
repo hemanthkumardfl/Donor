@@ -489,6 +489,7 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
     async handleSpermBankInfoNext(event) {
         try {
             this.contactObj = JSON.parse(JSON.stringify(event.detail));
+            console.log('>>> conact >>>' + JSON.stringify(this.contactObj));
             let result = await createSpermBank({ donorDetails: JSON.stringify(this.contactObj) })
             if (result.isSuccess) {
                 this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
@@ -525,13 +526,22 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
             }
         }
         catch (e) {
+            console.log(e.stack)
+            console.log(e.message)
         }
     }
 
     handleSpermBankInfoBack(event) {
-        this.contactObj = JSON.parse(JSON.stringify(event.detail));
-        this.showSpermBankInfo = false;
-        this.showDonationBasics = true;
+        try{
+            this.contactObj = JSON.parse(JSON.stringify(event.detail));
+            this.showSpermBankInfo = false;
+            this.showDonationBasics = true;
+        }
+          catch(e){
+                console.log('main >>>')
+                console.log(e.stack);
+                console.log(e.message);
+            }
     }
 
     async handleRecipientDetailsNext(event) {

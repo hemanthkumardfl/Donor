@@ -98,6 +98,7 @@ export default class DonorPreRegHippa extends LightningElement {
     @track showAgencyPlusButton = false;
     @track selectedAgencyId = '';
     @track selectedAgency = null;
+    @track isDisabled = false;
 
     get isAddButtonDisabled() {
         return !this.selectedSpermBankId;
@@ -802,6 +803,7 @@ export default class DonorPreRegHippa extends LightningElement {
                         spermBankWebsite: this.newSperm.spermBankWebsite || '',
                         spermBankEmail: this.newSperm.spermBankEmail || '',
                         isEditable: false
+                        
                     }];
                     this.showToast('Success', 'Sperm Bank added successfully', 'success');
                     this.selectedSpermBankId = '';
@@ -1469,64 +1471,38 @@ export default class DonorPreRegHippa extends LightningElement {
         this.isConfirmed = event.target.checked;
     }
 
-    handleDeleteYes() {
-        if (this.deleteItemType === 'Sperm') {
-            deleteSpermBank({ accountId: this.deleteItemId })
-                .then(() => {
-                    this.sperms = this.sperms.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-                    this.showToast('Success', `${this.deleteItemType} deleted successfully`, 'success');
-                    this.closeDeletePopup();
-                })
-                .catch(error => {
-                    this.showToast('Error', `Error deleting ${this.deleteItemType}: ${error.body.message}`, 'error');
-                    this.closeDeletePopup();
-                });
-        } else if (this.deleteItemType === 'Agency') {
-            deleteAgency({ accountId: this.deleteItemId })
-                .then(() => {
-                    this.agencies = this.agencies.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-                    this.showToast('Success', `${this.deleteItemType} deleted successfully`, 'success');
-                    this.closeDeletePopup();
-                })
-                .catch(error => {
-                    this.showToast('Error', `Error deleting ${this.deleteItemType}: ${error.body.message}`, 'error');
-                    this.closeDeletePopup();
-                });
-        } else if (this.deleteItemType === 'Clinic') {
-            deleteClinic({ accountId: this.deleteItemId })
-                .then(() => {
-                    this.clinics = this.clinics.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-                    this.showToast('Success', `${this.deleteItemType} deleted successfully`, 'success');
-                    this.closeDeletePopup();
-                })
-                .catch(error => {
-                    this.showToast('Error', `Error deleting ${this.deleteItemType}: ${error.body.message}`, 'error');
-                    this.closeDeletePopup();
-                });
-        } else if (this.deleteItemType === 'Attorney') {
-            deleteAttorney({ accountId: this.deleteItemId })
-                .then(() => {
-                    this.attorneys = this.attorneys.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-                    this.showToast('Success', `${this.deleteItemType} deleted successfully`, 'success');
-                    this.closeDeletePopup();
-                })
-                .catch(error => {
-                    this.showToast('Error', `Error deleting ${this.deleteItemType}: ${error.body.message}`, 'error');
-                    this.closeDeletePopup();
-                });
-        } else if (this.deleteItemType === 'Recipient') {
-            deleteRecipient({ accountId: this.deleteItemId })
-                .then(() => {
-                    this.recipients = this.recipients.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-                    this.showToast('Success', `${this.deleteItemType} deleted successfully`, 'success');
-                    this.closeDeletePopup();
-                })
-                .catch(error => {
-                    this.showToast('Error', `Error deleting ${this.deleteItemType}: ${error.body.message}`, 'error');
-                    this.closeDeletePopup();
-                });
-        }
-    }
+   handleDeleteYes() {
+    console.log(`Attempting to delete ${this.deleteItemType} with ID: ${this.deleteItemId}, Index: ${this.deleteItemIndex}, Donor ID: ${this.donorId}`);
+    const deletePromise = this.deleteItemType === 'Sperm' ? deleteSpermBank({ donorId: this.donorId, spermBankId: this.deleteItemId }) :
+                         this.deleteItemType === 'Agency' ? deleteAgency({ donorId: this.donorId, agencyId: this.deleteItemId }) :
+                         this.deleteItemType === 'Clinic' ? deleteClinic({ donorId: this.donorId, clinicId: this.deleteItemId }) :
+                         this.deleteItemType === 'Attorney' ? deleteAttorney({ donorId: this.donorId, contactId: this.deleteItemId }) :
+                         this.deleteItemType === 'Recipient' ? deleteRecipient({ donorId: this.donorId, contactId: this.deleteItemId }) :
+                         Promise.reject(new Error('Invalid delete item type'));
+
+    deletePromise
+        .then(() => {
+            console.log(`Successfully deleted ${this.deleteItemType}`);
+            if (this.deleteItemType === 'Sperm') {
+                this.sperms = this.sperms.filter((_, index) => index !== parseInt(this.deleteItemIndex));
+            } else if (this.deleteItemType === 'Agency') {
+                this.agencies = this.agencies.filter((_, index) => index !== parseInt(this.deleteItemIndex));
+            } else if (this.deleteItemType === 'Clinic') {
+                this.clinics = this.clinics.filter((_, index) => index !== parseInt(this.deleteItemIndex));
+            } else if (this.deleteItemType === 'Attorney') {
+                this.attorneys = this.attorneys.filter((_, index) => index !== parseInt(this.deleteItemIndex));
+            } else if (this.deleteItemType === 'Recipient') {
+                this.recipients = this.recipients.filter((_, index) => index !== parseInt(this.deleteItemIndex));
+            }
+            this.showToast('Success', `${this.deleteItemType} deleted successfully`, 'success');
+            this.closeDeletePopup();
+        })
+        .catch(error => {
+            console.error(`Error deleting ${this.deleteItemType} with ID ${this.deleteItemId}:`, error);
+            this.showToast('Error', `Error deleting ${this.deleteItemType}: ${error.body?.message || error.message}`, 'error');
+            this.closeDeletePopup();
+        });
+}
 
     handleDeleteNo() {
         this.closeDeletePopup();
