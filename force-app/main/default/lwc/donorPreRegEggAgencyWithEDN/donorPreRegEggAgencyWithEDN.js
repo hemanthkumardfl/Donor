@@ -78,12 +78,13 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
                             ...outcome,
                             index: idx,
                             cycles,
-                            selectedCycles: outcome.selectedCycles || [],
+                            selectedCycles: existing.selectedCycles || [],
                             noAgencyChecked: outcome.noAgencyChecked || false,
                             incorrectAgencyChecked: existing.incorrectAgencyChecked || false,
                             primaryConfirmed: existing.primaryConfirmed || false,
                             showDonorCodeInput: !!existing.showDonorCodeInput,
                             hideDonorCodeInput: existing.hideDonorCodeInput ?? true,
+                            DonorCode : existing.DonorCode || '',
                             CoordinatorName: existing.CoordinatorName || '',
                             PMC: outcome.PMC,
                             disableAddIcon : existing.disableAddIcon || true,
@@ -347,6 +348,7 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
 
     async handleEggAgencyWithEDNNext() {
         try {
+
             this.unselectedCycles = [];
             for (let i = 1; i <= this.totalDonationsCount; i++) {
                 if (!this.totalSelectedCycles.includes(i)) {
@@ -474,7 +476,17 @@ export default class DonorPreRegEggAgencyWithEDN extends LightningElement {
             this.unselectedCyclesFilterList = [];
             this.notIntrestedForAgencyCyclesList = [];
             this.updateContactObj();
-            console.log('this.contactObj 3 >>> ' + JSON.stringify(this.contactObj));
+            let param = {
+                donorId: this.contactObj.donorId,
+                agencyData: JSON.stringify(this.contactObj.agenciesWithCodes.donationOutcomesListFromApex)
+            }
+            let result = await updateEggAgenciesWithCodes(param);
+            console.log('Result updateEggAgenciesWithCodes >>> ' + JSON.stringify(result));
+            if (result.isSuccess) {
+                this.dispatchEvent(new CustomEvent('next', {
+                    detail: this.contactObj
+                }));
+            }
         } catch (e) {
             console.error(`handleNextFromMissedPopup Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`);
         }
