@@ -47,6 +47,20 @@ export default class DonorPreRegSideBar extends LightningElement {
         { name: 'matchVerification', index: '11', label: 'Finish Registration' }
     ];
 
+    @track offSpringSideBarList = [
+        { name: 'getstarted', index: '1', label: 'Get Started' },
+        { name: 'securityverification', index: '2', label: 'Verification' },
+        { name: 'codesubmission', index: '3', label: 'Age Verify' },
+        { name: 'donationbasics', index: '4', label: 'Codes' },
+        { name: 'bankinfo', index: '5', label: 'Parties Involved' },
+        { name: 'clinicinfo', index: '6', label: 'Donor Info' },
+        { name: 'recipientInfo', index: '7', label: 'Professionals Info' },
+        { name: 'donationOutcome', index: '8', label: 'HIPAA Prep' },
+        { name: 'hippaPrep', index: '9', label: 'HIPAA Form' },
+        { name: 'hippaSign', index: '10', label: 'Contact Select' },
+        { name: 'matchVerification', index: '11', label: 'Finish' }
+    ];
+
     connectedCallback() {
         if (this.donorType === 'egg') {
             this.sideBarList = this.eggSideBarList;
@@ -54,7 +68,11 @@ export default class DonorPreRegSideBar extends LightningElement {
             this.sideBarList = this.spermSideBarList;
         }  else if (this.donorType === 'parent') {
             this.sideBarList = this.parentSideBarList;
-        } else {
+        } 
+        else if(this.donorType === 'offSpring'){
+             this.sideBarList = this.offSpringSideBarList;
+        }
+        else {
             this.sideBarList = [];
         }
     }

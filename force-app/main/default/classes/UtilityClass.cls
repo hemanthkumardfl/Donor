@@ -32,6 +32,7 @@ public without sharing class UtilityClass {
             if(coordinatorRecord.coordinatorId != null && string.IsNotBlank(coordinatorRecord.coordinatorId)){
                 con.Id = coordinatorRecord.coordinatorId;
             }
+            con.RecordTypeId = Schema.SObjectType.Contact.getRecordTypeInfosByName().get('coordinator').getRecordTypeId();
             upsert con;
             system.debug('>>>' + con);
             coordinatorRecord.coordinatorId = con.Id;
@@ -83,17 +84,22 @@ public without sharing class UtilityClass {
                     }
                 }
                 String query = fieldsToQuery + ' FROM '+ inputWrapper.objectApiName;
-               // query += ' WHERE RecordType.Name = \'' + String.escapeSingleQuotes(recordTypeName) + '\'';
+                query += ' WHERE RecordType.Name = \'' + String.escapeSingleQuotes(recordTypeName) + '\'';
                 system.debug('query >>>' + query);
                 String filterCriteria = inputWrapper.fieldApiName + ' LIKE ' + '\'' + String.escapeSingleQuotes(inputWrapper.searchString.trim()) + '%\' LIMIT 10';
                 if(String.isNotBlank(inputWrapper.selectedRecordId)) {
-                    query += ' Where Id = \''+ inputWrapper.selectedRecordId + '\'';
+                    query += ' AND Id = \''+ inputWrapper.selectedRecordId + '\'';
                 }else if(String.isNotBlank(inputWrapper.parentFieldApiName) && String.isNotBlank(inputWrapper.parentRecordId)){
-                    query += ' Where '+ inputWrapper.parentFieldApiName+ ' = \''+ inputWrapper.parentRecordId + '\'';
+                    query += ' AND '+ inputWrapper.parentFieldApiName+ ' = \''+ inputWrapper.parentRecordId + '\'';
                     query += ' AND ' + filterCriteria;
                 } 
                 else {
-                    query += ' Where '+ filterCriteria;
+                    system.debug('query >>> '+query);
+                    if(inputWrapper.objectApiName == 'Contact'){
+                        query += ' AND '+ filterCriteria + ' AND AccountId != NULL';
+                    }else{
+                    query += ' AND '+ filterCriteria;
+                    }
                 }
                 system.debug(query);
                 system.debug(Database.query(query));
@@ -131,7 +137,7 @@ public without sharing class UtilityClass {
     
     @AuraEnabled
     public static Account fetchSpermBankRecord(string accountId){
-        Account acc = [SELECT Id, Name, Website, Phone FROM Account WHERE Id =: accountId LIMIT 1];
+        Account acc = [SELECT Id, Name, Website, Phone, d21_Email__c, d21_Doctor_Name__c, d21_City_State_Of_Clinic__c FROM Account WHERE Id =: accountId LIMIT 1];
         return acc;
     }
 

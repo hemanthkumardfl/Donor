@@ -1,0 +1,39 @@
+<template>
+    <lightning-layout multiple-rows class="maindivheight">
+
+       
+    <!-- <c-confetti-celebration></c-confetti-celebration>-->
+
+        <!-- Fixed Header -->
+        <lightning-layout-item size="12" style="position:fixed;z-index:9999">
+            <c-donor-pre-reg-header onhomebuttonclick={handleHomeButtonClick}></c-donor-pre-reg-header>
+        </lightning-layout-item>
+
+        <!-- Donor Video Section (Desktop) -->
+        <lightning-layout-item size="12" if:true={showDonorVideo} class="slds-p-around_x-large slds-m-top_xx-large laptopvideocls videoWrapperScrollable">
+            <lightning-layout-item size="2"></lightning-layout-item>
+            <lightning-layout-item size="8">
+                    <c-donor-pre-reg-Offspring-videos oncontinue={handleDonorVideoContinue} onback={handleDonorVideoBack}></c-donor-pre-reg-Offspring-videos>
+            </lightning-layout-item>
+            <lightning-layout-item size="2"></lightning-layout-item>
+        </lightning-layout-item>
+
+        <!-- Donor Video Section (Mobile) -->
+        <lightning-layout-item size="12" if:true={showDonorVideo} class="slds-p-around_medium mobilecls">
+            <div style="min-height: 5em;"></div>
+            <c-donor-pre-reg-Offspring-videos oncontinue={handleDonorVideoContinue} onback={handleDonorVideoBack}></c-donor-pre-reg-Offspring-videos>
+        </lightning-layout-item>
+
+        <!-- Pre-Registration Screen class="slds-p-top_medium slds-m-top_xx-large" -->
+        <lightning-layout-item size="12" if:true={preRegistrationScreens} class="slds-p-top_medium slds-m-top_xx-large">
+            <c-donor-pre-registration-main-screen-clone oncancel={handleHomeButtonClick} donor-type={selectedDonorType}></c-donor-pre-registration-main-screen-clone>
+        </lightning-layout-item>
+        
+
+        <!-- Mobile Footer -->
+        <lightning-layout-item size="12" if:true={isMobile} class="mobilefooterDisplaycls slds-p-top_small slds-p-left_small slds-p-right_small">
+            <c-donor-pre-registartion-mobile-footer onprevious={previousHandler}></c-donor-pre-registartion-mobile-footer>
+        </lightning-layout-item>
+        
+    </lightning-layout>
+</template>

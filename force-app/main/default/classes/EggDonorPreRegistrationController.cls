@@ -177,6 +177,7 @@ public without sharing class EggDonorPreRegistrationController {
                             d21_Preferred_Password__c = wrapper.preferredPassword,
                             d21_Verification_Type__c = wrapper.verificationType,
                             d21_Donor_Terms_and_Conditions__c = wrapper.terms,
+                            What_age_best_describes_you__c	= wrapper.whatAgeDescribesYou,
                             Id = conList[0].Id
                         );
                         update con;
@@ -198,10 +199,12 @@ public without sharing class EggDonorPreRegistrationController {
                 }
             }
             else{
-                string recordTypeName = (wrapper.donorType == 'sperm') ? 'Sperm Donor' : 'Egg Donor';
+                string recordTypeName = (wrapper.donorType == 'sperm') ? 'Sperm Donor' : (wrapper.donorType == 'offSpring') ? 'Offspring' : 'Egg Donor';
+
+                string accountRecordTypeName = (wrapper.donorType == 'offSpring') ? 'Offspring' : 'Donor Household';
                 Account acc = new Account();
                 acc.Name = wrapper.lastName;
-                acc.recordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Donor Household').getRecordTypeId();
+                acc.recordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get(accountRecordTypeName).getRecordTypeId();
                 insert acc;
                 system.debug('Account >>> '+acc);
                 Contact con = new Contact(
@@ -215,6 +218,7 @@ public without sharing class EggDonorPreRegistrationController {
                     d21_Verification_Type__c = wrapper.verificationType,
                     d21_Donor_Terms_and_Conditions__c = wrapper.terms,
                     recordTypeId = Schema.SObjectType.Contact.getRecordTypeInfosByName().get(recordTypeName).getRecordTypeId(),
+                    What_age_best_describes_you__c	= wrapper.whatAgeDescribesYou,
                     Progress__c = 'Get Started'
                 );
                 insert con;
@@ -229,6 +233,7 @@ public without sharing class EggDonorPreRegistrationController {
                 res.preferredPassword = con.d21_Preferred_Password__c;
                 res.verificationType = con.d21_Verification_Type__c;
                 res.terms = con.d21_Donor_Terms_and_Conditions__c;
+                res.whatAgeDescribesYou	= con.What_age_best_describes_you__c;
                 return new Response(true,JSON.serialize(res));
             }
         }        
@@ -546,6 +551,7 @@ public without sharing class EggDonorPreRegistrationController {
             Map<string,Account> cycleAccountMap = new Map<string,Account>();
             list<d21_Donor_Agency__c> donorAgencyList = new list<d21_Donor_Agency__c>();
             Set<Id> accIds = new Set<Id>();
+            list<contact> updateContactList = new List<Contact>();
             list<RecordWrapper> agencyList  = donor.agenciesWithoutCode;
             system.debug('donor.agenciesWithoutCode >>> '+donor.agenciesWithoutCode);
             list<d21_Cycle__c> cyclist = [SELECT Id,Name,d21_Agency__c,d21_Donor__c,d21_Clinic__c,d21_Agency__r.Name FROM d21_Cycle__c WHERE d21_Donor__c =:donor.donorId];
@@ -579,8 +585,16 @@ public without sharing class EggDonorPreRegistrationController {
                     if(!agencyList[i].selectedCycles.isEmpty() && accountsToUpsert.size() > i){
                         agencyList[i].agencyId = accountsToUpsert[i].Id;
                         system.debug('Agency >>> '+agencyList[i]);
+                        if(String.isNotBlank(agencyList[i].CoordinatorName)){
+                            Contact con = new Contact(Id = agencyList[i].CoordinatorName,AccountId = agencyList[i].agencyId);
+                            updateContactList.add(con);
+                        }
                     }
                 }
+            }
+
+            if(!updateContactList.isEmpty()){
+                update updateContactList;
             }
             
             for(d21_Cycle__c cycle : cyclist){
@@ -1155,6 +1169,18 @@ public without sharing class EggDonorPreRegistrationController {
             return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - Line: ' + e.getLineNumber());
         }
     }
+
+      @AuraEnabled(cacheable=true)
+    public static List<String> getAgePicklistValues() {
+        List<String> picklistValues = new List<String>();
+        Schema.DescribeFieldResult fieldResult = Contact.What_age_best_describes_you__c.getDescribe();
+        for (Schema.PicklistEntry val : fieldResult.getPicklistValues()) {
+            if (val.isActive()) {
+                picklistValues.add(val.getLabel());
+            }
+        }
+        return picklistValues;
+    }
     
     
     public class BankDetails{
@@ -1182,6 +1208,7 @@ public without sharing class EggDonorPreRegistrationController {
         @AuraEnabled public String phone;
         @AuraEnabled public String preferredUserName;
         @AuraEnabled public String preferredPassword;
+        @AuraEnabled public String whatAgeDescribesYou;
         @AuraEnabled public String verificationType;
         @AuraEnabled public Boolean terms;
         @AuraEnabled public string AccountId;
@@ -1285,7 +1312,21 @@ public without sharing class EggDonorPreRegistrationController {
         @AuraEnabled public Boolean noClinicChecked;
         @AuraEnabled public Boolean noAttorneyChecked;
         @AuraEnabled public Boolean noSpermBankChecked;
+        @AuraEnabled public Boolean isDisabled;
+        @AuraEnabled public Boolean disableAddIcon;
+        @AuraEnabled public Boolean disableContactAddIcon;
+        @AuraEnabled public Coordinator Coordinator;
     }
+
+
+    public class Coordinator{
+        @AuraEnabled public string lastName;
+        @AuraEnabled public string firstName;
+         @AuraEnabled public string parentId;
+         @AuraEnabled public string coordinatorId;
+         @AuraEnabled public string Phone;
+    }
+    
     
     
     public class Cycles{

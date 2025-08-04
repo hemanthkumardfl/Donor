@@ -1,0 +1,184 @@
+<template>
+    <lightning-layout multiple-rows style="background: #E8E3DC;" class="mainscreenlayoutcls">
+        
+        <lightning-layout-item size="3" medium-device-size="3" large-device-size="2" class="sidebarcomponentcls"
+            >Sidebar
+            <c-donor-pre-reg-side-bar optionname={currentStepName} donor-type={donorType}
+                registration-type={getRegistrationType}></c-donor-pre-reg-side-bar>
+        </lightning-layout-item>
+
+        <!-- header -->
+        <lightning-layout-item size="12" padding="around-small" class="mobilemaincomponentHeaderCls">
+            <div style="background:white;display:flex;flex-direction:column;gap:1em;border-radius:5px"
+                class="slds-p-around_small">
+                <div style="display:flex;justify-content:space-between">
+                    <span style="font-size:Large;font-weight:bold;" class="parentbarcls">{getRegistrationType}</span>
+                    <span style="font-size:small;" class="parentbarcls"> Step {stepnumber} / 10</span>
+                </div>
+                <div style="font-size:medium;font-weight:bold;">{currentMobileStepName}</div>
+                <lightning-progress-bar value={progressValue} size="medium" variant="circular"
+                    style="--slds-g-color-brand-base-50 : black;"></lightning-progress-bar>
+            </div>
+            <div class="slds-p-bottom_medium" style="background : #E8E3DC;"></div>
+        </lightning-layout-item>
+        <!-- header ends-->
+
+        <lightning-layout-item size="12" small-device-size="12" medium-device-size="9" large-device-size="10"
+            class="maincomponentparent">
+
+            <lightning-layout-item size="12" class="maincomponentcls slds-p-top_small maincomponentHeadercls"
+                style="display:flex">
+                <lightning-layout-item size="1"></lightning-layout-item>
+                <lightning-layout-item size="10" padding="around-small">
+                    <lightning-progress-bar value={progressValue} size="medium" variant="circular"
+                        style="--slds-g-color-brand-base-50 : black;padding-top:1%"></lightning-progress-bar>
+                </lightning-layout-item>
+                <lightning-layout-item size="1"></lightning-layout-item>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" padding="around-small" class="layoutcontainercls ">
+
+                <lightning-layout-item size="2" medium-device-size="1" large-device-size="2" class="mobileSidesCls"
+                    padding="around-small">
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="10" large-device-size="8"
+                    padding="around-small" class="mobileMaincls">
+                    <!-- showIPProductSelection -->
+                    <c-donor-pre-reg-i-p-product-selection
+                        if:true={showIPProductSelection}></c-donor-pre-reg-i-p-product-selection>
+                    <!--showGetStarted-->
+                    <c-donor-pre-reg-get-started if:true={showGetStarted} oncancel={handleGetStartedCancel}
+                        donor-type={donorType} contact-obj={contactObj}
+                        oncontinue={handleGetStartedContinue}></c-donor-pre-reg-get-started>
+                    <!-- isTwoFactor -->
+                    <c-donor-pre-reg-security-verification if:true={isTwoFactor} contact-obj={contactObj}
+                        onverifyotpcode={handleVerifyotp}
+                        onresendcode={handleResendCode}></c-donor-pre-reg-security-verification>
+                    <!-- <c-donor-portal-get-started if:true={isTwoFactor}></c-donor-portal-get-started> -->
+                    <!-- <c-donor-portal-get-started-initialize if:true={isTwoFactor}></c-donor-portal-get-started-initialize> -->
+                    <!-- <c-donor-portal-settings if:true={isTwoFactor}></c-donor-portal-settings> -->
+                    <!-- <c-donor-pre-reg-embryo-with-e-m-b-code if:true={isTwoFactor}></c-donor-pre-reg-embryo-with-e-m-b-code> -->
+                    <!-- <c-donor-pre-reg-embryo-donor-info if:true={isTwoFactor}></c-donor-pre-reg-embryo-donor-info> -->
+                    <!-- <c-donor-pre-reg-embryo-without-e-m-b-code if:true={isTwoFactor}></c-donor-pre-reg-embryo-without-e-m-b-code> -->
+                    <!-- <c-donor-pre-reg-embryo-donor-details if:true={isTwoFactor}></c-donor-pre-reg-embryo-donor-details> -->
+                    <!-- <c-donor-pre-reg-embryo-outside-egg-or-sperm if:true={isTwoFactor}></c-donor-pre-reg-embryo-outside-egg-or-sperm> -->
+                    <!-- <c-donor-pre-reg-embryo-why-choose-donor if:true={isTwoFactor}></c-donor-pre-reg-embryo-why-choose-donor> -->
+                    <!-- showCodeSubmission -->
+                     <c-donor-pre-reg-offspring-age-verification if:true={showAgeVerification} onback={handleAgeVerificationBack}
+                        onnext={handleAgeVerificationNext} contact-obj={contactObj}></c-donor-pre-reg-offspring-age-verification>
+                    DonorPreRegOffspringAgeVerification
+                    <c-donor-pre-reg-code-submission if:true={showCodeSubmission} onback={handleCodeSubmissionBack}
+                        onnext={handleCodeSubmissionNext} contact-obj={contactObj}></c-donor-pre-reg-code-submission>
+                    <!-- showErrorCodeSubmission -->
+                    <c-donor-pre-reg-error-code-submission if:true={showErrorCodeSubmission}
+                        onback={handleErrorCodeSubmissionBack} onnext={handleErrorCodeSubmissionNext}
+                        contact-obj={contactObj}></c-donor-pre-reg-error-code-submission>
+                    <!-- showCodeError -->
+                    <c-donor-pre-reg-code-error if:true={showCodeError} onback={handleCodeErrorBack}
+                        onnext={handleCodeErrorNext} contact-obj={contactObj}></c-donor-pre-reg-code-error>
+                    <!-- showDonationBasics -->
+                    <c-donor-pre-reg-donation-basics if:true={showDonationBasics} onback={handleDonationBasicsBack}
+                        onnext={handleDonationBasicsNext} donor-type={donorType}
+                        contact-obj={contactObj}></c-donor-pre-reg-donation-basics>
+                    <!-- <c-donor-pre-reg-offspring-age-remind-screen></c-donor-pre-reg-offspring-age-remind-screen> -->
+                    <!-- <c-donor-pre-reg-offspring-parties-involved></c-donor-pre-reg-offspring-parties-involved> -->
+                    <!-- <c-donor-pre-reg-offspring-donor-info></c-donor-pre-reg-offspring-donor-info> -->
+                    <!-- <c-donor-off-spring-professionals-info></c-donor-off-spring-professionals-info> -->
+                    <!-- <c-donor-pre-reg-off-spring-contact-select></c-donor-pre-reg-off-spring-contact-select> -->
+                    <!-- showSpermBankInfoWithSDN -->
+                    <c-donor-pre-reg-sperm-bank-info-with-s-d-n if:true={showSpermBankInfoWithSDN}
+                     contact-obj={contactObj}
+                        onnext={handleSpermBankInfoWithSDNNext}
+                        onback={handleSpermBankInfoWithSDNBack}></c-donor-pre-reg-sperm-bank-info-with-s-d-n>
+                    <!--showClinicInfoWithNoSDN-->
+                    <c-donor-pre-reg-clinic-info if:true={showClinicInfoWithNoSDN}
+                        clinic-user-input-without-s-d-n={clinicUserInputWithoutSDN} contact-obj={contactObj}
+                        onnext={handleClinicInfoNext} onback={handleClinicInfoBack}></c-donor-pre-reg-clinic-info>
+                    <!-- showClinicInfoWithSDN-->
+                    <c-donor-pre-reg-clinic-info-with-s-d-n if:true={showClinicInfoWithSDN}
+                     contact-obj={contactObj}
+                        onnext={handleClinicInfoWithSDNNext}
+                        onback={handleClinicInfoWithSDNBack}></c-donor-pre-reg-clinic-info-with-s-d-n>
+                    <!-- showSpermBankInfo -->
+                    <c-donor-pre-reg-sperm-bank-info if:true={showSpermBankInfo}
+                        sperm-bank-user-input-without-s-d-n={spermBankUserInputWithoutSDN} contact-obj={contactObj}
+                        onback={handleSpermBankInfoBack}
+                        onnext={handleSpermBankInfoNext}></c-donor-pre-reg-sperm-bank-info>
+                    <!-- showRecipientDetails -->
+                    <c-donor-pre-reg-recipient-details if:true={showRecipientDetails}
+                      contact-obj={contactObj}
+                        onback={handleRecipientDetailsBack}
+                        onnext={handleRecipientDetailsNext}></c-donor-pre-reg-recipient-details>
+                    <!-- showDonationOutcome -->
+                    <c-donor-pre-reg-donation-outcome if:true={showDonationOutcome}
+                        donation-outcome-user-input-obj={donationOutcomeUserInputObj} contact-obj={contactObj}
+                        onback={handleDonationOutcomeBack}
+                        onnext={handleDonationOutcomeNext}></c-donor-pre-reg-donation-outcome>
+                    <!-- showHippaScreen -->
+
+                    <c-donor-pre-reg-egg-donor-recipient-details onback={handleEggRecipientBack}
+                        onnext={handleEggRecipientNext} if:true={showEggRecipientScreen}
+                        contact-obj={contactObj}></c-donor-pre-reg-egg-donor-recipient-details>
+                    <c-donor-pre-reg-hippa if:true={showHippaScreen} agencieslist={eggDonorAgencyUserInput} contact-obj={contactObj}
+                        clinicslist={eggClinicWithoutEdnUserInputs} attorneyslist={fertilityAttorneyWithoutEDNUserInput}
+                        onback={handleDonorHippaBack} onnext={handleDonorHippaNext}></c-donor-pre-reg-hippa>
+
+                         <c-donor-pre-reg-hippa-sign contact-obj={contactObj} if:true={showHippaSign} onback={handleDonorHippasignBack} onnext={handleDonorHippasignNext}></c-donor-pre-reg-hippa-sign>
+                        <!-- <c-donor-pre-reg-hippa-sign if:true={showHippaSign}  contact-obj={contactObj}
+                       
+                        onback={handleDonorHippasignBack} onnext={handleDonorHippasignNext}></c-donor-pre-reg-hippa-sign> -->
+
+                        <c-donor-egg-hip-a-a if:true={showEggHipaa} contact-obj={contactObj} onnext={handleEggHipaaNext}></c-donor-egg-hip-a-a>
+
+                    <!-- showMatchVerification -->
+                    <c-donor-pre-reg-match-verification if:true={showMatchVerification}
+                        onback={handleMatchVerificationBack} contact-obj={contactObj}
+                        onnext={handleMatchVerificationNext}></c-donor-pre-reg-match-verification>
+                    <!-- showEggAgencyOrBankWithEDN -->
+                    <c-donor-pre-reg-egg-agency-with-e-d-n if:true={showEggAgencyOrBankWithEDN}
+                        onnext={handleEggAgencyWithEDNNext} onback={handleEggAgencyWithEDNBack}
+                         contact-obj={contactObj}
+                        ></c-donor-pre-reg-egg-agency-with-e-d-n>
+                    <!-- showEggAgencyOrBankWithoutEDN -->
+                    <c-donor-pre-reg-egg-donor-agency if:true={showEggAgencyOrBankWithoutEDN} contact-obj={contactObj}
+                        onnext={handleEggAgencyOrBankWithoutEDNNext}
+                        onback={handleEggAgencyOrBankWithoutEDNBack}></c-donor-pre-reg-egg-donor-agency>
+                    <!-- showEggClinicWithEDN -->
+                    <!-- showEggClinicWithEDN -->
+                    <c-donor-pre-reg-egg-clinic-with-e-d-n if:true={showEggClinicWithEDN}
+                        onnext={handleEggClinicWithEDNNext} onback={handleEggClinicWithEDNBack}
+                        contact-obj={contactObj}
+                       ></c-donor-pre-reg-egg-clinic-with-e-d-n>
+                    <!-- showEggClinicWithoutEDN -->
+                    <c-donor-pre-reg-egg-clinic if:true={showEggClinicWithoutEDN} contact-obj={contactObj}
+                        onnext={handleEggClinicWithoutEDNNext}
+                        onback={handleEggClinicWithoutEDNBack}></c-donor-pre-reg-egg-clinic>
+                    <!-- showEggAttorneyWithoutEDN -->
+                    <c-donor-pre-reg-egg-fertility-attorney if:true={showEggAttorneyWithoutEDN}
+                        onnext={handleEggFertilityAttorneyWithoutEDNNext}
+                        onback={handleEggFertilityAttorneyWithoutEDNBack}
+                        contact-obj={contactObj}></c-donor-pre-reg-egg-fertility-attorney>
+                    <!-- showEggAttorneyWithEDN -->
+                    <c-donor-pre-reg-egg-fertility-attorney-with-e-d-n if:true={showEggAttorneyWithEDN}
+                        onnext={handleEggAttorneyWithEDNNext} onback={handleEggAttorneyWithEDNBack}
+                        contact-obj={contactObj}></c-donor-pre-reg-egg-fertility-attorney-with-e-d-n>
+                    <!-- showEggCycleOutcome -->
+                    <c-donor-pre-reg-egg-cycle-outcome if:true={showEggCycleOutcome} 
+                        contact-obj={contactObj}
+                        onnext={handleEggCycleOutcomeNext}
+                        onback={handleEggCycleOutcomeBack} donation-outcome-userinput={eggCycleOutComeUserInput}
+                        donation-basics-info={donationBasicsUserInput}></c-donor-pre-reg-egg-cycle-outcome>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="2" medium-device-size="1" large-device-size="2" class="mobileSidesCls"
+                    padding="around-small">
+                </lightning-layout-item>
+
+            </lightning-layout-item>
+
+        </lightning-layout-item>
+
+    </lightning-layout>
+
+</template>

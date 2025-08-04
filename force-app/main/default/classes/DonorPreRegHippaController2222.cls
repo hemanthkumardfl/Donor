@@ -5,7 +5,7 @@ public without sharing class DonorPreRegHippaController2222 {
         hipaaWrapper hipaaWrapperlist = new hipaaWrapper();
         
         List<d21_Donor_Agency__c> Agencyjunctionlist = [
-            SELECT Id, d21_Egg_Donor__c, Agency__r.Name, Agency__c, Agency__r.Phone, 
+            SELECT Id, d21_Egg_Donor__c, Agency__r.Name, Agency__c, Agency__r.Phone,d21_isExisting__c, 
             Agency__r.d21_Coordinator_Name__c, Agency__r.Website, Agency__r.d21_Email__c 
             FROM d21_Donor_Agency__c 
             WHERE d21_Egg_Donor__c = :donorId AND Agency__c != null
@@ -420,7 +420,7 @@ public static String addlookupSpermBank(
         Account spermBank = [
             SELECT Id, Name,  d21_Coordinator_Name__c
             FROM Account
-            WHERE Id = :spermBankId AND RecordTypeId = :spermBankRecordTypeId
+            WHERE Id = :spermBankId 
             LIMIT 1
         ];
 
@@ -586,7 +586,7 @@ public static String addlookupSpermBank(
             throw new AuraHandledException('Error adding sperm bank: ' + e.getMessage());
         }
     }*/
-    
+   @AuraEnabled  
 public static String addSpermBank(String donorId, String spermBankName, String phone, String coordinatorName, String coordinatorId, String website, String email, String coordinatorFirstName, String coordinatorLastName, String coordinatorPhone) {
     try {
         // Validate required fields
@@ -745,7 +745,7 @@ public static String addSpermBank(String donorId, String spermBankName, String p
             if (String.isBlank(donorId) || String.isBlank(lastName)) {
                 throw new AuraHandledException('Donor ID and Recipient Last Name are required.');
             }
-            Id accountRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('d21_Recipient').getRecordTypeId();
+            Id accountRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Recipient').getRecordTypeId();
             Account recipientAccount = new Account(
                 Name = String.isNotBlank(firstName) ? firstName + ' ' + lastName : lastName,
                 RecordTypeId = accountRecordTypeId
@@ -947,4 +947,82 @@ update attorney;*/
         }
         return spermBanks;
     }
+    
+    
+    @AuraEnabled
+public static String addlookupClinic(
+    String donorId,
+    String clinicId,
+    String coordinatorId,
+    String coordinatorFirstName,
+    String coordinatorLastName,
+    String coordinatorPhone,
+    String coordinatorName
+) {
+    try {
+        // Validate required fields
+        if (String.isBlank(donorId) || String.isBlank(clinicId)) {
+            throw new AuraHandledException('Donor ID and Clinic ID are required.');
+        }
+        if (String.isBlank(coordinatorId) && String.isBlank(coordinatorFirstName) && String.isNotBlank(coordinatorName)) {
+            throw new AuraHandledException('Coordinator first name is required when adding a new coordinator.');
+        }
+
+        // Verify Clinic (Account) exists with the correct record type
+        Id clinicRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('d21_Clinic').getRecordTypeId();
+        Account clinic = [
+            SELECT Id, Name, d21_Coordinator_Name__c, RecordTypeId
+            FROM Account
+            WHERE Id = :clinicId 
+            LIMIT 1
+        ];
+
+        // Create a new Coordinator Contact if ID not provided
+        if (String.isBlank(coordinatorId) && String.isNotBlank(coordinatorFirstName)) {
+            Contact newCoordinator = new Contact(
+                FirstName = coordinatorFirstName,
+                LastName = String.isBlank(coordinatorLastName) ? 'Coordinator' : coordinatorLastName,
+                Phone = coordinatorPhone,
+                AccountId = clinic.Id
+            );
+            insert newCoordinator;
+            coordinatorId = newCoordinator.Id;
+        } else if (String.isNotBlank(coordinatorId)) {
+            Contact existingCoordinator = [SELECT Id, AccountId FROM Contact WHERE Id = :coordinatorId LIMIT 1];
+            if (existingCoordinator.AccountId == null) {
+                existingCoordinator.AccountId = clinic.Id;
+                update existingCoordinator;
+            }
+        }
+
+        // Update Clinic Account with coordinator info if provided
+        if (String.isNotBlank(coordinatorName)) {
+            clinic.d21_Coordinator_Name__c = coordinatorName;
+            update clinic;
+        }
+
+        // Check if junction already exists
+        List<d21_Donor_Fertility_Clinic__c> existingLinks = [
+            SELECT Id
+            FROM d21_Donor_Fertility_Clinic__c
+            WHERE d21_Donor__c = :donorId AND d21_Clinic__c = :clinicId
+            LIMIT 1
+        ];
+
+        if (!existingLinks.isEmpty()) {
+            throw new AuraHandledException('Clinic already linked to this donor.');
+        }
+
+        // Create junction record
+        d21_Donor_Fertility_Clinic__c link = new d21_Donor_Fertility_Clinic__c(
+            d21_Donor__c = donorId,
+            d21_Clinic__c = clinic.Id
+        );
+        insert link;
+        return link.Id;
+
+    } catch (Exception e) {
+        throw new AuraHandledException('Error adding clinic: ' + e.getMessage());
+    }
+}
 }

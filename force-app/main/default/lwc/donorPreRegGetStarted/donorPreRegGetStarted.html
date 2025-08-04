@@ -76,6 +76,31 @@
                     name="preferredPassword" onchange={handleInputChange} onblur={validateInput}></lightning-input>
             </lightning-layout-item>
 
+            <!-- what age best describes you?-->
+            <template if:false={isDonor}>
+              <lightning-layout-item size="12" padding="around-small" class="inputParentcls">
+                <div class="slds-grid slds-grid_vertical-align-center">
+                 <span class="spanTextcls">What age best describes you?</span><lightning-icon icon-name="utility:info"
+                                class="slds-m-left_xx-small" alternative-text="Help" size="x-small" title="Password must be at least 8 characters long and include:
+                    • At least one letter
+                    • At least one number
+                    • At least one special character (e.g., @, #, $)">
+                            </lightning-icon>
+                </div>
+                 <lightning-combobox
+                        label="What age best describes you?"
+                        class="textcls inpucls" 
+                        variant="label-hidden" style="width:100%" 
+                        value={contactObj.whatAgeDescribesYou}
+                        options={ageOptions}
+                        name="whatAgeDescribesYou"
+                        onchange={handleInputChange}
+                    ></lightning-combobox>
+               
+            </lightning-layout-item>
+
+            </template>
+
             <!-- Radio Group -->
             <lightning-layout-item size="12" padding="around-small">
                 <span class="spanTextcls">

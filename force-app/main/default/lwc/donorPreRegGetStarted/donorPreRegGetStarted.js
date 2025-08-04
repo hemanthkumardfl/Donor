@@ -1,5 +1,6 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api, track, wire } from 'lwc';
 import DONOR_PRE_REG_GET_STARTED_LOGO from '@salesforce/resourceUrl/donorPreRegGetStartedLogo';
+import getAgePicklistValues from '@salesforce/apex/EggDonorPreRegistrationController.getAgePicklistValues';
 
 export default class DonorPreRegGetStarted extends LightningElement {
 
@@ -15,6 +16,7 @@ export default class DonorPreRegGetStarted extends LightningElement {
     @api emailRadioButton = false;
     @api phoneRadioButton = false;
     @api bothRadioButton = false;
+    @track isDonor = true;
 
     @api
     verifyEmailHandler(message) {
@@ -43,6 +45,26 @@ export default class DonorPreRegGetStarted extends LightningElement {
             this.bothRadioButton = (this.contactObj['verificationType'] == 'Both');
             this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
         }
+        if(this.donorType == 'offSpring'){
+            this.isDonor = false;
+        }
+        else{
+            this.isDonor = true;
+        }
+    }
+
+    @track ageOptions = [];
+
+    @wire(getAgePicklistValues)
+    wiredPicklistValues({ data, error }) {
+        if (data) {
+            this.ageOptions = data.map(val => ({
+                label: val,
+                value: val
+            }));
+        } else if (error) {
+            console.error('Error loading picklist values:', error);
+        }
     }
 
     handleInputChange(event) {
@@ -61,7 +83,8 @@ export default class DonorPreRegGetStarted extends LightningElement {
             'preferredUserName': 'Preferred Username',
             'preferredPassword': 'Preferred Password',
             'terms': 'Terms and Conditions',
-            'verificationType': 'Verification Type'
+            'verificationType': 'Verification Type',
+            'whatAgeDescribesYou' : 'What Age Describes You'
         }
 
         switch (input.name) {
@@ -104,6 +127,13 @@ export default class DonorPreRegGetStarted extends LightningElement {
                     msg = 'Enter a valid phone number with country code, e.g., +19876543210';
                 }
                 break;
+
+            case 'whatAgeDescribesYou':
+                if (input.value == undefined || input.value == null || input.value == '') {
+                    msg = `Enter your ${labelList[input.name]}`;
+                }
+                break;
+
         }
 
         input.setCustomValidity(msg);
@@ -115,7 +145,7 @@ export default class DonorPreRegGetStarted extends LightningElement {
         const radioButtons = this.template.querySelectorAll('input[name="radioGroup"]');
         let isValid = true;
         this.contactObj = JSON.parse(JSON.stringify(this.contactObj))
-        this.contactObj['donorType'] = (this.donorType == 'egg') ? 'Egg Donor' : (this.donorType == 'sperm') ? 'Sperm Donor' : (this.donorType == 'embryo') ? 'Embryo Donor' : '';
+        this.contactObj['donorType'] = (this.donorType == 'egg') ? 'Egg Donor' : (this.donorType == 'sperm') ? 'Sperm Donor' : (this.donorType == 'embryo') ? 'Embryo Donor' :  (this.donorType == 'offSpring') ? 'OffSpring': '';
         allInputs.forEach(input => {
             const { type, name, value, checked } = input;
 
@@ -138,6 +168,21 @@ export default class DonorPreRegGetStarted extends LightningElement {
                 }
             }
         });
+        if(this.donorType == 'offSpring'){
+             const allInputs = this.template.querySelectorAll('lightning-combobox');
+             allInputs.forEach(input => {
+                const { name, value } = input;
+                this.validateInput({ target: input });
+                if (!input.checkValidity()) {
+                    isValid = false;
+                    if (input) {
+                        input.scrollIntoView({ behavior: 'smooth' });
+                    }
+                } else {
+                    this.contactObj[name] = value;
+                }          
+            });
+        }
         const isRadioChecked = Array.from(radioButtons).some(rb => rb.checked);
         this.showRadioError = !isRadioChecked;
         isValid = isValid && isRadioChecked;

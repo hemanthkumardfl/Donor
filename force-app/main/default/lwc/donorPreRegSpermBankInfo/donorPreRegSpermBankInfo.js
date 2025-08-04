@@ -19,6 +19,7 @@ export default class SpermBankDetails extends LightningElement {
             showDonorCodeInput: false,
             accountId : '',
             junctionId : '',
+            oldJunctionId : '',
             showNoAccountRecordsErrorMessage :false,
             disableIcon : true,
             disableInputs : true,
@@ -107,7 +108,13 @@ export default class SpermBankDetails extends LightningElement {
         this.spermBanks = this.spermBanks.map(bank => {
             if (bank.clinicNumber == clinicNumber) {
                 return { 
-                    ...bank, 
+                    ...bank,
+                    oldJunctionId : bank.junctionId, 
+                    name: '',
+                    website: '',
+                    phone: '',
+                    email: '',
+                    accountId : '',
                     disableInputs :  false  
                 };
             }
@@ -404,6 +411,9 @@ export default class SpermBankDetails extends LightningElement {
             coordinator: '',
             knowDonorCode: '',
             donorCode: '',
+            oldJunctionId : '',
+            accountId : '',
+            junctionId : '',
             showDonorCodeInput: false,
             showNoAccountRecordsErrorMessage :false,
             disableIcon : true,

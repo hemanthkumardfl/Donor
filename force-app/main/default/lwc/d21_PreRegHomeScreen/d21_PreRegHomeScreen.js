@@ -11,4 +11,12 @@ export default class donorIntroComponent extends LightningElement {
             window.open('/parent-registration', '_self');
         }
     }
+    @track showOffspring = false;
+    connectedCallback() {
+        this.showOffspring = false;
+    }
+    
+    handleoffSpringClick(event){
+        this.showOffspring = true;
+    }
 }

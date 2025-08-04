@@ -11,10 +11,10 @@
     align-items: center;
 }
 .monthcls, .daycls{
-    width: 5%;
+    width: 55px;
 }
 .yearcls{
-    width: 9%;
+    width: 65px;
 }
 .offspringImageParentCls, .headerParentCls, .buttonscls{
     display: flex;

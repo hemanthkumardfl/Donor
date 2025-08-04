@@ -115,11 +115,32 @@
                 </div>
             </lightning-layout-item>
 
+            <lightning-layout-item size="12" key={outcome.index} padding="around-small" class="inputParentCls">
+                <lightning-layout multiple-rows horizontal-align="spread">
+                    <lightning-layout-item size="11">
+                        <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact"
+                            object-label="Account" object-api-name="Account" field-api-name="Name"
+                            other-field-api-name="Phone" selected-record-id={outcome.agencyId}
+                            selected-record-id-change={outcome.agencyId} record-type-name="Agency"
+                            onvalueselected={handleValueSelectedOnAccount} onlookupdata={handleLookupData}
+                            data-type="Account" data-index={outcome.index} class="recordPickerCls"
+                            lookup-placeholder="Search your Egg agency...">
+                        </c-d21_-dynamic-custom-lookup>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="1" class="slds-p-left_medium slds-p-top_medium">
+                        <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add"
+                            disabled={outcome.disableAddIcon} onclick={handleOpenCreateCoordinator}
+                            style="cursor:pointer" data-index={index} data-type="Account" size="medium"></lightning-button-icon>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+
+
             <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputParentCls">
                 <span class="textcls agencyDescriptionCls inputscls">Agency/Egg Bank Name</span>
                 <lightning-input type="text" label="" class="textcls" value={outcome.AgencyName} maxlength="255"
                     onchange={handleInputChange} onblur={handleInputBlur} name="AgencyName" data-index={outcome.index}
-                    disabled={noAgencyChecked}>
+                    disabled={outcome.isDisabled}>
                 </lightning-input>
             </lightning-layout-item>
 
@@ -127,33 +148,70 @@
                 <span class="textcls inputscls">Agency/Egg Bank Website</span>
                 <lightning-input type="url" label="" class="textcls" value={outcome.Website}
                     placeholder="http://www.youtube.com" onchange={handleInputChange} onblur={handleInputBlur}
-                    name="Website" data-index={outcome.index} disabled={noAgencyChecked}>
+                    name="Website" data-index={outcome.index} disabled={outcome.isDisabled}>
                 </lightning-input>
             </lightning-layout-item>
 
             <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputParentCls">
                 <span class="textcls inputscls">Agency/Egg Bank Phone</span>
                 <lightning-input type="tel" label="" class="textcls" value={outcome.Phone} onchange={handleInputChange}
-                    onblur={handleInputBlur} name="Phone" data-index={outcome.index} disabled={noAgencyChecked}
+                    onblur={handleInputBlur} name="Phone" data-index={outcome.index} disabled={outcome.isDisabled}
                     pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
                     message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890.">
                 </lightning-input>
             </lightning-layout-item>
 
-            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputParentCls">
+            <!-- <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputParentCls">
                 <span class="textcls inputscls">Agency/Egg Bank Email</span>
                 <lightning-input type="email" label="" class="textcls" value={outcome.Email}
                     onchange={handleInputChange} onblur={handleInputBlur} name="Email" data-index={outcome.index}
-                    disabled={noAgencyChecked}>
+                    disabled={outcome.isDisabled}>
                 </lightning-input>
-            </lightning-layout-item>
+            </lightning-layout-item> -->
 
             <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputParentCls">
                 <span class="textcls inputscls">Coordinator Name</span>
-                <lightning-input type="text" label="" class="textcls" value={outcome.CoordinatorName}
-                    onchange={handleInputChange} onblur={handleInputBlur} name="CoordinatorName"
-                    data-index={outcome.index} disabled={noAgencyChecked}>
-                </lightning-input>
+                <lightning-layout multiple-rows horizontal-align="spread">
+                    <lightning-layout-item size="11">
+                        <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact"
+                            object-label="Contact" object-api-name="Contact" field-api-name="Name"
+                            parent-record-id={outcome.agencyId} parent-field-api-name="AccountId"
+                            onlookupdata={handleLookupData} selected-record-id={outcome.CoordinatorName}
+                            data-type="Contact" data-index={outcome.index} record-type-name="coordinator"
+                            selected-record-id-change={outcome.CoordinatorName} other-field-api-name="Phone"
+                            onvalueselected={handleValueSelectedOnAccount}>
+                        </c-d21_-dynamic-custom-lookup>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="1" class="slds-p-left_medium slds-p-top_medium">
+                        <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add"
+                            disabled={outcome.disableContactAddIcon} onclick={handleOpenCreateCoordinator}
+                            style="cursor:pointer" data-index={index} data-type="Contact" size="medium"></lightning-button-icon>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" key={outcome.index} if:true={outcome.openCoordinator}
+                padding="around-small">
+                <lightning-layout-item size="6">
+                    <lightning-input type="text" name="firstName" data-index={index}
+                        value={outcome.Coordinator.firstName} onchange={handleCoordinatorChange} variant="label-hidden"
+                        maxlength="40" placeholder="First Name" class="CoordinatorClass"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" padding="around-small">
+                    <lightning-input type="text" name="lastName" data-index={index} variant="label-hidden"
+                        value={outcome.Coordinator.lastName} onchange={handleCoordinatorChange} placeholder="Last Name"
+                        maxlength="80" class="CoordinatorClass"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" padding="around-small">
+                    <lightning-input variant="label-hidden" name="phone" data-index={index}
+                        value={outcome.Coordinator.phone} onchange={handleCoordinatorChange} placeholder="Phone"
+                        type="tel" pattern="^\+\d{1,3}(?=\d{10}$)\d{10}$" class="CoordinatorClass"
+                        message-when-pattern-mismatch="Enter a valid phone number with country code, e.g: +911234567890."></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" padding="around-small">
+                    <div class="nextbtncls" onclick={handleCreateCoordinator} data-id={outcome.agencyId}
+                        data-index={index}>Save</div>
+                </lightning-layout-item>
             </lightning-layout-item>
 
             <lightning-layout-item size="12" padding="around-small" key={outcome.index}>

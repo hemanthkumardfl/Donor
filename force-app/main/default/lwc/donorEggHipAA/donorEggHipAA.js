@@ -19,11 +19,11 @@ import addRecipient from '@salesforce/apex/DonorPreRegHippaController2222.addRec
 import editRecipient from '@salesforce/apex/DonorPreRegHippaController2222.editRecipient';
 import fetchSpermBankRecord from '@salesforce/apex/UtilityClass.fetchSpermBankRecord';
 import addlookupSpermBank from '@salesforce/apex/DonorPreRegHippaController2222.addlookupSpermBank';
-import addlookupClinic from '@salesforce/apex/DonorPreRegHippaController2222.addlookupSpermBank';
-import addlookupAttorney from '@salesforce/apex/DonorPreRegHippaController2222.addlookupSpermBank';
-import addlookupRecipient from '@salesforce/apex/DonorPreRegHippaController2222.addlookupSpermBank';
+import addlookupClinic from '@salesforce/apex/DonorPreRegHippaController2222.addlookupClinic';
+//import addlookupAttorney from '@salesforce/apex/DonorPreRegHippaController2222.addlookupSpermBank';
+//import addlookupRecipient from '@salesforce/apex/DonorPreRegHippaController2222.addlookupSpermBank';
 import addlookupAgency from '@salesforce/apex/DonorPreRegHippaController2222.addlookupSpermBank';
-import fetchContactRecord from '@salesforce/apex/UtilityClass.fetchSpermBankRecord';
+//import fetchContactRecord from '@salesforce/apex/UtilityClass.fetchSpermBankRecord';
 import createCoordinator from '@salesforce/apex/UtilityClass.createCoordinator';
 
 export default class DonorPreRegHippa extends LightningElement {
@@ -89,8 +89,8 @@ export default class DonorPreRegHippa extends LightningElement {
     @track noAgencyChecked = false;
     @track noSpermChecked = false;
     @track noClinicChecked = false;
-    @track noAttorneyChecked = false;
-    @track noRecipientChecked = false;
+   // @track noAttorneyChecked = false;
+ //   @track noRecipientChecked = false;
     @track isEditingAgency = false;
     @track isEditingSperm = false;
     @track isEditingClinic = false;
@@ -107,14 +107,14 @@ export default class DonorPreRegHippa extends LightningElement {
     @track selectedClinic = null;
     @track showAttorneyAddButton = false;
     @track showAttorneyPlusButton = false;
-    @track selectedAttorneyId = '';
-    @track selectedAttorney = null;
-    @track showRecipientAddButton = false;
-    @track showRecipientPlusButton = false;
-    @track selectedRecipientId = '';
-    @track selectedRecipient = null;
-    @track showAgencyAddButton = false;
-    @track showAgencyPlusButton = false;
+   // @track selectedAttorneyId = '';
+   // @track selectedAttorney = null;
+   // @track showRecipientAddButton = false;
+   // @track showRecipientPlusButton = false;
+    //@track selectedRecipientId = '';
+   // @track selectedRecipient = null;
+   // @track showAgencyAddButton = false;
+   // @track showAgencyPlusButton = false;
     @track selectedAgencyId = '';
     @track selectedAgency = null;
     @track loadSpinner = false;
@@ -135,13 +135,13 @@ export default class DonorPreRegHippa extends LightningElement {
         return this.noClinicChecked ? 'slds-button slds-button_neutral disabled' : 'slds-button slds-button_neutral';
     }
 
-    get addAttorneyClass() {
-        return this.noAttorneyChecked ? 'slds-button slds-button_neutral disabled' : 'slds-button slds-button_neutral';
-    }
+    // get addAttorneyClass() {
+    //     return this.noAttorneyChecked ? 'slds-button slds-button_neutral disabled' : 'slds-button slds-button_neutral';
+    // }
 
-    get addRecipientClass() {
-        return this.noRecipientChecked ? 'slds-button slds-button_neutral disabled' : 'slds-button slds-button_neutral';
-    }
+    // get addRecipientClass() {
+    //     return this.noRecipientChecked ? 'slds-button slds-button_neutral disabled' : 'slds-button slds-button_neutral';
+    // }
 
     get agencyButtonLabel() {
         return this.isEditingAgency ? 'Save' : 'Add';
@@ -289,29 +289,29 @@ export default class DonorPreRegHippa extends LightningElement {
                 disableAddCoordinatorIcon: !!item.coordinatorId
             })) : [];
 
-            this.attorneys = Array.isArray(result.Attorneylist) ? result.Attorneylist.map(item => ({
-                id: item.Id || `attorney_${Date.now()}_${Math.random().toString(36).substring(2)}`,
-                attorneyName: item.Name || '',
-                phone: item.Phone || '',
-                lawFirm: item.lawFirm || item.coordinatorName || '',
-                website: item.website || '',
-                cityState: item.cityState || '',
-                email: item.email || '',
-                isEditable: item.isEditable !== false,
-                isFromPrimaryBanks: item.isEditable === false
-            })) : [];
+this.attorneys = Array.isArray(result.Attorneylist) ? result.Attorneylist.map(item => ({
+    id: item.Id || `attorney_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+    attorneyName: item.Name || '',
+    phone: item.Phone || '',
+    lawFirm: item.lawFirm || item.coordinatorName || '',
+    website: item.website || '',
+    cityState: item.cityState || '',
+    email: item.email || '',
+    isEditable: true, // Always editable since no lookup
+    isFromPrimaryBanks: false
+})) : [];
 
-            this.recipients = Array.isArray(result.Recipientlist) ? result.Recipientlist.map(item => ({
-                id: item.Id || `recipient_${Date.now()}_${Math.random().toString(36).substring(2)}`,
-                firstName: item.firstName || '',
-                lastName: item.lastName || '',
-                Name: `${item.firstName || ''} ${item.lastName || ''}`.trim(),
-                phone: item.Phone || '',
-                email: item.email || '',
-                additionalInfo: item.additionalInfo || '',
-                isEditable: item.isEditable !== false,
-                isFromPrimaryBanks: item.isEditable === false
-            })) : [];
+this.recipients = Array.isArray(result.Recipientlist) ? result.Recipientlist.map(item => ({
+    id: item.Id || `recipient_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+    firstName: item.firstName || '',
+    lastName: item.lastName || '',
+    Name: `${item.firstName || ''} ${item.lastName || ''}`.trim(),
+    phone: item.Phone || '',
+    email: item.email || '',
+    additionalInfo: item.additionalInfo || '',
+    isEditable: true, // Always editable since no lookup
+    isFromPrimaryBanks: false
+})) : [];
         } catch (error) {
             console.error('Error loading donor data:', error);
             this.showToast('Error', `Failed to load donor data: ${error.body?.message || error.message}`, 'error');
@@ -343,9 +343,33 @@ export default class DonorPreRegHippa extends LightningElement {
         this.address[field] = event.target.value;
     }
 
+    // handleCoordinatorSelect(event) {
+    //     const { id, name, dataType } = event.detail;
+    //     const entity = this.getEntity(dataType);
+    //     entity.coordinatorId = id || '';
+    //     entity.coordinatorName = name || '';
+    //     entity.coordinatorUserInputsObj = {
+    //         firstName: '',
+    //         lastName: '',
+    //         phone: '',
+    //         coordinatorId: id || '',
+    //         parentId: entity.accountId,
+    //         fullName: name || '',
+    //         isAllow: !!id,
+    //         isCoordinatorFirstNameBlank: false
+    //     };
+    //     entity.disableAddCoordinatorIcon = !!id;
+    //     entity.showNoCoordinatorRecordsErrorMessage = false;
+    //     entity.isAdditionalCoordinators = false;
+    //     this.updateEntity(dataType, entity);
+    // }
+
+
     handleCoordinatorSelect(event) {
+    try {
         const { id, name, dataType } = event.detail;
         const entity = this.getEntity(dataType);
+
         entity.coordinatorId = id || '';
         entity.coordinatorName = name || '';
         entity.coordinatorUserInputsObj = {
@@ -361,8 +385,14 @@ export default class DonorPreRegHippa extends LightningElement {
         entity.disableAddCoordinatorIcon = !!id;
         entity.showNoCoordinatorRecordsErrorMessage = false;
         entity.isAdditionalCoordinators = false;
+
         this.updateEntity(dataType, entity);
+    } catch (error) {
+        console.error('Error in handleCoordinatorSelect:', error);
+        // Optionally show a UI error message or handle fallback logic
     }
+}
+
 
     handleNoCoordinatorData(event) {
         const dataType = event.target.dataset.type;
@@ -768,7 +798,7 @@ export default class DonorPreRegHippa extends LightningElement {
 
     handleAddSpermClick() {
         this.showSpermPicker = true;
-        this.showSpermForm = false;
+        this.showSpermForm = true;
         this.isEditingSperm = false;
         this.newSperm = {
             id: '', spermBankName: '', spermBankPhone: '', coordinatorName: '', spermBankWebsite: '', spermBankEmail: '',
@@ -933,7 +963,7 @@ export default class DonorPreRegHippa extends LightningElement {
                     coordinatorId: this.newSperm.coordinatorId || '',
                     spermBankWebsite: this.newSperm.spermBankWebsite || '',
                     spermBankEmail: this.newSperm.spermBankEmail || '',
-                    isEditable: true,
+                    isEditable: false,
                     isFromPrimaryBanks: this.newSperm.disableInputs,
                     accountId: this.selectedSpermBankId,
                     showNoCoordinatorRecordsErrorMessage: false,
@@ -1030,7 +1060,7 @@ export default class DonorPreRegHippa extends LightningElement {
 
     handleAddClinicClick() {
         this.showClinicPicker = true;
-        this.showClinicForm = false;
+        this.showClinicForm = true;
         this.isEditingClinic = false;
         this.newClinic = {
             id: '', clinicName: '', phone: '', coordinatorName: '', website: '', cityState: '', coordinatorEmail: '',
@@ -1199,7 +1229,7 @@ export default class DonorPreRegHippa extends LightningElement {
                     website: this.newClinic.website || '',
                     cityState: this.newClinic.cityState || '',
                     coordinatorEmail: this.newClinic.coordinatorEmail || '',
-                    isEditable: true,
+                    isEditable: false,
                     isFromPrimaryBanks: this.newClinic.disableInputs,
                     accountId: this.selectedClinicId,
                     showNoCoordinatorRecordsErrorMessage: false,
@@ -1295,74 +1325,69 @@ export default class DonorPreRegHippa extends LightningElement {
         this.newClinic[field] = event.target.value;
     }
 
-    handleAddAttorneyClick() {
-        this.showAttorneyPicker = true;
-        this.showAttorneyForm = false;
-        this.isEditingAttorney = false;
-        this.newAttorney = { id: '', attorneyName: '', phone: '', lawFirm: '', website: '', cityState: '', email: '', disableInputs: false };
-        this.selectedAttorneyId = '';
-        this.selectedAttorney = null;
-        this.showAttorneyAddButton = false;
-        this.showAttorneyPlusButton = false;
-    }
+handleAddAttorneyClick() {
+    this.showAttorneyForm = true;
+    this.isEditingAttorney = false;
+    this.newAttorney = { id: '', attorneyName: '', phone: '', lawFirm: '', website: '', cityState: '', email: '' };
+}
 
-    async handleAttorneySelect(event) {
-        console.log('Attorney select:', JSON.stringify(event.detail));
-        this.selectedAttorneyId = event.detail.id || '';
-        if (this.selectedAttorneyId) {
-            try {
-                const result = await fetchContactRecord({ accountId: this.selectedAttorneyId });
-                console.log('Selected attorney details:', JSON.stringify(result));
-                if (result) {
-                    this.newAttorney = {
-                        id: result.Id,
-                        attorneyName: result.Name || '',
-                        phone: result.Phone || '',
-                        lawFirm: result.d21_Law_Firm__c || '',
-                        website: result.Website || '',
-                        cityState: result.City__c || '',
-                        email: result.Email || '',
-                        disableInputs: true
-                    };
-                    this.selectedAttorney = result;
-                    this.showAttorneyForm = true;
-                    this.showAttorneyPicker = false;
-                    this.showAttorneyAddButton = true;
-                    this.showAttorneyPlusButton = false;
-                } else {
-                    this.newAttorney = {
-                        id: this.selectedAttorneyId,
-                        attorneyName: '',
-                        phone: '',
-                        lawFirm: '',
-                        website: '',
-                        cityState: '',
-                        email: '',
-                        disableInputs: false
-                    };
-                    this.selectedAttorney = null;
-                    this.showAttorneyForm = true;
-                    this.showAttorneyPicker = false;
-                    this.showAttorneyAddButton = true;
-                    this.showAttorneyPlusButton = false;
-                }
-            } catch (error) {
-                console.error('Error fetching attorney:', error);
-                this.showToast('Error', `Error fetching attorney details: ${error.body?.message || error.message}`, 'error');
-                this.selectedAttorneyId = '';
-                this.selectedAttorney = null;
-                this.showAttorneyForm = false;
-                this.showAttorneyAddButton = false;
-                this.showAttorneyPlusButton = false;
-            }
-        } else {
-            this.selectedAttorney = null;
-            this.showAttorneyForm = false;
-            this.showAttorneyAddButton = false;
-            this.showAttorneyPlusButton = false;
-            this.showToast('Info', 'No attorney selected.', 'info');
-        }
-    }
+    // async handleAttorneySelect(event) {
+    //     console.log('Attorney select:', JSON.stringify(event.detail));
+    //     this.selectedAttorneyId = event.detail.id || '';
+    //     if (this.selectedAttorneyId) {
+    //         try {
+    //             const result = await fetchContactRecord({ accountId: this.selectedAttorneyId });
+    //             console.log('Selected attorney details:', JSON.stringify(result));
+    //             if (result) {
+    //                 this.newAttorney = {
+    //                     id: result.Id,
+    //                     attorneyName: result.Name || '',
+    //                     phone: result.Phone || '',
+    //                     lawFirm: result.d21_Law_Firm__c || '',
+    //                     website: result.Website || '',
+    //                     cityState: result.City__c || '',
+    //                     email: result.Email || '',
+    //                     disableInputs: true
+    //                 };
+    //                 this.selectedAttorney = result;
+    //                 this.showAttorneyForm = true;
+    //                 this.showAttorneyPicker = false;
+    //                 this.showAttorneyAddButton = true;
+    //                 this.showAttorneyPlusButton = false;
+    //             } else {
+    //                 this.newAttorney = {
+    //                     id: this.selectedAttorneyId,
+    //                     attorneyName: '',
+    //                     phone: '',
+    //                     lawFirm: '',
+    //                     website: '',
+    //                     cityState: '',
+    //                     email: '',
+    //                     disableInputs: false
+    //                 };
+    //                 this.selectedAttorney = null;
+    //                 this.showAttorneyForm = true;
+    //                 this.showAttorneyPicker = false;
+    //                 this.showAttorneyAddButton = true;
+    //                 this.showAttorneyPlusButton = false;
+    //             }
+    //         } catch (error) {
+    //             console.error('Error fetching attorney:', error);
+    //             this.showToast('Error', `Error fetching attorney details: ${error.body?.message || error.message}`, 'error');
+    //             this.selectedAttorneyId = '';
+    //             this.selectedAttorney = null;
+    //             this.showAttorneyForm = false;
+    //             this.showAttorneyAddButton = false;
+    //             this.showAttorneyPlusButton = false;
+    //         }
+    //     } else {
+    //         this.selectedAttorney = null;
+    //         this.showAttorneyForm = false;
+    //         this.showAttorneyAddButton = false;
+    //         this.showAttorneyPlusButton = false;
+    //         this.showToast('Info', 'No attorney selected.', 'info');
+    //     }
+    // }
 
     handleNoAttorneyData(event) {
         console.log('No attorney data:', event.detail);
@@ -1382,183 +1407,147 @@ export default class DonorPreRegHippa extends LightningElement {
         this.selectedAttorney = null;
     }
 
-    async handleAddNewAttorneyClick() {
-        if (!this.newAttorney.attorneyName) {
-            this.showToast('Error', 'Please ensure all required fields are filled.', 'error');
-            return;
-        }
-        try {
-            this.loadSpinner = true;
-            if (this.isEditingAttorney) {
-                await editAttorney({
-                    attorneyId: this.newAttorney.id,
-                    attorneyName: this.newAttorney.attorneyName,
-                    phone: this.newAttorney.phone,
-                    lawFirm: this.newAttorney.lawFirm,
-                    website: this.newAttorney.website,
-                    cityState: this.newAttorney.cityState,
-                    email: this.newAttorney.email
-                });
-                this.attorneys = this.attorneys.map(attorney =>
-                    attorney.id === this.newAttorney.id ? { ...this.newAttorney, isEditable: true } : attorney
-                );
-                this.showToast('Success', 'Attorney updated successfully', 'success');
-                this.handleCancelAttorney();
-            } else if (this.selectedAttorney) {
-                await addlookupAttorney({ donorId: this.donorId, attorneyId: this.selectedAttorneyId });
-                this.attorneys = [...this.attorneys, {
-                    id: this.selectedAttorneyId,
-                    attorneyName: this.newAttorney.attorneyName,
-                    phone: this.newAttorney.phone || '',
-                    lawFirm: this.newAttorney.lawFirm || '',
-                    website: this.newAttorney.website || '',
-                    cityState: this.newAttorney.cityState || '',
-                    email: this.newAttorney.email || '',
-                    isEditable: true,
-                    isFromPrimaryBanks: this.newAttorney.disableInputs
-                }];
-                this.showToast('Success', 'Attorney added successfully', 'success');
-                this.handleCancelAttorney();
-            } else {
-                const result = await addAttorney({
-                    donorId: this.donorId,
-                    attorneyName: this.newAttorney.attorneyName,
-                    phone: this.newAttorney.phone,
-                    lawFirm: this.newAttorney.lawFirm,
-                    website: this.newAttorney.website,
-                    cityState: this.newAttorney.cityState,
-                    email: this.newAttorney.email
-                });
-                this.attorneys = [...this.attorneys, {
-                    ...this.newAttorney,
-                    id: result,
-                    isEditable: true,
-                    isFromPrimaryBanks: false
-                }];
-                this.showToast('Success', 'Attorney added successfully', 'success');
-                this.handleCancelAttorney();
-            }
-        } catch (error) {
-            console.error('Error adding/updating attorney:', error);
-            this.showToast('Error', `Error adding/updating attorney: ${error.body?.message || error.message}`, 'error');
-        } finally {
-            this.loadSpinner = false;
-        }
+   async handleAddNewAttorneyClick() {
+    if (!this.newAttorney.attorneyName) {
+        this.showToast('Error', 'Please ensure all required fields are filled.', 'error');
+        return;
     }
-
-    handleEditAttorney(event) {
-        const index = parseInt(event.target.dataset.index, 10);
-        const attorney = this.attorneys[index];
-        if (!attorney || !attorney.isEditable) {
-            this.showToast('Error', 'This attorney cannot be edited.', 'error');
-            return;
-        }
-        this.isEditingAttorney = true;
-        this.newAttorney = { ...attorney };
-        this.showAttorneyForm = true;
-        this.showAttorneyPicker = false;
-        this.showAttorneyAddButton = true;
-        this.showAttorneyPlusButton = false;
-        this.selectedAttorneyId = attorney.id;
-        this.selectedAttorney = { Id: attorney.id, Name: attorney.attorneyName };
-    }
-
-    handleDeleteAttorney(event) {
-        const index = parseInt(event.target.dataset.index, 10);
-        const attorney = this.attorneys[index];
-        if (!attorney) {
-            this.showToast('Error', 'Invalid attorney selected for deletion.', 'error');
-            return;
-        }
-        this.deleteItemType = 'Attorney';
-        this.deleteItemIndex = index;
-        this.deleteItemName = attorney.attorneyName;
-        this.deleteItemId = attorney.id;
-        this.showDeletePopup = true;
-    }
-
-    handleCancelAttorney() {
-        this.showAttorneyForm = false;
-        this.showAttorneyPicker = false;
-        this.isEditingAttorney = false;
-        this.newAttorney = { id: '', attorneyName: '', phone: '', lawFirm: '', website: '', cityState: '', email: '', disableInputs: false };
-        this.selectedAttorneyId = '';
-        this.selectedAttorney = null;
-        this.showAttorneyAddButton = false;
-        this.showAttorneyPlusButton = false;
-    }
-
-    handleAttorneyFieldChange(event) {
-        const field = event.target.dataset.field;
-        this.newAttorney[field] = event.target.value;
-    }
-
-    handleAddRecipientClick() {
-        this.showRecipientPicker = true;
-        this.showRecipientForm = false;
-        this.isEditingRecipient = false;
-        this.newRecipient = { id: '', firstName: '', lastName: '', phone: '', email: '', additionalInfo: '', disableInputs: false };
-        this.selectedRecipientId = '';
-        this.selectedRecipient = null;
-        this.showRecipientAddButton = false;
-        this.showRecipientPlusButton = false;
-    }
-
-    async handleRecipientSelect(event) {
-        console.log('Recipient select:', JSON.stringify(event.detail));
-        this.selectedRecipientId = event.detail.id || '';
-        if (this.selectedRecipientId) {
-            try {
-                const result = await fetchContactRecord({ accountId: this.selectedRecipientId });
-                console.log('Selected recipient details:', JSON.stringify(result));
-                if (result) {
-                    this.newRecipient = {
-                        id: result.Id,
-                        firstName: result.FirstName || '',
-                        lastName: result.LastName || '',
-                        phone: result.Phone || '',
-                        email: result.Email || '',
-                        additionalInfo: result.d21_Additional_Information__c || '',
-                        disableInputs: true
-                    };
-                    this.selectedRecipient = result;
-                    this.showRecipientForm = true;
-                    this.showRecipientPicker = false;
-                    this.showRecipientAddButton = true;
-                    this.showRecipientPlusButton = false;
-                } else {
-                    this.newRecipient = {
-                        id: this.selectedRecipientId,
-                        firstName: '',
-                        lastName: '',
-                        phone: '',
-                        email: '',
-                        additionalInfo: '',
-                        disableInputs: false
-                    };
-                    this.selectedRecipient = null;
-                    this.showRecipientForm = true;
-                    this.showRecipientPicker = false;
-                    this.showRecipientAddButton = true;
-                    this.showRecipientPlusButton = false;
-                }
-            } catch (error) {
-                console.error('Error fetching recipient:', error);
-                this.showToast('Error', `Error fetching recipient details: ${error.body?.message || error.message}`, 'error');
-                this.selectedRecipientId = '';
-                this.selectedRecipient = null;
-                this.showRecipientForm = false;
-                this.showRecipientAddButton = false;
-                this.showRecipientPlusButton = false;
-            }
+    try {
+        this.loadSpinner = true;
+        if (this.isEditingAttorney) {
+            await editAttorney({
+                attorneyId: this.newAttorney.id,
+                attorneyName: this.newAttorney.attorneyName,
+                phone: this.newAttorney.phone,
+                lawFirm: this.newAttorney.lawFirm,
+                website: this.newAttorney.website,
+                cityState: this.newAttorney.cityState,
+                email: this.newAttorney.email
+            });
+            this.attorneys = this.attorneys.map(attorney =>
+                attorney.id === this.newAttorney.id ? { ...this.newAttorney, isEditable: true } : attorney
+            );
+            this.showToast('Success', 'Attorney updated successfully', 'success');
         } else {
-            this.selectedRecipient = null;
-            this.showRecipientForm = false;
-            this.showRecipientAddButton = false;
-            this.showRecipientPlusButton = false;
-            this.showToast('Info', 'No recipient selected.', 'info');
+            const result = await addAttorney({
+                donorId: this.donorId,
+                attorneyName: this.newAttorney.attorneyName,
+                phone: this.newAttorney.phone,
+                lawFirm: this.newAttorney.lawFirm,
+                website: this.newAttorney.website,
+                cityState: this.newAttorney.cityState,
+                email: this.newAttorney.email
+            });
+            this.attorneys = [...this.attorneys, {
+                ...this.newAttorney,
+                id: result,
+                isEditable: true,
+                isFromPrimaryBanks: false
+            }];
+            this.showToast('Success', 'Attorney added successfully', 'success');
         }
+        this.handleCancelAttorney();
+    } catch (error) {
+        console.error('Error adding/updating attorney:', error);
+        this.showToast('Error', `Error adding/updating attorney: ${error.body?.message || error.message}`, 'error');
+    } finally {
+        this.loadSpinner = false;
     }
+}
+
+handleEditAttorney(event) {
+    const index = parseInt(event.target.dataset.index, 10);
+    const attorney = this.attorneys[index];
+    if (!attorney) {
+        this.showToast('Error', 'Invalid attorney selected for editing.', 'error');
+        return;
+    }
+    this.isEditingAttorney = true;
+    this.newAttorney = { ...attorney };
+    this.showAttorneyForm = true;
+}
+
+handleDeleteAttorney(event) {
+    const index = parseInt(event.target.dataset.index, 10);
+    const attorney = this.attorneys[index];
+    if (!attorney) {
+        this.showToast('Error', 'Invalid attorney selected for deletion.', 'error');
+        return;
+    }
+    this.deleteItemType = 'Attorney';
+    this.deleteItemIndex = index;
+    this.deleteItemName = attorney.attorneyName;
+    this.deleteItemId = attorney.id;
+    this.showDeletePopup = true;
+}
+
+handleCancelAttorney() {
+    this.showAttorneyForm = false;
+    this.isEditingAttorney = false;
+    this.newAttorney = { id: '', attorneyName: '', phone: '', lawFirm: '', website: '', cityState: '', email: '' };
+}
+
+   handleAttorneyFieldChange(event) {
+    const field = event.target.dataset.field;
+    this.newAttorney[field] = event.target.value;
+}
+
+handleAddRecipientClick() {
+    this.showRecipientForm = true;
+    this.isEditingRecipient = false;
+    this.newRecipient = { id: '', firstName: '', lastName: '', phone: '', email: '', additionalInfo: '' };
+}
+
+   async handleAddNewRecipientClick() {
+    if (!this.newRecipient.lastName) {
+        this.showToast('Error', 'Please ensure all required fields are filled.', 'error');
+        return;
+    }
+    try {
+        this.loadSpinner = true;
+        if (this.isEditingRecipient) {
+            await editRecipient({
+                recipientId: this.newRecipient.id,
+                firstName: this.newRecipient.firstName,
+                lastName: this.newRecipient.lastName,
+                phone: this.newRecipient.phone,
+                email: this.newRecipient.email,
+                additionalInfo: this.newRecipient.additionalInfo
+            });
+            this.recipients = this.recipients.map(recipient =>
+                recipient.id === this.newRecipient.id ? {
+                    ...this.newRecipient,
+                    Name: `${this.newRecipient.firstName} ${this.newRecipient.lastName}`.trim(),
+                    isEditable: true
+                } : recipient
+            );
+            this.showToast('Success', 'Recipient updated successfully', 'success');
+        } else {
+            const result = await addRecipient({
+                donorId: this.donorId,
+                firstName: this.newRecipient.firstName,
+                lastName: this.newRecipient.lastName,
+                phone: this.newRecipient.phone,
+                email: this.newRecipient.email,
+                additionalInfo: this.newRecipient.additionalInfo
+            });
+            this.recipients = [...this.recipients, {
+                ...this.newRecipient,
+                id: result,
+                Name: `${this.newRecipient.firstName} ${this.newRecipient.lastName}`.trim(),
+                isEditable: true,
+                isFromPrimaryBanks: false
+            }];
+            this.showToast('Success', 'Recipient added successfully', 'success');
+        }
+        this.handleCancelRecipient();
+    } catch (error) {
+        console.error('Error adding/updating recipient:', error);
+        this.showToast('Error', `Error adding/updating recipient: ${error.body?.message || error.message}`, 'error');
+    } finally {
+        this.loadSpinner = false;
+    }
+}
 
     handleNoRecipientData(event) {
         console.log('No recipient data:', event.detail);
@@ -1613,7 +1602,7 @@ export default class DonorPreRegHippa extends LightningElement {
                     phone: this.newRecipient.phone || '',
                     email: this.newRecipient.email || '',
                     additionalInfo: this.newRecipient.additionalInfo || '',
-                    isEditable: true,
+                    isEditable: false,
                     isFromPrimaryBanks: this.newRecipient.disableInputs
                 }];
                 this.showToast('Success', 'Recipient added successfully', 'success');
@@ -1645,52 +1634,42 @@ export default class DonorPreRegHippa extends LightningElement {
         }
     }
 
-    handleEditRecipient(event) {
-        const index = parseInt(event.target.dataset.index, 10);
-        const recipient = this.recipients[index];
-        if (!recipient || !recipient.isEditable) {
-            this.showToast('Error', 'This recipient cannot be edited.', 'error');
-            return;
-        }
-        this.isEditingRecipient = true;
-        this.newRecipient = { ...recipient };
-        this.showRecipientForm = true;
-        this.showRecipientPicker = false;
-        this.showRecipientAddButton = true;
-        this.showRecipientPlusButton = false;
-        this.selectedRecipientId = recipient.id;
-        this.selectedRecipient = { Id: recipient.id, Name: recipient.Name };
+handleEditRecipient(event) {
+    const index = parseInt(event.target.dataset.index, 10);
+    const recipient = this.recipients[index];
+    if (!recipient) {
+        this.showToast('Error', 'Invalid recipient selected for editing.', 'error');
+        return;
     }
+    this.isEditingRecipient = true;
+    this.newRecipient = { ...recipient };
+    this.showRecipientForm = true;
+}
 
-    handleDeleteRecipient(event) {
-        const index = parseInt(event.target.dataset.index, 10);
-        const recipient = this.recipients[index];
-        if (!recipient) {
-            this.showToast('Error', 'Invalid recipient selected for deletion.', 'error');
-            return;
-        }
-        this.deleteItemType = 'Recipient';
-        this.deleteItemIndex = index;
-        this.deleteItemName = recipient.Name;
-        this.deleteItemId = recipient.id;
-        this.showDeletePopup = true;
+handleDeleteRecipient(event) {
+    const index = parseInt(event.target.dataset.index, 10);
+    const recipient = this.recipients[index];
+    if (!recipient) {
+        this.showToast('Error', 'Invalid recipient selected for deletion.', 'error');
+        return;
     }
+    this.deleteItemType = 'Recipient';
+    this.deleteItemIndex = index;
+    this.deleteItemName = recipient.Name;
+    this.deleteItemId = recipient.id;
+    this.showDeletePopup = true;
+}
 
-    handleCancelRecipient() {
-        this.showRecipientForm = false;
-        this.showRecipientPicker = false;
-        this.isEditingRecipient = false;
-        this.newRecipient = { id: '', firstName: '', lastName: '', phone: '', email: '', additionalInfo: '', disableInputs: false };
-        this.selectedRecipientId = '';
-        this.selectedRecipient = null;
-        this.showRecipientAddButton = false;
-        this.showRecipientPlusButton = false;
-    }
+handleCancelRecipient() {
+    this.showRecipientForm = false;
+    this.isEditingRecipient = false;
+    this.newRecipient = { id: '', firstName: '', lastName: '', phone: '', email: '', additionalInfo: '' };
+}
 
-    handleRecipientFieldChange(event) {
-        const field = event.target.dataset.field;
-        this.newRecipient[field] = event.target.value;
-    }
+   handleRecipientFieldChange(event) {
+    const field = event.target.dataset.field;
+    this.newRecipient[field] = event.target.value;
+}
 
     handleConfirmationChange(event) {
         this.isConfirmed = event.target.checked;

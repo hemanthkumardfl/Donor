@@ -1,5 +1,8 @@
 import { LightningElement, track, api } from 'lwc';
-import deleteCycleAgency from '@salesforce/apex/EggDonorAgencyWithCodeController.deleteCycleAgency'
+import deleteCycleAgency from '@salesforce/apex/EggDonorAgencyWithCodeController.deleteCycleAgency'; getRecord
+import getRecord from '@salesforce/apex/EggDonorAgencyWithCodeController.getRecord';
+import createCoordinator from '@salesforce/apex/UtilityClass.createCoordinator';
+
 
 export default class DonorPreRegEggDonorAgency extends LightningElement {
     @track totalDonationsCount;
@@ -37,7 +40,12 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
         cycles: [],
         selectedCycles: [],
         headingIndex: 0,
-        agencyId: ''
+        agencyId: '',
+        isDisabled: false,
+        disableAddIcon: true,
+        disableContactAddIcon: true,
+        Coordinator: { lastName: '', firstName: '', phone: '', parentId: '', coordinatorId: '' },
+        openCoordinator: false
     };
 
     get showAddAnother() {
@@ -49,6 +57,7 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
         this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
         this.totalDonationsCount = this.contactObj.donationBasics.egg.liveBirths;
         if (this.contactObj && this.contactObj['agenciesWithoutCode'] && this.contactObj['agenciesWithoutCode'].length > 0) {
+            console.log('Connected Call >>> '+JSON.stringify(this.contactObj['agenciesWithoutCode']));
             this.donationOutcomes = this.contactObj['agenciesWithoutCode'].map(outcome => ({
                 ...outcome,
                 cycles: outcome.cycles.map(cycle => ({
@@ -71,7 +80,7 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
                 )];
             }
 
-            console.log('this.donationOutcomes >>> '+JSON.stringify(this.donationOutcomes));
+            console.log('this.donationOutcomes >>> ' + JSON.stringify(this.donationOutcomes));
 
             if (this.donationOutcomes[0]['noAgencyChecked']) {
                 this.noAgencyChecked = this.donationOutcomes[0]['noAgencyChecked'];
@@ -110,9 +119,111 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
         }
     }
 
+
+    async handleCreateCoordinator(event) {
+        let isValid = true;
+        let index = parseInt(event.currentTarget.dataset.index);
+
+        for (let input of this.template.querySelectorAll('.CoordinatorClass')) {
+            const validations = {
+                lastName: () => !input.value.trim() && 'Last Name is required',
+                phone: () => input.value && !input.checkValidity() && 'Enter a valid phone number with country code, e.g: +911234567890.'
+            };
+            const errorMsg = validations[input.name]?.() || '';
+            input.setCustomValidity(errorMsg);
+            input.reportValidity();
+            if (errorMsg) {
+                isValid = false;
+                break;
+            }
+        }
+
+        if (isValid) {
+            let result = await createCoordinator({ coordinateData: JSON.stringify(this.donationOutcomes[index].Coordinator) });
+            console.log('Result createCoordinator >>> ' + JSON.stringify(result));
+            if (result.isSuccess) {
+                let coordinatorRecord = JSON.parse(result.message);
+                if (this.donationOutcomes[index]['CoordinatorName']) {
+                    let res = await deleteCoordinator({ coordinatorId: this.donationOutcomes[index]['CoordinatorName'] });
+                    console.log('Result deleteCoordinator >>> ' + JSON.stringify(res));
+                }
+                this.donationOutcomes[index]['CoordinatorName'] = coordinatorRecord.coordinatorId;
+                this.donationOutcomes[index]['Coordinator']['coordinatorId'] = coordinatorRecord.coordinatorId;
+                this.donationOutcomes[index]['openCoordinator'] = false;
+            }
+        }
+    }
+
+
+    handleCoordinatorChange(event) {
+        let { name, dataset, value } = event.currentTarget;
+        this.donationOutcomes[parseInt(dataset.index)].Coordinator[name] = value;
+    }
+
+
+    handleOpenCreateCoordinator(event) {
+        try {
+            let index = parseInt(event.target.dataset.index);
+            let datatype = event.target.dataset.type;
+            if (datatype == 'Contact') {
+                this.donationOutcomes[index].openCoordinator = !this.donationOutcomes[index].openCoordinator;
+            }
+            else if (datatype == 'Account') {
+                this.donationOutcomes[index].isDisabled = false;
+                this.donationOutcomes[index].AgencyName = '';
+                this.donationOutcomes[index].Website = '';
+                this.donationOutcomes[index].Phone = '';
+                this.donationOutcomes[index].agencyId = '';
+            }
+        } catch (e) {
+            console.error(`connectedCallback Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`);
+        }
+    }
+
+
+    async handleValueSelectedOnAccount(event) {
+        try {
+            if (event.detail) {
+                let datatype = event.target.dataset.type;
+                let index = parseInt(event.target.dataset.index, 10);
+                if (datatype == 'Account') {
+                    let accountRecord = await getRecord({ accountId: event.detail.id });
+                    console.log('Result getRecord >>> ' + JSON.stringify(accountRecord))
+                    console.log('this.donationOutcomes >>> ' + JSON.stringify(this.donationOutcomes[index]));
+                    this.donationOutcomes[index].isDisabled = true;
+                    this.donationOutcomes[index].AgencyName = accountRecord.Name;
+                    this.donationOutcomes[index].Website = accountRecord.Website;
+                    this.donationOutcomes[index].Phone = accountRecord.Phone;
+                    this.donationOutcomes[index].agencyId = event.detail.id;
+                    this.donationOutcomes[index]['Coordinator']['parentId'] = event.detail.id;
+                }
+                else if (datatype == 'Contact') {
+                    this.donationOutcomes[index].CoordinatorName = event.detail.id;
+                }
+            }
+        }
+        catch (e) {
+            console.error(`handleValueSelectedOnAccount Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`);
+        }
+    }
+
+
     get donationOutcomes() {
         return this.donationOutcomes;
     }
+
+    handleLookupData(event) {
+        console.log(event.detail);
+        let index = event.target.dataset.index;
+        let datatype = event.target.dataset.type;
+        if (datatype == 'Account') {
+            this.donationOutcomes[index]['disableAddIcon'] = event.detail;
+        }
+        else if (datatype == 'Contact') {
+            this.donationOutcomes[index]['disableContactAddIcon'] = event.detail;
+        }
+    }
+
 
     handleAddAnotherClinic() {
         this.donationOutcomes = this.donationOutcomes.map(outcome => ({
@@ -486,6 +597,8 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
                     this.donationOutcomes[0]['totalSelectedCycles'] = this.totalSelectedCycles;
                     this.donationOutcomes[0]['unselectedCycles'] = this.unselectedCycles;
                     this.contactObj['agenciesWithoutCode'] = this.donationOutcomes;
+                    console.clear();
+                    console.log('this.contactObj >>> ' + JSON.stringify(this.contactObj));
                     this.dispatchEvent(new CustomEvent('next', { detail: this.contactObj }));
                 }
             }

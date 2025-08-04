@@ -1,0 +1,232 @@
+/* Global Styles */
+* {
+	font-family: Inter, sans-serif;
+}
+
+/* Layout Containers */
+.donortypesSectioncls {
+	display: flex;
+	place-content: center;
+	position: relative;
+	top: 12em;
+}
+
+.donorintrocls {
+	display: flex;
+}
+
+.videoWrapperScrollable {
+	max-height: 90vh;
+	overflow-y: auto;
+	padding-right: 10px;
+}
+
+.donorLabelsParentCls {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1em;
+	width: 80%;
+	margin-top: 7%;
+}
+
+.imgSectionCls {
+	display: flex;
+	place-content: end;
+	height: 100vh;
+	/* width: auto; */
+}
+
+.imgcls {
+	width: 100%;
+}
+
+/* Text Styling */
+.textCls {
+	width: 100%;
+	text-align: center;
+}
+
+.headercls {
+	font-size: 1.5rem;
+	font-weight: 700;
+}
+
+/* Button Styles */
+.donorLabelCls,
+.nextbtncls {
+	border: 2px solid black;
+	border-radius: 5px;
+	text-align: center;
+	background: white;
+	color: black;
+	cursor: pointer;
+}
+
+.donorLabelCls {
+	width: 45%;
+	padding: 2%;
+}
+
+.nextbtncls {
+	width: 15%;
+	min-height: 2.5em;
+	padding: 10px;
+	background: black;
+	color: white;
+	font-size: 12px;
+}
+
+/* Active State */
+.active-step {
+	background: black !important;
+	color: white !important;
+}
+
+/* Visibility Utilities */
+.laptopvideocls {
+	display: flex;
+}
+
+.mobilecls,
+.mobilefooterDisplaycls {
+	display: none;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+	.donorintrocls {
+		flex-direction: column-reverse;
+		align-items: center;
+		overflow-y: auto;
+		max-height: 80vh;
+	}
+	
+	.preRegistrationCls{
+		padding-top: 0;
+		margin-top: 0;
+		position: absolute;
+		bottom: 5%;
+	}
+
+	.donortypesSectioncls {
+		top: 0;
+		width: 100%;
+	}
+
+	.textpaddingcls {
+		padding: 0.5%;
+	}
+
+	.imgSectionCls {
+		width: 100%;
+		place-content: center;
+		height: 47vh;
+	}
+
+	.imgcls {
+		width: 100%;
+		mix-blend-mode: darken;
+	}
+
+	.donorLabelCls {
+		width: 70%;
+		padding: 10px;
+		margin-top: 0%;
+	}
+
+	.donorLabelsParentCls {
+		width: 100%;
+		padding: 10px;
+		margin-top: 3%;
+	}
+
+	.nextbtncls {
+		width: 40%;
+		min-height: 3em;
+		font-weight: 600;
+		padding-top: 3%;
+	}
+
+	.mobilecls {
+		display: block;
+	}
+
+	.laptopvideocls {
+		display: none;
+	}
+
+	.mobilefooterDisplaycls {
+		margin-top : 5rem;
+		display: block; 
+		background: white;
+		position: fixed;
+		bottom: 0;
+		width: 100%;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 10px 15px rgba(0, 0, 0, 0.1);
+	}
+
+	.textCls {
+		font-size: 15.2px;
+	}
+
+	.headercls {
+		font-size: 21px;
+		font-weight: bold;
+	}
+}
+
+/* Responsive Typography */
+@media (min-width: 769px) and (max-width: 1100px) {
+	.textCls { font-size: 13.4px;}
+	.headercls { font-size: 16px; font-weight: 600; }
+	.donorLabelsParentCls {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1em;
+		width: 80%;
+		margin-top: 0%;
+	}
+
+	.donortypesSectioncls {
+		display: flex;
+		place-content: center;
+		position: relative;
+		top: 10em;
+	}
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {
+	.textCls { font-size: 14.8px; }
+	.headercls { font-size: 16.1px; font-weight: 600; }
+	.donorLabelsParentCls {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1em;
+		width: 80%;
+		margin-top: 0%;
+	}
+}
+
+@media (min-width: 1251px) and (max-width: 1399px) {
+	.textCls { font-size: 15.3px; }
+	.headercls { font-size: 17.5px; font-weight: 600; }
+}
+
+@media (min-width: 1400px) and (max-width: 1599px) {
+	.textCls { font-size: 16.2px;}
+	.headercls { font-size: 18.7px; font-weight: 600; }
+}
+
+@media (min-width: 1600px) {
+	.textCls { font-size: 17.4px; }
+	.headercls { font-size: 21.5px; font-weight: 600; }
+}
+/* for safari browser starts here*/
+@supports (-webkit-touch-callout: none) {
+   .donorintrocls{
+		max-height: 75vh;
+   }
+}

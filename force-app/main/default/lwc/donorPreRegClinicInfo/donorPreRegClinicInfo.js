@@ -80,6 +80,9 @@ export default class DonorPreRegClinicInfo extends LightningElement {
                             website :  result.Website || clinic.website,
                             phone : result.Phone || clinic.phone,
                             accountId : result.Id || clinic.accountId,
+                            doctorName : result.d21_Doctor_Name__c || clinic.doctorName,
+                            cityState : result.d21_City_State_Of_Clinic__c || clinic.cityState,
+                            email : result.d21_Email__c || clinic.result,
                             disableInputs : true
                         };
                     }
@@ -101,11 +104,19 @@ export default class DonorPreRegClinicInfo extends LightningElement {
             if (clinic.clinicNumber == clinicNumber) {
                 return { 
                     ...clinic, 
+                    name: '',
+                    doctorName: '',
+                    website: '',
+                    phone: '',
+                    email: '',
+                    cityState: '',
+                    accountId : '',
                     disableInputs :  false  
                 };
             }
             return clinic;
         });
+        console.log('clinics updates>>>');
          this.clinics = [...  this.clinics];
         console.log(JSON.stringify(this.clinics));
     }

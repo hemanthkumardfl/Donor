@@ -19,6 +19,7 @@ public without sharing  class SpermDonorPreRegistrationController {
         @AuraEnabled public string coordinatorContactAvailable;
         @AuraEnabled public boolean primaryConfirmed;
         @AuraEnabled public CoordinatorWrapper coordinatorUserInputsObj;
+        @AuraEnabled public string oldJunctionId;
        
     }
     
@@ -669,7 +670,8 @@ public static Response createSpermClinicWithSDN(string contactObj){
         system.debug(donor);
         list<SpermBankWrapper> spermBanks = donor.spermBanks;
         system.debug(spermBanks);
-        system.debug(spermBanks[0].coordinatorUserInputsObj);
+        system.debug(spermBanks[0].oldJunctionId);
+    
         
         //Holds sperm bank record type accounts
         List<Account> spermBankAccounts = new List<Account>();

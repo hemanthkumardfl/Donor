@@ -1,6 +1,6 @@
 <template>
     <!--main component intro screen -->
-    <div class="mainscreencls" style={backgroundStyle}>
+    <div class="mainscreencls" style={backgroundStyle} if:false={showOffspring}>
         <!-- Header with logo and sign in -->
         <lightning-layout multiple-rows="false" style="padding: 20px 30px;">
             <lightning-layout-item size="6">
@@ -21,9 +21,15 @@
             <lightning-layout class="footerbuttons">
                 <button class="footerbtn" data-name="parent" onclick={handleDonorClick}>Parent</button>
                  <button class="footerbtn" data-name="donor" onclick={handleDonorClick}>Donor</button>
-                 <button class="footerbtn">Offspring</button>
+                 <button class="footerbtn" onclick={handleoffSpringClick}>Offspring</button>
                  <button class="footerbtn">Professional</button>
             </lightning-layout>
         </div>
     </div>
+    <lightning-layout multiple-rows="false">
+    <lightning-layout-item size="12" if:true={showOffspring} class="laptopvideocls videoWrapperScrollable">
+        <c-donor-pre-reg-offspring-screen ></c-donor-pre-reg-offspring-screen>
+
+        </lightning-layout-item>
+    </lightning-layout>
 </template>

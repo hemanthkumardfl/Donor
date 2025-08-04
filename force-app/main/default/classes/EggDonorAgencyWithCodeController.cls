@@ -159,6 +159,16 @@ public without sharing class EggDonorAgencyWithCodeController {
             return new Response(false, e.getMessage()+' >>> '+e.getLineNumber()+'  >>>  '+e.getStackTraceString());
         }
     }
+
+
+    @AuraEnabled
+    public static Account getRecord(string accountId){
+        try {
+            return [select Id,Name,Phone,Website from Account Where Id =: accountId limit 1];
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
     
     
     public class DonorRegistrationWrapper {
