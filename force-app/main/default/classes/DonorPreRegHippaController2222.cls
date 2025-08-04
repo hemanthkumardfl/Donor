@@ -365,8 +365,8 @@ public without sharing class DonorPreRegHippaController2222 {
         }
     }
     
-  @AuraEnabled
-public static String addlookupSpermBank(String donorId, String spermBankId) {
+ 
+/*public static String addlookupSpermBank(String donorId, String spermBankId) {
     system.debug('donorId>>>>>>>>>'+donorId+'spermBankId>>>>>>>>>>>'+spermBankId);
     try {
         if (String.isBlank(donorId) || String.isBlank(spermBankId)) {
@@ -391,7 +391,84 @@ public static String addlookupSpermBank(String donorId, String spermBankId) {
     } catch (Exception e) {
         throw new AuraHandledException('Error adding sperm bank: ' + e.getMessage());
     }
+}*/
+    @AuraEnabled
+public static String addlookupSpermBank(
+    String donorId,
+    String spermBankId,
+    String coordinatorId,
+    String coordinatorFirstName,
+    String coordinatorLastName,
+    String coordinatorPhone,
+    String coordinatorName
+) {
+    System.debug('donorId: ' + donorId + ', spermBankId: ' + spermBankId + ', coordinatorId: ' + coordinatorId + ', coordinatorFirstName: ' + coordinatorFirstName);
+    
+    try {
+        // Validate required fields
+        if (String.isBlank(donorId) || String.isBlank(spermBankId)) {
+            throw new AuraHandledException('Donor ID and Sperm Bank ID are required.');
+        }
+
+        if (String.isBlank(coordinatorId) && String.isBlank(coordinatorFirstName) && !String.isBlank(coordinatorName)) {
+            throw new AuraHandledException('Coordinator first name is required when adding a new coordinator.');
+        }
+
+        // Verify Sperm Bank (Account) exists with the correct record type
+        Id spermBankRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('d21_Sperm_Bank').getRecordTypeId();
+        
+        Account spermBank = [
+            SELECT Id, Name,  d21_Coordinator_Name__c
+            FROM Account
+            WHERE Id = :spermBankId AND RecordTypeId = :spermBankRecordTypeId
+            LIMIT 1
+        ];
+
+        // Create a new Coordinator Contact if ID not provided
+        if (String.isBlank(coordinatorId) && !String.isBlank(coordinatorFirstName)) {
+            Contact newCoordinator = new Contact(
+                FirstName = coordinatorFirstName,
+                LastName = String.isBlank(coordinatorLastName) ? 'Coordinator' : coordinatorLastName,
+                Phone = coordinatorPhone,
+                AccountId = spermBank.Id
+            );
+            insert newCoordinator;
+            coordinatorId = newCoordinator.Id;
+        }
+
+        // Update Sperm Bank Account with coordinator info
+        /*if (!String.isBlank(coordinatorId)) {
+            spermBank.d21_Coordinator__c = coordinatorId;
+            if (!String.isBlank(coordinatorName)) {
+                spermBank.d21_Coordinator_Name__c = coordinatorName;
+            }*/
+            update spermBank;
+        
+
+        // Check if junction already exists
+        List<d21_Donor_Agency__c> existingLinks = [
+            SELECT Id
+            FROM d21_Donor_Agency__c
+            WHERE d21_Egg_Donor__c = :donorId AND Agency__c = :spermBankId
+            LIMIT 1
+        ];
+
+        if (existingLinks.isEmpty()) {
+            d21_Donor_Agency__c link = new d21_Donor_Agency__c(
+                d21_Egg_Donor__c = donorId,
+                Agency__c = spermBank.Id
+            );
+            insert link;
+            return link.Id;
+        } else {
+            throw new AuraHandledException('Sperm bank already linked to this donor.');
+        }
+
+    } catch (Exception e) {
+        throw new AuraHandledException('Error adding sperm bank: ' + e.getMessage());
+    }
 }
+
     
     @AuraEnabled
     public static void deleteAgency(String donorId, String recordId) {
@@ -481,7 +558,7 @@ public static String addlookupSpermBank(String donorId, String spermBankId) {
         }
     }
     
-    @AuraEnabled
+  /*  @AuraEnabled
     public static String addSpermBank(String donorId, String spermBankName, String phone, String coordinatorName, String website, String email) {
         try {
             if (String.isBlank(donorId) || String.isBlank(spermBankName)) {
@@ -508,7 +585,66 @@ public static String addlookupSpermBank(String donorId, String spermBankId) {
         } catch (Exception e) {
             throw new AuraHandledException('Error adding sperm bank: ' + e.getMessage());
         }
+    }*/
+    
+public static String addSpermBank(String donorId, String spermBankName, String phone, String coordinatorName, String coordinatorId, String website, String email, String coordinatorFirstName, String coordinatorLastName, String coordinatorPhone) {
+    try {
+        // Validate required fields
+        if (String.isBlank(donorId) || String.isBlank(spermBankName)) {
+            throw new AuraHandledException('Donor ID and Sperm Bank Name are required.');
+        }
+
+        if (String.isBlank(coordinatorId) && String.isBlank(coordinatorFirstName) && !String.isBlank(coordinatorName)) {
+            throw new AuraHandledException('Coordinator first name is required when adding a new coordinator.');
+        }
+
+        // Get the Sperm Bank record type ID
+        Id accountRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('d21_Sperm_Bank').getRecordTypeId();
+
+        // Create the Sperm Bank (Account) record
+        Account spermBank = new Account(
+            Name = spermBankName,
+            RecordTypeId = accountRecordTypeId,
+            Phone = phone,
+            d21_Coordinator_Name__c = coordinatorName,
+            Website = website,
+            d21_Email__c = email
+        );
+
+        insert spermBank;
+
+        // Create or associate Coordinator (Contact)
+        if (String.isBlank(coordinatorId) && !String.isBlank(coordinatorFirstName)) {
+            Contact coordinator = new Contact(
+                FirstName = coordinatorFirstName,
+                LastName = String.isBlank(coordinatorLastName) ? 'Coordinator' : coordinatorLastName,
+                Phone = coordinatorPhone,
+                AccountId = spermBank.Id // Relating Contact to Sperm Bank Account
+            );
+            insert coordinator;
+        } else if (!String.isBlank(coordinatorId)) {
+            // Optionally update coordinator's AccountId if not already set
+            Contact existingCoordinator = [SELECT Id, AccountId FROM Contact WHERE Id = :coordinatorId LIMIT 1];
+            if (existingCoordinator.AccountId == null) {
+                existingCoordinator.AccountId = spermBank.Id;
+                update existingCoordinator;
+            }
+        }
+
+        // Create the junction object to link Donor and Sperm Bank
+        d21_Donor_Agency__c junction = new d21_Donor_Agency__c(
+            d21_Egg_Donor__c = donorId,
+            Agency__c = spermBank.Id
+        );
+        insert junction;
+
+        return spermBank.Id;
+
+    } catch (Exception e) {
+        throw new AuraHandledException('Error adding sperm bank: ' + e.getMessage());
     }
+}
+
     
     @AuraEnabled
     public static String addAgency(String donorId, String agencyName, String phone, String coordinatorName, String website, String cityState, String email) {

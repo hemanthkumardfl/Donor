@@ -8,209 +8,149 @@ public without sharing class EggDonorAttorneyWithCodeController {
             this.isSuccess = isSuccess;
         }
     } 
-    
-    
+
+
     @AuraEnabled 
     public static Response fetchCodeData(string contactObj){
         try{
-        DonorRegistrationWrapper donor = (DonorRegistrationWrapper) JSON.deserialize(contactObj, DonorRegistrationWrapper.class);  
-            list<string> attorneyIds = new list<string>();
+            
+            DonorRegistrationWrapper donor = (DonorRegistrationWrapper) JSON.deserialize(contactObj, DonorRegistrationWrapper.class);  
             list<string> pmccodes = new list<string>();
             List<string> associateCodes = new List<string>();
-            list<Attorney> attornies = new list<Attorney>();
-            list<d21_PMC__c> PMCRecords = new list<d21_PMC__c>();
+            list<Attorney> agencies = new list<Attorney>();
+            list<d21_PMC__c> pmcRecords = new list<d21_PMC__c>();
+            Map<string,string> pmcAgencyIdMap = new Map<string,string>();
+            
             pmccodes.addAll(donor.codes.PMC);
             associateCodes.addAll(donor.codes.EDN);
             associateCodes.addAll(donor.codes.SDN);
             associateCodes.addAll(donor.codes.EMB);
             associateCodes.addAll(donor.codes.REC);
-            if(!pmccodes.isEmpty()){
-             PMCRecords = [SELECT Id,Name,d21_Attorney__c FROM d21_PMC__c WHERE Name IN :pmccodes  AND d21_Attorney__c != NULL]; 
-            }
-            else if(!associateCodes.isEmpty()){
-                system.debug('associateCodes >>> '+associateCodes);
-                list<d21_Associated_Codes__c> associateList = [select Id,d21_PMC_Code__c from d21_Associated_Codes__c Where Name In :associateCodes];
+            
+            if(!associateCodes.isEmpty()){
+                list<d21_Associated_Codes__c> associateList = [SELECT Id,d21_PMC_Code__c 
+                                                               FROM d21_Associated_Codes__c 
+                                                               WHERE Name IN :associateCodes
+                                                               WITH SYSTEM_MODE];
                 for(d21_Associated_Codes__c aCode: associateList){
                     pmccodes.add(aCode.d21_PMC_Code__c);
                 }
-                system.debug('pmccodes >>> '+pmccodes);
-                PMCRecords = [SELECT Id,Name,d21_Attorney__c FROM d21_PMC__c WHERE Id IN :pmccodes  AND d21_Attorney__c != NULL]; 
             }
             
-            if(!PMCRecords.isEmpty()){
-                for(d21_PMC__c pmc : PMCRecords){
-                    attorneyIds.add(pmc.d21_Attorney__c);
+            system.debug('PMC Codes >>> '+pmccodes);
+            
+            if(!pmccodes.isEmpty()){
+                pmcRecords = [SELECT Id,Name,d21_Attorney__c 
+                              FROM d21_PMC__c 
+                              WHERE Name IN :pmccodes  
+                              AND d21_Attorney__c != NULL
+                              WITH SYSTEM_MODE]; 
+            }
+            
+            if(!pmcRecords.isEmpty()){
+                
+                for(d21_PMC__c pmc : pmcRecords){
+                    pmcAgencyIdMap.put(pmc.Name,pmc.d21_Attorney__c);
                 }
-                if(!attorneyIds.isEmpty()){
-                    for(Contact acc : [Select Name, Id,Phone,Email,Account.Website,Account.Name,Account.d21_City_State_Of_Clinic__c from Contact where Id IN :attorneyIds]){
+                
+                if(!pmcAgencyIdMap.values().isEmpty()){
+                    Map<Id,Contact> accountMap = new Map<Id,Contact>([SELECT Name, Id,Phone,Email,Account.Website,Account.Name,Account.d21_City_State_Of_Clinic__c 
+                                                                              FROM Contact WHERE Id IN :pmcAgencyIdMap.values()
+                                                                              WITH SYSTEM_MODE]);
+                    for(string pmc : pmcAgencyIdMap.keySet()){
+
                         Attorney att = new Attorney();
-                        att.Name = acc.Name;
-                        att.attorneyId = acc.Id;
-                        att.Phone = acc.Phone;
-                        att.Website = acc.Account.Website;
-                        att.Email = acc.Email;
-                        att.LawFirm = acc.Account.Name;
-                        att.State = acc.Account.d21_City_State_Of_Clinic__c;
-                        attornies.add(att);
+                        att.Name = accountMap.get(pmcAgencyIdMap.get(pmc)).Name;
+                        att.attorneyId = accountMap.get(pmcAgencyIdMap.get(pmc)).Id;
+                        att.Phone = accountMap.get(pmcAgencyIdMap.get(pmc)).Phone;
+                        att.Website = accountMap.get(pmcAgencyIdMap.get(pmc)).Account.Website;
+                        att.Email = accountMap.get(pmcAgencyIdMap.get(pmc)).Email;
+                        att.LawFirm = accountMap.get(pmcAgencyIdMap.get(pmc)).Account.Name;
+                        att.State = accountMap.get(pmcAgencyIdMap.get(pmc)).Account.d21_City_State_Of_Clinic__c;
+                        agencies.add(att);
                     }
                 }
             }
-        
-            return new Response(true, JSON.serialize(attornies));
+            
+            return new Response(true, JSON.serialize(agencies));
         }catch(Exception e){
             return new Response(false, e.getMessage()+' >>> '+e.getLineNumber()+'  >>>  '+e.getStackTraceString());
         }
-}
+    }
 
 
     @AuraEnabled
-    public  static Response updateEggAttorniesWithCodes(string existingAttornies,string addedAttornies,string cycles){
+    public  static Response updateEggAttorniesWithCodes(string donorId,string attorneyData){
         try {
-            list<RecordWrapper> existingAttorneyList = (list<RecordWrapper>)JSON.deserialize(existingAttornies, list<RecordWrapper>.class);  
-            list<RecordWrapper> addedAttorneyList = (list<RecordWrapper>)JSON.deserialize(addedAttornies, list<RecordWrapper>.class);  
-            list<Cycle> cyclesList = (list<Cycle>)JSON.deserialize(cycles, list<Cycle>.class);  
+            List<RecordWrapper> agencyList = (List<RecordWrapper>)JSON.deserialize(attorneyData, List<RecordWrapper>.class);
+            Map<string,string> cycleMap = new Map<string,string>();
+            list<d21_Cycle__c> cycleList = new list<d21_Cycle__c>();
+            list<d21_Cycle__c> removeAgencyCycleList = new list<d21_Cycle__c>();
+            list<d21_Donor_Fertility_Attorney__c> donorAgencyList = new list<d21_Donor_Fertility_Attorney__c>();
 
-            list<Contact> upsertExistingAttorneyList = new list<Contact>();
-            list<Contact> upsertAddedAttorneyList = new list<Contact>();
-            list<d21_Cycle__c> updateCycleList = new list<d21_Cycle__c>();
-            Map<string,Contact> cycleAccountMap = new Map<string,Contact>();
-            list<d21_Donor_Fertility_Attorney__c> donorAttorneyList = new list<d21_Donor_Fertility_Attorney__c>();
-            Set<string> conIds = new Set<string>();
-            Set<string> addedConIds = new Set<string>();
-            list<Account> updateAttorneyAccounts = new list<Account>();
-            Map<string,Account> powerMap = new Map<string,Account>();
-
-            for(RecordWrapper record : existingAttorneyList){
-                conIds.add(record.attorneyId);
+            list<d21_Cycle__c> fetchCycleList = [SELECT Id,Name,d21_Donor__c,d21_Attorney__c FROM d21_Cycle__c WHERE d21_Donor__c = :donorId WITH SYSTEM_MODE];
+            
+            for(d21_Cycle__c cycle : fetchCycleList){
+                cycleMap.put(cycle.Name,cycle.Id);
             }
-
-            Map<string,Contact> contactMap = new Map<string,Contact>([Select Name, Id,Phone,AccountId,Email,Account.Website,Account.Name,Account.d21_City_State_Of_Clinic__c from Contact where Id IN :conIds]);
-
-
-            for(RecordWrapper record : existingAttorneyList){
-                if(!record.noAttorneyChecked && !record.selectedCycles.isEmpty()){
-                    if(record.attorneyId != null && record.attorneyId != '' && contactMap.get(record.attorneyId).AccountId != null){
-                        Account acct = new Account();
-                        acct.Id = contactMap.get(record.attorneyId).AccountId;
-                        acct.Name = record.LawFirm;
-                        acct.d21_City_State_Of_Clinic__c = record.State;
-                        acct.Website = record.Website;
-                        updateAttorneyAccounts.add(acct);
-                    }
-                Contact acc = new Contact();
-                acc.Id = record.attorneyId;
-                acc.Phone = record.Phone;
-                acc.Email = record.Email;
-                acc.LastName = record.Name;
-                acc.recordTypeId = Schema.SObjectType.Contact.getRecordTypeInfosByName().get('Attorney').getRecordTypeId();
-                upsertExistingAttorneyList.add(acc);
-                for(string cycle : record.selectedCycles){
-                    cycleAccountMap.put('Cycle '+cycle,acc);
-                }
+            
+            list<d21_Donor_Fertility_Attorney__c> fetchExistingDonorAgencyList = [SELECT Id,d21_Donor__c,d21_Attorney__c 
+                                                                      FROM d21_Donor_Fertility_Attorney__c 
+                                                                      WHERE d21_Donor__c  =:donorId
+                                                                      WITH SYSTEM_MODE];
+            
+            if(!fetchExistingDonorAgencyList.isEmpty()){
+                delete fetchExistingDonorAgencyList;
             }
-            }
-
-            if(!updateAttorneyAccounts.isEmpty()){
-                update updateAttorneyAccounts;
-            }
-
-            if(!upsertExistingAttorneyList.isEmpty()){
-                upsert upsertExistingAttorneyList;
-            }
-
-            for(RecordWrapper record : addedAttorneyList){
-                addedConIds.add(record.attorneyId);
-            }
-
-            Map<string,Contact> addedContactMap = new Map<string,Contact>([Select Name, Id,Phone,AccountId,Email,Account.Website,Account.Name,Account.d21_City_State_Of_Clinic__c from Contact where Id IN :addedConIds]);
-
-            for(RecordWrapper record : addedAttorneyList){
-                if(!record.selectedCycles.isEmpty()){
-                    if(record.LawFirm != null && record.LawFirm != ''){
-                    Account acct = new Account();
-                    acct.Name = record.LawFirm;
-                    acct.Website = record.Website;
-                    acct.d21_City_State_Of_Clinic__c = record.State;
-                    if(record.attorneyId != null && record.attorneyId != '' && addedContactMap.get(record.attorneyId).AccountId != null){
-                        acct.Id = addedContactMap.get(record.attorneyId).AccountId;
-                    }
-                powerMap.put(record.Name+' '+record.LawFirm,acct);
-                    }
-                Contact acc = new Contact();
-                acc.Id = record.attorneyId;
-                acc.Phone = record.Phone;
-                acc.Email = record.Email;
-                acc.LastName = record.Name;
-                acc.FirstName = record.LawFirm;
-                acc.recordTypeId = Schema.SObjectType.Contact.getRecordTypeInfosByName().get('Attorney').getRecordTypeId();
-                upsertAddedAttorneyList.add(acc);
-                for(string cycle : record.selectedCycles){
-                    cycleAccountMap.put('Cycle '+cycle,acc);
-                }
-            }
-            }
-
-            system.debug('powerMap.values() >>> '+powerMap.values());
-
-            if(!powerMap.values().isEmpty()){
-                upsert powerMap.values();
-            }
-
-            if(!upsertAddedAttorneyList.isEmpty()){
-                for(Contact con : upsertAddedAttorneyList){
-                    if(con.FirstName != null && con.FirstName != '' && powerMap.containsKey(con.FirstName+' '+con.LastName)){
-                    con.AccountId = powerMap.get(con.FirstName+' '+con.LastName).Id;
-                    }
-                }
-                upsert upsertAddedAttorneyList;
-                for (Integer i = 0; i < addedAttorneyList.size(); i++) {
-                    if(!addedAttorneyList[i].selectedCycles.isEmpty()){
-                    addedAttorneyList[i].attorneyId = upsertAddedAttorneyList[i].Id;
+            
+            for(RecordWrapper acc : agencyList){
+                if(!acc.selectedCycles.isEmpty()){
+                    
+                    d21_Donor_Fertility_Attorney__c donorAgency = new d21_Donor_Fertility_Attorney__c();
+                    donorAgency.d21_Donor__c = donorId;
+                    donorAgency.d21_Attorney__c = acc.attorneyId; 
+                    donorAgency.Name = acc.Name;
+                    // if(acc.showDonorCodeInput){
+                    //     donorAgency.d21_Donor_Code__c = acc.DonorCode;
+                    // }
+                    // donorAgency.d21_Know_Donor_Code__c = acc.showDonorCodeInput;
+                    donorAgencyList.add(donorAgency);
+                    for(string cyc : acc.selectedCycles){
+                        d21_Cycle__c cycle = new d21_Cycle__c();
+                        cycle.Id = cycleMap.get('Cycle '+cyc);
+                        cycle.d21_Attorney__c = acc.attorneyId;
+                        cycleMap.remove('Cycle '+cyc);
+                        cycleList.add(cycle);
                     }
                 }
             }
-            system.debug('cycleAccountMap >>> '+cycleAccountMap);
-            for(Cycle record : cyclesList){
+            
+            if(!cycleList.isEmpty()){
+                update cycleList;
+            }
+            
+            if(!donorAgencyList.isEmpty()){
+                insert donorAgencyList;
+            }
+
+            for(string cycleMapKey : cycleMap.keySet()){
                 d21_Cycle__c cycle = new d21_Cycle__c();
-                cycle.Id = record.Id;
-                if(cycleAccountMap.containsKey(record.Name)){
-                cycle.d21_Attorney__c = cycleAccountMap.get(record.Name).Id;
-                }
-                updateCycleList.add(cycle);
+                cycle.Id = cycleMap.get(cycleMapKey);
+                cycle.d21_Agency__c = null;
+                removeAgencyCycleList.add(cycle);
             }
-
-            if(!updateCycleList.isEmpty()){
-                update updateCycleList;
-                Map<string,d21_Cycle__c> cycleMap = new Map<string,d21_Cycle__c>(updateCycleList);
-                list<d21_Cycle__c> fetchCycles = [Select Id,d21_Attorney__r.LastName,d21_Attorney__c,d21_Donor__c from d21_Cycle__c Where Id In :cycleMap.keySet()];
-                list<d21_Donor_Fertility_Attorney__c> deleteDonorAttorneyList = [SELECT Id,Name from 	d21_Donor_Fertility_Attorney__c WHERE d21_Donor__c = :fetchCycles[0].d21_Donor__c];
-                if(!deleteDonorAttorneyList.isEmpty()){
-                    delete deleteDonorAttorneyList;
-                }
-                Map<string,string> accIdNameMap = new Map<string,string>();
-                for(d21_Cycle__c cycle : fetchCycles){
-                    if(cycle.d21_Attorney__c != null){
-                    accIdNameMap.put(cycle.d21_Attorney__c, cycle.d21_Attorney__r.LastName);
-                    }
-                }
-                for(string accId : accIdNameMap.keySet()){
-                    d21_Donor_Fertility_Attorney__c donorAttorney = new d21_Donor_Fertility_Attorney__c();
-                    donorAttorney.Name = accIdNameMap.get(accId);
-                    donorAttorney.d21_Attorney__c = accId;
-                    donorAttorney.d21_Donor__c = fetchCycles[0].d21_Donor__c;
-                    donorAttorneyList.add(donorAttorney);
-                } 
-                if(!donorAttorneyList.isEmpty()){
-                    insert donorAttorneyList;
-                }
+            
+            if(!removeAgencyCycleList.isEmpty()){
+                update removeAgencyCycleList;
             }
-
-            return new Response(true,JSON.serialize(addedAttorneyList));
-
+            
+            return new Response(true,'');
+            
         } catch (Exception e) {
             return new Response(false, e.getMessage()+' >>> '+e.getLineNumber()+'  >>>  '+e.getStackTraceString());
         }
     }
+    
 
     @AuraEnabled
     public static Response deleteCycleAttorney(string attorneyId){

@@ -83,17 +83,17 @@ public without sharing class UtilityClass {
                     }
                 }
                 String query = fieldsToQuery + ' FROM '+ inputWrapper.objectApiName;
-                query += ' WHERE RecordType.Name = \'' + String.escapeSingleQuotes(recordTypeName) + '\'';
+               // query += ' WHERE RecordType.Name = \'' + String.escapeSingleQuotes(recordTypeName) + '\'';
                 system.debug('query >>>' + query);
                 String filterCriteria = inputWrapper.fieldApiName + ' LIKE ' + '\'' + String.escapeSingleQuotes(inputWrapper.searchString.trim()) + '%\' LIMIT 10';
                 if(String.isNotBlank(inputWrapper.selectedRecordId)) {
-                    query += ' AND Id = \''+ inputWrapper.selectedRecordId + '\'';
+                    query += ' Where Id = \''+ inputWrapper.selectedRecordId + '\'';
                 }else if(String.isNotBlank(inputWrapper.parentFieldApiName) && String.isNotBlank(inputWrapper.parentRecordId)){
-                    query += ' AND '+ inputWrapper.parentFieldApiName+ ' = \''+ inputWrapper.parentRecordId + '\'';
+                    query += ' Where '+ inputWrapper.parentFieldApiName+ ' = \''+ inputWrapper.parentRecordId + '\'';
                     query += ' AND ' + filterCriteria;
                 } 
                 else {
-                    query += ' AND '+ filterCriteria;
+                    query += ' Where '+ filterCriteria;
                 }
                 system.debug(query);
                 system.debug(Database.query(query));
