@@ -22,7 +22,7 @@ import addlookupSpermBank from '@salesforce/apex/DonorPreRegHippaController2222.
 import addlookupClinic from '@salesforce/apex/DonorPreRegHippaController2222.addlookupClinic';
 //import addlookupAttorney from '@salesforce/apex/DonorPreRegHippaController2222.addlookupSpermBank';
 //import addlookupRecipient from '@salesforce/apex/DonorPreRegHippaController2222.addlookupSpermBank';
-import addlookupAgency from '@salesforce/apex/DonorPreRegHippaController2222.addlookupSpermBank';
+import addlookupAgency from '@salesforce/apex/DonorPreRegHippaController2222.addlookupAgency';
 //import fetchContactRecord from '@salesforce/apex/UtilityClass.fetchSpermBankRecord';
 import createCoordinator from '@salesforce/apex/UtilityClass.createCoordinator';
 

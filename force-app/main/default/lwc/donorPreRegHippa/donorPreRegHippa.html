@@ -709,7 +709,7 @@
         <template if:true={recipients.length}>
             <template for:each={recipients} for:item="recipient" for:index="index">
                 <div key={recipient.id} class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
-                    <span>{recipient.Name}</span>
+                    <span>{recipient.firstName}</span>
                     <div>
                         <template if:true={recipient.isEditable}>
                             <lightning-button-icon icon-name="utility:edit" variant="bare" onclick={handleEditRecipient} data-index={index} class="slds-m-right_x-small" title="Edit Recipient"></lightning-button-icon>

@@ -19,6 +19,7 @@ export default class DonorPreRegDonationBasics extends LightningElement {
     @track haveIntendedParentDetailsForSperm = false;
     @track nothaveIntendedParentDetailsForSperm = false;
     @track showError = false;
+    @track showFinalConfirmation = false;
 
     get isEggDonation() {
         return this.donorType === 'egg';
@@ -63,13 +64,17 @@ export default class DonorPreRegDonationBasics extends LightningElement {
         if (['e', 'E', '+', '-', '.', 'b', 'B', 't', 'T', 'k', 'K', 'm', 'M'].includes(event.key)) {
             event.preventDefault();
         }
-        if (parseInt(event.target.value) > 15) {
-            event.target.value = 15;
-        }
+        // if (parseInt(event.target.value) > 15) {
+        //     event.target.value = 15;
+        // }
     }
 
     handleInputChange(event) {
         this.liveBirths = parseInt(event.target.value);
+    }
+
+    handleFinalConfirm(){
+        location.reload();
     }
 
     handleRadioChange(event) {
@@ -102,6 +107,9 @@ export default class DonorPreRegDonationBasics extends LightningElement {
                 const allEmpty = Object.values(eggBasics).every(value => !value);
                 if (!allEmpty) {
                     this.dispatchEvent(new CustomEvent('next', { detail: this.contactObj }));
+                }
+                else{
+                    this.showFinalConfirmation = true;
                 }
             }
             else {

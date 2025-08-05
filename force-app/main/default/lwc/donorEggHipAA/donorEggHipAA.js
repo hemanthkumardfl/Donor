@@ -18,9 +18,11 @@ import deleteRecipient from '@salesforce/apex/DonorPreRegHippaController2222.del
 import addRecipient from '@salesforce/apex/DonorPreRegHippaController2222.addRecipient';
 import editRecipient from '@salesforce/apex/DonorPreRegHippaController2222.editRecipient';
 import fetchSpermBankRecord from '@salesforce/apex/UtilityClass.fetchSpermBankRecord';
+//import fetchAgencyRecord from '@salesforce/apex/DonorPreRegHippaController2222.fetchAgencyRecord';
+//import fetchClinicRecord from '@salesforce/apex/DonorPreRegHippaController2222.fetchClinicRecord';
 import addlookupSpermBank from '@salesforce/apex/DonorPreRegHippaController2222.addlookupSpermBank';
-import addlookupClinic from '@salesforce/apex/DonorPreRegHippaController2222.addlookupClinic';
 //import addlookupAgency from '@salesforce/apex/DonorPreRegHippaController2222.addlookupAgency';
+import addlookupClinic from '@salesforce/apex/DonorPreRegHippaController2222.addlookupClinic';
 import createCoordinator from '@salesforce/apex/UtilityClass.createCoordinator';
 
 export default class DonorPreRegHippa extends LightningElement {
@@ -70,7 +72,8 @@ export default class DonorPreRegHippa extends LightningElement {
         accountId: '', coordinatorId: '', disableInputs: false, disableAddIcon: true,
         showNoCoordinatorRecordsErrorMessage: false, isAdditionalCoordinators: false,
         coordinatorUserInputsObj: { firstName: '', lastName: '', phone: '', coordinatorId: '', parentId: '', fullName: '', isAllow: false, isCoordinatorFirstNameBlank: false },
-        disableAddCoordinatorIcon: true
+        disableAddCoordinatorIcon: true,
+        cycles: []
     };
     @track newClinic = {
         id: '', clinicName: '', phone: '', coordinatorName: '', website: '', cityState: '', coordinatorEmail: '',
@@ -97,16 +100,10 @@ export default class DonorPreRegHippa extends LightningElement {
     @track isEditingAttorney = false;
     @track isEditingRecipient = false;
     @track selectedSpermBankId = '';
-    @track selectedSpermBank = null;
-    @track showAddButton = false;
-    @track showPlusButton = false;
-    @track showClinicAddButton = false;
-    @track showClinicPlusButton = false;
-    @track selectedClinicId = '';
-    @track selectedClinic = null;
     @track selectedAgencyId = '';
-    @track selectedAgency = null;
+    @track selectedClinicId = '';
     @track loadSpinner = false;
+    @track donorType = 'egg';
 
     get isAddButtonDisabled() {
         return !this.selectedSpermBankId;
@@ -163,11 +160,11 @@ export default class DonorPreRegHippa extends LightningElement {
     async connectedCallback() {
         try {
             this.contactObj = JSON.parse(JSON.stringify(this.contactObj || {}));
-            this.donorId = this.contactObj.donorId || '003QL00000xXfiNYAS';
-            this.showagencySection = this.contactObj.donorType === 'egg';
-            this.showSpermBankSection = this.contactObj.donorType !== 'egg';
+            this.donorId = this.contactObj.donorId || '003QL00000wvXvbYAE';
+            this.showagencySection = this.donorType === 'egg';
+            this.showSpermBankSection = this.donorType !== 'egg';
             this.showclinicSection = true;
-            this.showattorneySection = this.contactObj.donorType === 'egg';
+            this.showattorneySection = this.donorType == 'egg';
             this.showrecipientSection = true;
 
             this.legalNamesri = {
@@ -184,7 +181,7 @@ export default class DonorPreRegHippa extends LightningElement {
                 additionalInfo: this.contactObj.additionalInfo || ''
             };
 
-            this.totalDonationsCount = this.contactObj.donationBasics?.egg?.liveBirths || 0;
+            this.totalDonationsCount = 5;
             this.initializeCycles();
 
             const result = await spermDonor({ donorId: this.donorId });
@@ -192,7 +189,7 @@ export default class DonorPreRegHippa extends LightningElement {
 
             if (result.parentdetails) {
                 this.legalNamesri = {
-                    firstName: result.parentdetails.fristName || this.legalNamesri.firstName,
+                    firstName: result.parentdetails.firstName || this.legalNamesri.firstName,
                     lastName: result.parentdetails.lastName || this.legalNamesri.lastName
                 };
                 this.legalName = { ...this.legalNamesri };
@@ -204,6 +201,7 @@ export default class DonorPreRegHippa extends LightningElement {
                     pincode: result.parentdetails.pincode || this.address.pincode,
                     additionalInfo: result.parentdetails.additionalInfo || this.address.additionalInfo
                 };
+                this.contactObj.donorType = result.parentdetails.donorType || this.contactObj.donorType;
             }
 
             this.agencies = Array.isArray(result.Agencylist) ? result.Agencylist.map(item => ({
@@ -215,10 +213,7 @@ export default class DonorPreRegHippa extends LightningElement {
                 website: item.website || '',
                 cityState: item.cityState || '',
                 coordinatorEmail: item.email || '',
-                pmcNumber: item.pmcNumber || '',
-                isEditable: item.isEditable !== false,
-                isFromPrimaryBanks: item.isEditable === false,
-                accountId: item.AccountId || '',
+                accountId: item.Id || '',
                 showNoCoordinatorRecordsErrorMessage: false,
                 isAdditionalCoordinators: false,
                 coordinatorUserInputsObj: {
@@ -226,7 +221,7 @@ export default class DonorPreRegHippa extends LightningElement {
                     lastName: item.coordinatorLastName || '',
                     phone: item.coordinatorPhone || '',
                     coordinatorId: item.coordinatorId || '',
-                    parentId: item.AccountId || '',
+                    parentId: item.Id || '',
                     fullName: item.coordinatorName || '',
                     isAllow: !!item.coordinatorId,
                     isCoordinatorFirstNameBlank: false
@@ -243,10 +238,7 @@ export default class DonorPreRegHippa extends LightningElement {
                 coordinatorId: item.coordinatorId || '',
                 spermBankWebsite: item.website || '',
                 spermBankEmail: item.email || '',
-                pmcNumber: item.pmcNumber || '',
-                isEditable: item.isEditable !== false,
-                isFromPrimaryBanks: item.isEditable === false,
-                accountId: item.AccountId || '',
+                accountId: item.Id || '',
                 showNoCoordinatorRecordsErrorMessage: false,
                 isAdditionalCoordinators: false,
                 coordinatorUserInputsObj: {
@@ -254,12 +246,13 @@ export default class DonorPreRegHippa extends LightningElement {
                     lastName: item.coordinatorLastName || '',
                     phone: item.coordinatorPhone || '',
                     coordinatorId: item.coordinatorId || '',
-                    parentId: item.AccountId || '',
+                    parentId: item.Id || '',
                     fullName: item.coordinatorName || '',
                     isAllow: !!item.coordinatorId,
                     isCoordinatorFirstNameBlank: false
                 },
-                disableAddCoordinatorIcon: !!item.coordinatorId
+                disableAddCoordinatorIcon: !!item.coordinatorId,
+                cycles: item.cycles || []
             })) : [];
 
             this.clinics = Array.isArray(result.Cliniclist) ? result.Cliniclist.map(item => ({
@@ -271,10 +264,7 @@ export default class DonorPreRegHippa extends LightningElement {
                 website: item.website || '',
                 cityState: item.cityState || '',
                 coordinatorEmail: item.email || '',
-                pmcNumber: item.pmcNumber || '',
-                isEditable: item.isEditable !== false,
-                isFromPrimaryBanks: item.isEditable === false,
-                accountId: item.AccountId || '',
+                accountId: item.Id || '',
                 showNoCoordinatorRecordsErrorMessage: false,
                 isAdditionalCoordinators: false,
                 coordinatorUserInputsObj: {
@@ -282,7 +272,7 @@ export default class DonorPreRegHippa extends LightningElement {
                     lastName: item.coordinatorLastName || '',
                     phone: item.coordinatorPhone || '',
                     coordinatorId: item.coordinatorId || '',
-                    parentId: item.AccountId || '',
+                    parentId: item.Id || '',
                     fullName: item.coordinatorName || '',
                     isAllow: !!item.coordinatorId,
                     isCoordinatorFirstNameBlank: false
@@ -300,7 +290,6 @@ export default class DonorPreRegHippa extends LightningElement {
                 cityState: item.cityState || '',
                 email: item.email || '',
                 isEditable: true,
-                isFromPrimaryBanks: false,
                 cycles: item.cycles || []
             })) : [];
 
@@ -313,7 +302,6 @@ export default class DonorPreRegHippa extends LightningElement {
                 email: item.email || '',
                 additionalInfo: item.additionalInfo || '',
                 isEditable: true,
-                isFromPrimaryBanks: false,
                 cycles: item.cycles || []
             })) : [];
 
@@ -329,7 +317,7 @@ export default class DonorPreRegHippa extends LightningElement {
         if (this.contactObj.donorType === 'egg' && this.totalDonationsCount > 0) {
             this.cycleList = Array.from({ length: this.totalDonationsCount }, (_, index) => ({
                 id: `cycle_${index + 1}`,
-                cycleNumber: index + 1,
+                cycleNumber: `${index + 1}`,
                 disabled: false
             }));
         }
@@ -344,16 +332,19 @@ export default class DonorPreRegHippa extends LightningElement {
         ];
         this.cycleList = this.cycleList.map(cycle => ({
             ...cycle,
-            disabled: allSelectedCycles.includes(cycle.id)
+            disabled: allSelectedCycles.includes(cycle.cycleNumber)
         }));
+        this.unselectedCycles = this.cycleList.filter(cycle => !allSelectedCycles.includes(cycle.cycleNumber));
     }
 
     calculateTotalSelectedCycles() {
         this.totalSelectedCycles = [
-            ...this.agencies.flatMap(agency => agency.cycles),
-            ...this.clinics.flatMap(clinic => clinic.cycles),
-            ...this.attorneys.flatMap(attorney => attorney.cycles),
-            ...this.recipients.flatMap(recipient => recipient.cycles)
+            ...new Set([
+                ...this.agencies.flatMap(agency => agency.cycles),
+                ...this.clinics.flatMap(clinic => clinic.cycles),
+                ...this.attorneys.flatMap(attorney => attorney.cycles),
+                ...this.recipients.flatMap(recipient => recipient.cycles)
+            ])
         ].length;
     }
 
@@ -380,18 +371,18 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     handleCycleChange(event) {
-        const cycleId = event.target.value;
+        const cycleNumber = event.target.value;
         const isChecked = event.target.checked;
         const dataType = event.target.dataset.type;
         const entity = this.getEntity(dataType);
 
         if (isChecked) {
-            if (!entity.cycles.includes(cycleId)) {
-                entity.cycles = [...entity.cycles, cycleId];
+            if (!entity.cycles.includes(cycleNumber)) {
+                entity.cycles = [...entity.cycles, cycleNumber];
                 this.totalSelectedCycles++;
             }
         } else {
-            entity.cycles = entity.cycles.filter(id => id !== cycleId);
+            entity.cycles = entity.cycles.filter(id => id !== cycleNumber);
             this.totalSelectedCycles--;
         }
 
@@ -424,8 +415,9 @@ export default class DonorPreRegHippa extends LightningElement {
         this.address[field] = event.target.value;
     }
 
-    handleAgencySelect(event) {
+    async handleAgencySelect(event) {
         try {
+            this.loadSpinner = true;
             const { id, name } = event.detail;
             this.selectedAgencyId = id || '';
             this.newAgency = {
@@ -457,23 +449,48 @@ export default class DonorPreRegHippa extends LightningElement {
             };
             this.noAgencyChecked = !id;
             if (id) {
+                const agencyDetails = await fetchSpermBankRecord({ accountId: this.selectedAgencyId })
+                this.newAgency = {
+                    ...this.newAgency,
+                    phone: agencyDetails.Phone || '',
+                    coordinatorName: agencyDetails.coordinatorName || '',
+                    coordinatorId: agencyDetails.coordinatorId || '',
+                    website: agencyDetails.website || '',
+                    cityState: agencyDetails.cityState || '',
+                    coordinatorEmail: agencyDetails.email || '',
+                    coordinatorUserInputsObj: {
+                        ...this.newAgency.coordinatorUserInputsObj,
+                        firstName: agencyDetails.coordinatorFirstName || '',
+                        lastName: agencyDetails.coordinatorLastName || '',
+                        phone: agencyDetails.coordinatorPhone || '',
+                        coordinatorId: agencyDetails.coordinatorId || '',
+                        fullName: agencyDetails.coordinatorName || '',
+                        isAllow: !!agencyDetails.coordinatorId
+                    },
+                    disableAddCoordinatorIcon: !!agencyDetails.coordinatorId
+                };
                 this.showAgencyPicker = false;
                 this.showAgencyForm = true;
+                this.showAgencyPlusButton = true;
             }
         } catch (error) {
             console.error('Error in handleAgencySelect:', error);
             this.showToast('Error', `Error selecting agency: ${error.body?.message || error.message}`, 'error');
+        } finally {
+            this.loadSpinner = false;
         }
     }
 
     handleNoAgencyData(event) {
         this.noAgencyChecked = true;
         this.newAgency.disableAddIcon = false;
+        this.showAgencyPlusButton = true;
         this.showToast('Info', 'No agency found. Click the add icon to add a new agency manually.', 'info');
     }
 
     async handleSpermBankSelect(event) {
         try {
+            this.loadSpinner = true;
             const { id, name } = event.detail;
             this.selectedSpermBankId = id || '';
             this.newSperm = {
@@ -499,12 +516,12 @@ export default class DonorPreRegHippa extends LightningElement {
                     isAllow: false,
                     isCoordinatorFirstNameBlank: false
                 },
-                disableAddCoordinatorIcon: true
+                disableAddCoordinatorIcon: true,
+                cycles: []
             };
             this.noSpermChecked = !id;
             if (id) {
-                this.loadSpinner = true;
-                const spermBankDetails = await fetchSpermBankRecord({ spermBankId: id });
+                const spermBankDetails = await fetchSpermBankRecord({ accountId: this.selectedAgencyId });
                 this.newSperm = {
                     ...this.newSperm,
                     spermBankPhone: spermBankDetails.Phone || '',
@@ -519,14 +536,13 @@ export default class DonorPreRegHippa extends LightningElement {
                         phone: spermBankDetails.coordinatorPhone || '',
                         coordinatorId: spermBankDetails.coordinatorId || '',
                         fullName: spermBankDetails.coordinatorName || '',
-                        isAllow: !!spermBankDetails.coordinatorId,
-                        isCoordinatorFirstNameBlank: false
+                        isAllow: !!spermBankDetails.coordinatorId
                     },
                     disableAddCoordinatorIcon: !!spermBankDetails.coordinatorId
                 };
                 this.showSpermPicker = false;
                 this.showSpermForm = true;
-                this.showToast('Success', 'Sperm bank details loaded successfully.', 'success');
+                this.showPlusButton = true;
             }
         } catch (error) {
             console.error('Error in handleSpermBankSelect:', error);
@@ -539,11 +555,13 @@ export default class DonorPreRegHippa extends LightningElement {
     handleNoData(event) {
         this.noSpermChecked = true;
         this.newSperm.disableAddIcon = false;
+        this.showPlusButton = true;
         this.showToast('Info', 'No sperm bank found. Click the add icon to add a new sperm bank manually.', 'info');
     }
 
-    handleClinicSelect(event) {
+    async handleClinicSelect(event) {
         try {
+            this.loadSpinner = true;
             const { id, name } = event.detail;
             this.selectedClinicId = id || '';
             this.newClinic = {
@@ -575,18 +593,42 @@ export default class DonorPreRegHippa extends LightningElement {
             };
             this.noClinicChecked = !id;
             if (id) {
+                const clinicDetails = await await fetchSpermBankRecord({ accountId: this.selectedAgencyId });
+                this.newClinic = {
+                    ...this.newClinic,
+                    phone: clinicDetails.Phone || '',
+                    coordinatorName: clinicDetails.coordinatorName || '',
+                    coordinatorId: clinicDetails.coordinatorId || '',
+                    website: clinicDetails.website || '',
+                    cityState: clinicDetails.cityState || '',
+                    coordinatorEmail: clinicDetails.email || '',
+                    coordinatorUserInputsObj: {
+                        ...this.newClinic.coordinatorUserInputsObj,
+                        firstName: clinicDetails.coordinatorFirstName || '',
+                        lastName: clinicDetails.coordinatorLastName || '',
+                        phone: clinicDetails.coordinatorPhone || '',
+                        coordinatorId: clinicDetails.coordinatorId || '',
+                        fullName: clinicDetails.coordinatorName || '',
+                        isAllow: !!clinicDetails.coordinatorId
+                    },
+                    disableAddCoordinatorIcon: !!clinicDetails.coordinatorId
+                };
                 this.showClinicPicker = false;
                 this.showClinicForm = true;
+                this.showClinicPlusButton = true;
             }
         } catch (error) {
             console.error('Error in handleClinicSelect:', error);
             this.showToast('Error', `Error selecting clinic: ${error.body?.message || error.message}`, 'error');
+        } finally {
+            this.loadSpinner = false;
         }
     }
 
     handleNoClinicData(event) {
         this.noClinicChecked = true;
         this.newClinic.disableAddIcon = false;
+        this.showClinicPlusButton = true;
         this.showToast('Info', 'No clinic found. Click the add icon to add a new clinic manually.', 'info');
     }
 
@@ -597,11 +639,8 @@ export default class DonorPreRegHippa extends LightningElement {
             entity.coordinatorId = id || '';
             entity.coordinatorName = name || '';
             entity.coordinatorUserInputsObj = {
-                firstName: '',
-                lastName: '',
-                phone: '',
+                ...entity.coordinatorUserInputsObj,
                 coordinatorId: id || '',
-                parentId: entity.accountId,
                 fullName: name || '',
                 isAllow: !!id,
                 isCoordinatorFirstNameBlank: false
@@ -634,11 +673,11 @@ export default class DonorPreRegHippa extends LightningElement {
         }
         entity.isAdditionalCoordinators = true;
         entity.coordinatorUserInputsObj = {
+            ...entity.coordinatorUserInputsObj,
             firstName: '',
             lastName: '',
             phone: '',
             coordinatorId: '',
-            parentId: entity.accountId,
             fullName: '',
             isAllow: false,
             isCoordinatorFirstNameBlank: false
@@ -652,7 +691,8 @@ export default class DonorPreRegHippa extends LightningElement {
         const entity = this.getEntity(dataType);
         entity.coordinatorUserInputsObj[name] = value;
         entity.coordinatorUserInputsObj.isCoordinatorFirstNameBlank = name === 'firstName' && !value;
-        entity.coordinatorName = `${entity.coordinatorUserInputsObj.firstName} ${entity.coordinatorUserInputsObj.lastName}`.trim();
+        entity.coordinatorName = `${entity.coordinatorUserInputsObj.firstName || ''} ${entity.coordinatorUserInputsObj.lastName || ''}`.trim();
+        entity.coordinatorUserInputsObj.fullName = entity.coordinatorName;
         this.updateEntity(dataType, entity);
     }
 
@@ -676,9 +716,13 @@ export default class DonorPreRegHippa extends LightningElement {
             });
             entity.coordinatorId = coordinatorId;
             entity.coordinatorName = `${entity.coordinatorUserInputsObj.firstName} ${entity.coordinatorUserInputsObj.lastName}`.trim();
-            entity.coordinatorUserInputsObj.coordinatorId = coordinatorId;
-            entity.coordinatorUserInputsObj.fullName = entity.coordinatorName;
-            entity.coordinatorUserInputsObj.isAllow = true;
+            entity.coordinatorUserInputsObj = {
+                ...entity.coordinatorUserInputsObj,
+                coordinatorId: coordinatorId,
+                fullName: entity.coordinatorName,
+                isAllow: true,
+                isCoordinatorFirstNameBlank: false
+            };
             entity.isAdditionalCoordinators = false;
             entity.disableAddCoordinatorIcon = true;
             entity.showNoCoordinatorRecordsErrorMessage = false;
@@ -724,6 +768,7 @@ export default class DonorPreRegHippa extends LightningElement {
         this.showAgencyPicker = true;
         this.showAgencyForm = false;
         this.isEditingAgency = false;
+        this.deleteItemIndex = -1;
         this.newAgency = {
             id: `agency_${Date.now()}_${Math.random().toString(36).substring(2)}`,
             agencyName: '',
@@ -752,231 +797,15 @@ export default class DonorPreRegHippa extends LightningElement {
             cycles: []
         };
         this.noAgencyChecked = false;
+        this.showAgencyPlusButton = false;
     }
 
-    handleAddSpermClick() {
-        this.showSpermPicker = true;
-        this.showSpermForm = false;
-        this.isEditingSperm = false;
-        this.newSperm = {
-            id: `sperm_${Date.now()}_${Math.random().toString(36).substring(2)}`,
-            spermBankName: '',
-            spermBankPhone: '',
-            coordinatorName: '',
-            coordinatorId: '',
-            spermBankWebsite: '',
-            spermBankEmail: '',
-            accountId: '',
-            disableInputs: false,
-            disableAddIcon: true,
-            showNoCoordinatorRecordsErrorMessage: false,
-            isAdditionalCoordinators: false,
-            coordinatorUserInputsObj: {
-                firstName: '',
-                lastName: '',
-                phone: '',
-                coordinatorId: '',
-                parentId: '',
-                fullName: '',
-                isAllow: false,
-                isCoordinatorFirstNameBlank: false
-            },
-            disableAddCoordinatorIcon: true
-        };
-        this.noSpermChecked = false;
-    }
-
-    handleAddClinicClick() {
-        this.showClinicPicker = true;
-        this.showClinicForm = false;
-        this.isEditingClinic = false;
-        this.newClinic = {
-            id: `clinic_${Date.now()}_${Math.random().toString(36).substring(2)}`,
-            clinicName: '',
-            phone: '',
-            coordinatorName: '',
-            coordinatorId: '',
-            website: '',
-            cityState: '',
-            coordinatorEmail: '',
-            accountId: '',
-            disableInputs: false,
-            disableAddIcon: true,
-            showNoCoordinatorRecordsErrorMessage: false,
-            isAdditionalCoordinators: false,
-            coordinatorUserInputsObj: {
-                firstName: '',
-                lastName: '',
-                phone: '',
-                coordinatorId: '',
-                parentId: '',
-                fullName: '',
-                isAllow: false,
-                isCoordinatorFirstNameBlank: false
-            },
-            disableAddCoordinatorIcon: true,
-            cycles: []
-        };
-        this.noClinicChecked = false;
-    }
-
-    handleAddAttorneyClick() {
-        this.showAttorneyForm = true;
-        this.isEditingAttorney = false;
-        this.newAttorney = {
-            id: `attorney_${Date.now()}_${Math.random().toString(36).substring(2)}`,
-            attorneyName: '',
-            phone: '',
-            lawFirm: '',
-            website: '',
-            cityState: '',
-            email: '',
-            disableInputs: false,
-            cycles: []
-        };
-    }
-
-    handleAddRecipientClick() {
-        this.showRecipientForm = true;
-        this.isEditingRecipient = false;
-        this.newRecipient = {
-            id: `recipient_${Date.now()}_${Math.random().toString(36).substring(2)}`,
-            firstName: '',
-            lastName: '',
-            Name: '',
-            phone: '',
-            email: '',
-            additionalInfo: '',
-            disableInputs: false,
-            cycles: []
-        };
-    }
-
-    async handlePlusAgencyClick() {
-        try {
-            this.loadSpinner = true;
-            const accountId = await addlookupAgency({ donorId: this.donorId });
-            this.newAgency = {
-                ...this.newAgency,
-                accountId: accountId,
-                agencyName: '',
-                phone: '',
-                coordinatorName: '',
-                coordinatorId: '',
-                website: '',
-                cityState: '',
-                coordinatorEmail: '',
-                disableInputs: false,
-                disableAddIcon: true,
-                showNoCoordinatorRecordsErrorMessage: false,
-                isAdditionalCoordinators: false,
-                coordinatorUserInputsObj: {
-                    firstName: '',
-                    lastName: '',
-                    phone: '',
-                    coordinatorId: '',
-                    parentId: accountId,
-                    fullName: '',
-                    isAllow: false,
-                    isCoordinatorFirstNameBlank: false
-                },
-                disableAddCoordinatorIcon: true,
-                cycles: []
-            };
-            this.showAgencyForm = true;
-            this.showAgencyPicker = false;
-            this.noAgencyChecked = false;
-            this.showToast('Success', 'New agency record created. Please fill in the details.', 'success');
-        } catch (error) {
-            console.error('Error in handlePlusAgencyClick:', error);
-            this.showToast('Error', `Error creating new agency: ${error.body?.message || error.message}`, 'error');
-        } finally {
-            this.loadSpinner = false;
-        }
-    }
-
-    async handlePlusIconClick() {
-        try {
-            this.loadSpinner = true;
-            const accountId = await addlookupSpermBank({ donorId: this.donorId });
-            this.newSperm = {
-                ...this.newSperm,
-                accountId: accountId,
-                spermBankName: '',
-                spermBankPhone: '',
-                coordinatorName: '',
-                coordinatorId: '',
-                spermBankWebsite: '',
-                spermBankEmail: '',
-                disableInputs: false,
-                disableAddIcon: true,
-                showNoCoordinatorRecordsErrorMessage: false,
-                isAdditionalCoordinators: false,
-                coordinatorUserInputsObj: {
-                    firstName: '',
-                    lastName: '',
-                    phone: '',
-                    coordinatorId: '',
-                    parentId: accountId,
-                    fullName: '',
-                    isAllow: false,
-                    isCoordinatorFirstNameBlank: false
-                },
-                disableAddCoordinatorIcon: true
-            };
-            this.showSpermForm = true;
-            this.showSpermPicker = false;
-            this.noSpermChecked = false;
-            this.showToast('Success', 'New sperm bank record created. Please fill in the details.', 'success');
-        } catch (error) {
-            console.error('Error in handlePlusIconClick:', error);
-            this.showToast('Error', `Error creating new sperm bank: ${error.body?.message || error.message}`, 'error');
-        } finally {
-            this.loadSpinner = false;
-        }
-    }
-
-    async handlePlusClinicClick() {
-        try {
-            this.loadSpinner = true;
-            const accountId = await addlookupClinic({ donorId: this.donorId });
-            this.newClinic = {
-                ...this.newClinic,
-                accountId: accountId,
-                clinicName: '',
-                phone: '',
-                coordinatorName: '',
-                coordinatorId: '',
-                website: '',
-                cityState: '',
-                coordinatorEmail: '',
-                disableInputs: false,
-                disableAddIcon: true,
-                showNoCoordinatorRecordsErrorMessage: false,
-                isAdditionalCoordinators: false,
-                coordinatorUserInputsObj: {
-                    firstName: '',
-                    lastName: '',
-                    phone: '',
-                    coordinatorId: '',
-                    parentId: accountId,
-                    fullName: '',
-                    isAllow: false,
-                    isCoordinatorFirstNameBlank: false
-                },
-                disableAddCoordinatorIcon: true,
-                cycles: []
-            };
-            this.showClinicForm = true;
-            this.showClinicPicker = false;
-            this.noClinicChecked = false;
-            this.showToast('Success', 'New clinic record created. Please fill in the details.', 'success');
-        } catch (error) {
-            console.error('Error in handlePlusClinicClick:', error);
-            this.showToast('Error', `Error creating new clinic: ${error.body?.message || error.message}`, 'error');
-        } finally {
-            this.loadSpinner = false;
-        }
+    handlePlusAgencyClick() {
+        this.showAgencyPicker = false;
+        this.showAgencyForm = true;
+        this.newAgency.disableInputs = false;
+        this.newAgency.disableAddIcon = false;
+        this.showAgencyPlusButton = true;
     }
 
     async handleAddNewAgencyClick() {
@@ -990,9 +819,21 @@ export default class DonorPreRegHippa extends LightningElement {
         }
         try {
             this.loadSpinner = true;
-            let agencyId = this.newAgency.id;
-            if (this.isEditingAgency) {
-                await editAgency({
+            let agencyId;
+            if (this.newAgency.accountId && !this.isEditingAgency) {
+                agencyId = await addlookupAgency({
+                    donorId: this.donorId,
+                    agencyId: this.newAgency.accountId,
+                    coordinatorId: this.newAgency.coordinatorId,
+                    coordinatorFirstName: this.newAgency.coordinatorUserInputsObj.firstName,
+                    coordinatorLastName: this.newAgency.coordinatorUserInputsObj.lastName,
+                    coordinatorPhone: this.newAgency.coordinatorUserInputsObj.phone,
+                    coordinatorName: this.newAgency.coordinatorName,
+                    cycles: this.newAgency.cycles
+                });
+            } else {
+                const apexMethod = this.isEditingAgency ? editAgency : addAgency;
+                agencyId = await apexMethod({
                     donorId: this.donorId,
                     agencyId: this.newAgency.id,
                     agencyName: this.newAgency.agencyName,
@@ -1004,26 +845,24 @@ export default class DonorPreRegHippa extends LightningElement {
                     email: this.newAgency.coordinatorEmail,
                     cycles: this.newAgency.cycles
                 });
-                this.agencies = this.agencies.map(agency =>
-                    agency.id === this.newAgency.id ? { ...this.newAgency, isFromPrimaryBanks: false } : agency
+            }
+            const newAgency = {
+                ...this.newAgency,
+                id: agencyId || this.newAgency.id,
+                isEditable: true,
+                isFromPrimaryBanks: !!this.newAgency.accountId
+            };
+            if (this.isEditingAgency) {
+                this.agencies = this.agencies.map((agency, index) =>
+                    index === this.deleteItemIndex ? newAgency : agency
                 );
             } else {
-                agencyId = await addAgency({
-                    donorId: this.donorId,
-                    agencyName: this.newAgency.agencyName,
-                    phone: this.newAgency.phone,
-                    coordinatorName: this.newAgency.coordinatorName,
-                    coordinatorId: this.newAgency.coordinatorId,
-                    website: this.newAgency.website,
-                    cityState: this.newAgency.cityState,
-                    email: this.newAgency.coordinatorEmail,
-                    cycles: this.newAgency.cycles
-                });
-                this.agencies.push({ ...this.newAgency, id: agencyId, isFromPrimaryBanks: false });
+                this.agencies = [...this.agencies, newAgency];
             }
             this.showAgencyForm = false;
             this.showAgencyPicker = false;
             this.isEditingAgency = false;
+            this.deleteItemIndex = -1;
             this.updateCycleList();
             this.calculateTotalSelectedCycles();
             this.showToast('Success', `Agency ${this.isEditingAgency ? 'updated' : 'added'} successfully.`, 'success');
@@ -1035,333 +874,11 @@ export default class DonorPreRegHippa extends LightningElement {
         }
     }
 
-    async handleAddNewSpermBankClick() {
-        if (!this.newSperm.spermBankName) {
-            this.showToast('Error', 'Sperm Bank Name is required.', 'error');
-            return;
-        }
-        try {
-            this.loadSpinner = true;
-            let spermBankId = this.newSperm.id;
-            if (this.isEditingSperm) {
-                await editSpermBank({
-                    donorId: this.donorId,
-                    spermBankId: this.newSperm.id,
-                    spermBankName: this.newSperm.spermBankName,
-                    phone: this.newSperm.spermBankPhone,
-                    coordinatorName: this.newSperm.coordinatorName,
-                    coordinatorId: this.newSperm.coordinatorId,
-                    website: this.newSperm.spermBankWebsite,
-                    email: this.newSperm.spermBankEmail
-                });
-                this.sperms = this.sperms.map(sperm =>
-                    sperm.id === this.newSperm.id ? { ...this.newSperm, isFromPrimaryBanks: false } : sperm
-                );
-            } else {
-                spermBankId = await addSpermBank({
-                    donorId: this.donorId,
-                    spermBankName: this.newSperm.spermBankName,
-                    phone: this.newSperm.spermBankPhone,
-                    coordinatorName: this.newSperm.coordinatorName,
-                    coordinatorId: this.newSperm.coordinatorId,
-                    website: this.newSperm.spermBankWebsite,
-                    email: this.newSperm.spermBankEmail
-                });
-                this.sperms.push({ ...this.newSperm, id: spermBankId, isFromPrimaryBanks: false });
-            }
-            this.showSpermForm = false;
-            this.showSpermPicker = false;
-            this.isEditingSperm = false;
-            this.showToast('Success', `Sperm bank ${this.isEditingSperm ? 'updated' : 'added'} successfully.`, 'success');
-        } catch (error) {
-            console.error('Error in handleAddNewSpermBankClick:', error);
-            this.showToast('Error', `Error ${this.isEditingSperm ? 'updating' : 'adding'} sperm bank: ${error.body?.message || error.message}`, 'error');
-        } finally {
-            this.loadSpinner = false;
-        }
-    }
-
-    async handleAddNewClinicClick() {
-        if (!this.newClinic.clinicName) {
-            this.showToast('Error', 'Clinic Name is required.', 'error');
-            return;
-        }
-        if (this.showCycleCheckboxes && this.newClinic.cycles.length === 0) {
-            this.showToast('Error', 'At least one donation cycle must be selected.', 'error');
-            return;
-        }
-        try {
-            this.loadSpinner = true;
-            let clinicId = this.newClinic.id;
-            if (this.isEditingClinic) {
-                await editClinic({
-                    donorId: this.donorId,
-                    clinicId: this.newClinic.id,
-                    clinicName: this.newClinic.clinicName,
-                    phone: this.newClinic.phone,
-                    coordinatorName: this.newClinic.coordinatorName,
-                    coordinatorId: this.newClinic.coordinatorId,
-                    website: this.newClinic.website,
-                    cityState: this.newClinic.cityState,
-                    email: this.newClinic.coordinatorEmail,
-                    cycles: this.newClinic.cycles
-                });
-                this.clinics = this.clinics.map(clinic =>
-                    clinic.id === this.newClinic.id ? { ...this.newClinic, isFromPrimaryBanks: false } : clinic
-                );
-            } else {
-                clinicId = await addClinic({
-                    donorId: this.donorId,
-                    clinicName: this.newClinic.clinicName,
-                    phone: this.newClinic.phone,
-                    coordinatorName: this.newClinic.coordinatorName,
-                    coordinatorId: this.newClinic.coordinatorId,
-                    website: this.newClinic.website,
-                    cityState: this.newClinic.cityState,
-                    email: this.newClinic.coordinatorEmail,
-                    cycles: this.newClinic.cycles
-                });
-                this.clinics.push({ ...this.newClinic, id: clinicId, isFromPrimaryBanks: false });
-            }
-            this.showClinicForm = false;
-            this.showClinicPicker = false;
-            this.isEditingClinic = false;
-            this.updateCycleList();
-            this.calculateTotalSelectedCycles();
-            this.showToast('Success', `Clinic ${this.isEditingClinic ? 'updated' : 'added'} successfully.`, 'success');
-        } catch (error) {
-            console.error('Error in handleAddNewClinicClick:', error);
-            this.showToast('Error', `Error ${this.isEditingClinic ? 'updating' : 'adding'} clinic: ${error.body?.message || error.message}`, 'error');
-        } finally {
-            this.loadSpinner = false;
-        }
-    }
-
-    async handleAddNewAttorneyClick() {
-        if (!this.newAttorney.attorneyName) {
-            this.showToast('Error', 'Attorney Name is required.', 'error');
-            return;
-        }
-        if (this.showCycleCheckboxes && this.newAttorney.cycles.length === 0) {
-            this.showToast('Error', 'At least one donation cycle must be selected.', 'error');
-            return;
-        }
-        try {
-            this.loadSpinner = true;
-            let attorneyId = this.newAttorney.id;
-            if (this.isEditingAttorney) {
-                await editAttorney({
-                    donorId: this.donorId,
-                    attorneyId: this.newAttorney.id,
-                    attorneyName: this.newAttorney.attorneyName,
-                    phone: this.newAttorney.phone,
-                    lawFirm: this.newAttorney.lawFirm,
-                    website: this.newAttorney.website,
-                    cityState: this.newAttorney.cityState,
-                    email: this.newAttorney.email,
-                    cycles: this.newAttorney.cycles
-                });
-                this.attorneys = this.attorneys.map(attorney =>
-                    attorney.id === this.newAttorney.id ? { ...this.newAttorney } : attorney
-                );
-            } else {
-                attorneyId = await addAttorney({
-                    donorId: this.donorId,
-                    attorneyName: this.newAttorney.attorneyName,
-                    phone: this.newAttorney.phone,
-                    lawFirm: this.newAttorney.lawFirm,
-                    website: this.newAttorney.website,
-                    cityState: this.newAttorney.cityState,
-                    email: this.newAttorney.email,
-                    cycles: this.newAttorney.cycles
-                });
-                this.attorneys.push({ ...this.newAttorney, id: attorneyId });
-            }
-            this.showAttorneyForm = false;
-            this.isEditingAttorney = false;
-            this.updateCycleList();
-            this.calculateTotalSelectedCycles();
-            this.showToast('Success', `Attorney ${this.isEditingAttorney ? 'updated' : 'added'} successfully.`, 'success');
-        } catch (error) {
-            console.error('Error in handleAddNewAttorneyClick:', error);
-            this.showToast('Error', `Error ${this.isEditingAttorney ? 'updating' : 'adding'} attorney: ${error.body?.message || error.message}`, 'error');
-        } finally {
-            this.loadSpinner = false;
-        }
-    }
-
-    async handleAddNewRecipientClick() {
-        if (!this.newRecipient.lastName) {
-            this.showToast('Error', 'Recipient Last Name is required.', 'error');
-            return;
-        }
-        if (this.showCycleCheckboxes && this.newRecipient.cycles.length === 0) {
-            this.showToast('Error', 'At least one donation cycle must be selected.', 'error');
-            return;
-        }
-        try {
-            this.loadSpinner = true;
-            let recipientId = this.newRecipient.id;
-            if (this.isEditingRecipient) {
-                await editRecipient({
-                    donorId: this.donorId,
-                    recipientId: this.newRecipient.id,
-                    firstName: this.newRecipient.firstName,
-                    lastName: this.newRecipient.lastName,
-                    phone: this.newRecipient.phone,
-                    email: this.newRecipient.email,
-                    additionalInfo: this.newRecipient.additionalInfo,
-                    cycles: this.newRecipient.cycles
-                });
-                this.recipients = this.recipients.map(recipient =>
-                    recipient.id === this.newRecipient.id ? { ...this.newRecipient, Name: `${this.newRecipient.firstName || ''} ${this.newRecipient.lastName || ''}`.trim() } : recipient
-                );
-            } else {
-                recipientId = await addRecipient({
-                    donorId: this.donorId,
-                    firstName: this.newRecipient.firstName,
-                    lastName: this.newRecipient.lastName,
-                    phone: this.newRecipient.phone,
-                    email: this.newRecipient.email,
-                    additionalInfo: this.newRecipient.additionalInfo,
-                    cycles: this.newRecipient.cycles
-                });
-                this.recipients.push({ ...this.newRecipient, id: recipientId, Name: `${this.newRecipient.firstName || ''} ${this.newRecipient.lastName || ''}`.trim() });
-            }
-            this.showRecipientForm = false;
-            this.isEditingRecipient = false;
-            this.updateCycleList();
-            this.calculateTotalSelectedCycles();
-            this.showToast('Success', `Recipient ${this.isEditingRecipient ? 'updated' : 'added'} successfully.`, 'success');
-        } catch (error) {
-            console.error('Error in handleAddNewRecipientClick:', error);
-            this.showToast('Error', `Error ${this.isEditingRecipient ? 'updating' : 'adding'} recipient: ${error.body?.message || error.message}`, 'error');
-        } finally {
-            this.loadSpinner = false;
-        }
-    }
-
-    handleEditAgency(event) {
-        const index = event.target.dataset.index;
-        this.isEditingAgency = true;
-        this.newAgency = { ...this.agencies[index] };
-        this.showAgencyForm = true;
-        this.showAgencyPicker = false;
-    }
-
-    handleEditSperm(event) {
-        const index = event.target.dataset.index;
-        this.isEditingSperm = true;
-        this.newSperm = { ...this.sperms[index] };
-        this.showSpermForm = true;
-        this.showSpermPicker = false;
-    }
-
-    handleEditClinic(event) {
-        const index = event.target.dataset.index;
-        this.isEditingClinic = true;
-        this.newClinic = { ...this.clinics[index] };
-        this.showClinicForm = true;
-        this.showClinicPicker = false;
-    }
-
-    handleEditAttorney(event) {
-        const index = event.target.dataset.index;
-        this.isEditingAttorney = true;
-        this.newAttorney = { ...this.attorneys[index] };
-        this.showAttorneyForm = true;
-    }
-
-    handleEditRecipient(event) {
-        const index = event.target.dataset.index;
-        this.isEditingRecipient = true;
-        this.newRecipient = { ...this.recipients[index] };
-        this.showRecipientForm = true;
-    }
-
-    handleDeleteAgency(event) {
-        this.deleteItemType = 'Agency';
-        this.deleteItemIndex = event.target.dataset.index;
-        this.deleteItemName = this.agencies[this.deleteItemIndex].agencyName;
-        this.deleteItemId = this.agencies[this.deleteItemIndex].id;
-        this.showDeletePopup = true;
-    }
-
-    handleDeleteSperm(event) {
-        this.deleteItemType = 'Sperm Bank';
-        this.deleteItemIndex = event.target.dataset.index;
-        this.deleteItemName = this.sperms[this.deleteItemIndex].spermBankName;
-        this.deleteItemId = this.sperms[this.deleteItemIndex].id;
-        this.showDeletePopup = true;
-    }
-
-    handleDeleteClinic(event) {
-        this.deleteItemType = 'Clinic';
-        this.deleteItemIndex = event.target.dataset.index;
-        this.deleteItemName = this.clinics[this.deleteItemIndex].clinicName;
-        this.deleteItemId = this.clinics[this.deleteItemIndex].id;
-        this.showDeletePopup = true;
-    }
-
-    handleDeleteAttorney(event) {
-        this.deleteItemType = 'Attorney';
-        this.deleteItemIndex = event.target.dataset.index;
-        this.deleteItemName = this.attorneys[this.deleteItemIndex].attorneyName;
-        this.deleteItemId = this.attorneys[this.deleteItemIndex].id;
-        this.showDeletePopup = true;
-    }
-
-    handleDeleteRecipient(event) {
-        this.deleteItemType = 'Recipient';
-        this.deleteItemIndex = event.target.dataset.index;
-        this.deleteItemName = this.recipients[this.deleteItemIndex].Name;
-        this.deleteItemId = this.recipients[this.deleteItemIndex].id;
-        this.showDeletePopup = true;
-    }
-
-    async handleDeleteYes() {
-        try {
-            this.loadSpinner = true;
-            if (this.deleteItemType === 'Agency') {
-                await deleteAgency({ donorId: this.donorId, agencyId: this.deleteItemId });
-                this.agencies = this.agencies.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-            } else if (this.deleteItemType === 'Sperm Bank') {
-                await deleteSpermBank({ donorId: this.donorId, spermBankId: this.deleteItemId });
-                this.sperms = this.sperms.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-            } else if (this.deleteItemType === 'Clinic') {
-                await deleteClinic({ donorId: this.donorId, clinicId: this.deleteItemId });
-                this.clinics = this.clinics.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-            } else if (this.deleteItemType === 'Attorney') {
-                await deleteAttorney({ donorId: this.donorId, attorneyId: this.deleteItemId });
-                this.attorneys = this.attorneys.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-            } else if (this.deleteItemType === 'Recipient') {
-                await deleteRecipient({ donorId: this.donorId, recipientId: this.deleteItemId });
-                this.recipients = this.recipients.filter((_, index) => index !== parseInt(this.deleteItemIndex));
-            }
-            this.updateCycleList();
-            this.calculateTotalSelectedCycles();
-            this.showToast('Success', `${this.deleteItemType} deleted successfully.`, 'success');
-        } catch (error) {
-            console.error(`Error deleting ${this.deleteItemType}:`, error);
-            this.showToast('Error', `Error deleting ${this.deleteItemType}: ${error.body?.message || error.message}`, 'error');
-        } finally {
-            this.showDeletePopup = false;
-            this.loadSpinner = false;
-        }
-    }
-
-    handleDeleteNo() {
-        this.showDeletePopup = false;
-        this.deleteItemType = '';
-        this.deleteItemIndex = -1;
-        this.deleteItemName = '';
-        this.deleteItemId = '';
-    }
-
     handleCancelAgency() {
         this.showAgencyForm = false;
         this.showAgencyPicker = false;
         this.isEditingAgency = false;
+        this.deleteItemIndex = -1;
         this.newAgency = {
             id: '',
             agencyName: '',
@@ -1391,10 +908,119 @@ export default class DonorPreRegHippa extends LightningElement {
         };
     }
 
+    handleAddSpermClick() {
+        this.showSpermPicker = true;
+        this.showSpermForm = false;
+        this.isEditingSperm = false;
+        this.deleteItemIndex = -1;
+        this.newSperm = {
+            id: `sperm_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+            spermBankName: '',
+            spermBankPhone: '',
+            coordinatorName: '',
+            coordinatorId: '',
+            spermBankWebsite: '',
+            spermBankEmail: '',
+            accountId: '',
+            disableInputs: false,
+            disableAddIcon: true,
+            showNoCoordinatorRecordsErrorMessage: false,
+            isAdditionalCoordinators: false,
+            coordinatorUserInputsObj: {
+                firstName: '',
+                lastName: '',
+                phone: '',
+                coordinatorId: '',
+                parentId: '',
+                fullName: '',
+                isAllow: false,
+                isCoordinatorFirstNameBlank: false
+            },
+            disableAddCoordinatorIcon: true,
+            cycles: []
+        };
+        this.noSpermChecked = false;
+        this.showPlusButton = false;
+    }
+
+    handlePlusIconClick() {
+        this.showSpermPicker = false;
+        this.showSpermForm = true;
+        this.newSperm.disableInputs = false;
+        this.newSperm.disableAddIcon = false;
+        this.showPlusButton = true;
+    }
+
+    async handleAddNewSpermBankClick() {
+        if (!this.newSperm.spermBankName) {
+            this.showToast('Error', 'Sperm Bank Name is required.', 'error');
+            return;
+        }
+        if (this.showCycleCheckboxes && this.newSperm.cycles.length === 0) {
+            this.showToast('Error', 'At least one donation cycle must be selected.', 'error');
+            return;
+        }
+        try {
+            this.loadSpinner = true;
+            let spermBankId;
+            if (this.newSperm.accountId && !this.isEditingSperm) {
+                spermBankId = await addlookupSpermBank({
+                    donorId: this.donorId,
+                    spermBankId: this.newSperm.accountId,
+                    coordinatorId: this.newSperm.coordinatorId,
+                    coordinatorFirstName: this.newSperm.coordinatorUserInputsObj.firstName,
+                    coordinatorLastName: this.newSperm.coordinatorUserInputsObj.lastName,
+                    coordinatorPhone: this.newSperm.coordinatorUserInputsObj.phone,
+                    coordinatorName: this.newSperm.coordinatorName,
+                    cycles: this.newSperm.cycles
+                });
+            } else {
+                const apexMethod = this.isEditingSperm ? editSpermBank : addSpermBank;
+                spermBankId = await apexMethod({
+                    donorId: this.donorId,
+                    spermBankId: this.newSperm.id,
+                    spermBankName: this.newSperm.spermBankName,
+                    phone: this.newSperm.spermBankPhone,
+                    coordinatorName: this.newSperm.coordinatorName,
+                    coordinatorId: this.newSperm.coordinatorId,
+                    website: this.newSperm.spermBankWebsite,
+                    email: this.newSperm.spermBankEmail,
+                    cycles: this.newSperm.cycles
+                });
+            }
+            const newSperm = {
+                ...this.newSperm,
+                id: spermBankId || this.newSperm.id,
+                isEditable: true,
+                isFromPrimaryBanks: !!this.newSperm.accountId
+            };
+            if (this.isEditingSperm) {
+                this.sperms = this.sperms.map((sperm, index) =>
+                    index === this.deleteItemIndex ? newSperm : sperm
+                );
+            } else {
+                this.sperms = [...this.sperms, newSperm];
+            }
+            this.showSpermForm = false;
+            this.showSpermPicker = false;
+            this.isEditingSperm = false;
+            this.deleteItemIndex = -1;
+            this.updateCycleList();
+            this.calculateTotalSelectedCycles();
+            this.showToast('Success', `Sperm bank ${this.isEditingSperm ? 'updated' : 'added'} successfully.`, 'success');
+        } catch (error) {
+            console.error('Error in handleAddNewSpermBankClick:', error);
+            this.showToast('Error', `Error ${this.isEditingSperm ? 'updating' : 'adding'} sperm bank: ${error.body?.message || error.message}`, 'error');
+        } finally {
+            this.loadSpinner = false;
+        }
+    }
+
     handleCancelSperm() {
         this.showSpermForm = false;
         this.showSpermPicker = false;
         this.isEditingSperm = false;
+        this.deleteItemIndex = -1;
         this.newSperm = {
             id: '',
             spermBankName: '',
@@ -1418,14 +1044,126 @@ export default class DonorPreRegHippa extends LightningElement {
                 isAllow: false,
                 isCoordinatorFirstNameBlank: false
             },
-            disableAddCoordinatorIcon: true
+            disableAddCoordinatorIcon: true,
+            cycles: []
         };
+    }
+
+    handleAddClinicClick() {
+        this.showClinicPicker = true;
+        this.showClinicForm = false;
+        this.isEditingClinic = false;
+        this.deleteItemIndex = -1;
+        this.newClinic = {
+            id: `clinic_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+            clinicName: '',
+            phone: '',
+            coordinatorName: '',
+            coordinatorId: '',
+            website: '',
+            cityState: '',
+            coordinatorEmail: '',
+            accountId: '',
+            disableInputs: false,
+            disableAddIcon: true,
+            showNoCoordinatorRecordsErrorMessage: false,
+            isAdditionalCoordinators: false,
+            coordinatorUserInputsObj: {
+                firstName: '',
+                lastName: '',
+                phone: '',
+                coordinatorId: '',
+                parentId: '',
+                fullName: '',
+                isAllow: false,
+                isCoordinatorFirstNameBlank: false
+            },
+            disableAddCoordinatorIcon: true,
+            cycles: []
+        };
+        this.noClinicChecked = false;
+        this.showClinicPlusButton = false;
+    }
+
+    handlePlusClinicClick() {
+        this.showClinicPicker = false;
+        this.showClinicForm = true;
+        this.newClinic.disableInputs = false;
+        this.newClinic.disableAddIcon = false;
+        this.showClinicPlusButton = true;
+    }
+
+    async handleAddNewClinicClick() {
+        if (!this.newClinic.clinicName) {
+            this.showToast('Error', 'Clinic Name is required.', 'error');
+            return;
+        }
+        if (this.showCycleCheckboxes && this.newClinic.cycles.length === 0) {
+            this.showToast('Error', 'At least one donation cycle must be selected.', 'error');
+            return;
+        }
+        try {
+            this.loadSpinner = true;
+            let clinicId;
+            if (this.newClinic.accountId && !this.isEditingClinic) {
+                clinicId = await addlookupClinic({
+                    donorId: this.donorId,
+                    clinicId: this.newClinic.accountId,
+                    coordinatorId: this.newClinic.coordinatorId,
+                    coordinatorFirstName: this.newClinic.coordinatorUserInputsObj.firstName,
+                    coordinatorLastName: this.newClinic.coordinatorUserInputsObj.lastName,
+                    coordinatorPhone: this.newClinic.coordinatorUserInputsObj.phone,
+                    coordinatorName: this.newClinic.coordinatorName,
+                    cycles: this.newClinic.cycles
+                });
+            } else {
+                const apexMethod = this.isEditingClinic ? editClinic : addClinic;
+                clinicId = await apexMethod({
+                    donorId: this.donorId,
+                    clinicId: this.newClinic.id,
+                    clinicName: this.newClinic.clinicName,
+                    phone: this.newClinic.phone,
+                    coordinatorName: this.newClinic.coordinatorName,
+                    coordinatorId: this.newClinic.coordinatorId,
+                    website: this.newClinic.website,
+                    cityState: this.newClinic.cityState,
+                    email: this.newClinic.coordinatorEmail,
+                    cycles: this.newClinic.cycles
+                });
+            }
+            const newClinic = {
+                ...this.newClinic,
+                id: clinicId || this.newClinic.id,
+                isEditable: true,
+                isFromPrimaryBanks: !!this.newClinic.accountId
+            };
+            if (this.isEditingClinic) {
+                this.clinics = this.clinics.map((clinic, index) =>
+                    index === this.deleteItemIndex ? newClinic : clinic
+                );
+            } else {
+                this.clinics = [...this.clinics, newClinic];
+            }
+            this.showClinicForm = false;
+            this.showClinicPicker = false;
+            this.isEditingClinic = false;
+            this.deleteItemIndex = -1;
+            this.updateCycleList();
+            this.calculateTotalSelectedCycles();
+            this.showToast('Success', `Clinic ${this.isEditingClinic ? 'updated' : 'added'} successfully.`, 'success');
+        } catch (error) {
+            console.error('Error in handleAddNewClinicClick:', error);
+            this.showToast('Error', `Error ${this.isEditingClinic ? 'updating' : 'adding'} clinic: ${error.body?.message || error.message}`, 'error');
+        } finally {
+            this.loadSpinner = false;
+        }
     }
 
     handleCancelClinic() {
         this.showClinicForm = false;
         this.showClinicPicker = false;
         this.isEditingClinic = false;
+        this.deleteItemIndex = -1;
         this.newClinic = {
             id: '',
             clinicName: '',
@@ -1455,9 +1193,76 @@ export default class DonorPreRegHippa extends LightningElement {
         };
     }
 
+    handleAddAttorneyClick() {
+        this.showAttorneyForm = true;
+        this.isEditingAttorney = false;
+        this.deleteItemIndex = -1;
+        this.newAttorney = {
+            id: `attorney_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+            attorneyName: '',
+            phone: '',
+            lawFirm: '',
+            website: '',
+            cityState: '',
+            email: '',
+            disableInputs: false,
+            cycles: []
+        };
+    }
+
+    async handleAddNewAttorneyClick() {
+        if (!this.newAttorney.attorneyName) {
+            this.showToast('Error', 'Attorney Name is required.', 'error');
+            return;
+        }
+        if (this.showCycleCheckboxes && this.newAttorney.cycles.length === 0) {
+            this.showToast('Error', 'At least one donation cycle must be selected.', 'error');
+            return;
+        }
+        try {
+            this.loadSpinner = true;
+            const apexMethod = this.isEditingAttorney ? editAttorney : addAttorney;
+            const attorneyId = await apexMethod({
+                donorId: this.donorId,
+                attorneyId: this.newAttorney.id,
+                attorneyName: this.newAttorney.attorneyName,
+                phone: this.newAttorney.phone,
+                lawFirm: this.newAttorney.lawFirm,
+                website: this.newAttorney.website,
+                cityState: this.newAttorney.cityState,
+                email: this.newAttorney.email,
+                cycles: this.newAttorney.cycles
+            });
+            const newAttorney = {
+                ...this.newAttorney,
+                id: attorneyId || this.newAttorney.id,
+                isEditable: true
+            };
+            if (this.isEditingAttorney) {
+                this.attorneys = this.attorneys.map((attorney, index) =>
+                    index === this.deleteItemIndex ? newAttorney : attorney
+                );
+            } else {
+                this.attorneys = [...this.attorneys, newAttorney];
+            }
+            this.showAttorneyForm = false;
+            this.isEditingAttorney = false;
+            this.deleteItemIndex = -1;
+            this.updateCycleList();
+            this.calculateTotalSelectedCycles();
+            this.showToast('Success', `Attorney ${this.isEditingAttorney ? 'updated' : 'added'} successfully.`, 'success');
+        } catch (error) {
+            console.error('Error in handleAddNewAttorneyClick:', error);
+            this.showToast('Error', `Error ${this.isEditingAttorney ? 'updating' : 'adding'} attorney: ${error.body?.message || error.message}`, 'error');
+        } finally {
+            this.loadSpinner = false;
+        }
+    }
+
     handleCancelAttorney() {
         this.showAttorneyForm = false;
         this.isEditingAttorney = false;
+        this.deleteItemIndex = -1;
         this.newAttorney = {
             id: '',
             attorneyName: '',
@@ -1471,9 +1276,76 @@ export default class DonorPreRegHippa extends LightningElement {
         };
     }
 
+    handleAddRecipientClick() {
+        this.showRecipientForm = true;
+        this.isEditingRecipient = false;
+        this.deleteItemIndex = -1;
+        this.newRecipient = {
+            id: `recipient_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+            firstName: '',
+            lastName: '',
+            Name: '',
+            phone: '',
+            email: '',
+            additionalInfo: '',
+            disableInputs: false,
+            cycles: []
+        };
+    }
+
+    async handleAddNewRecipientClick() {
+        if (!this.newRecipient.lastName) {
+            this.showToast('Error', 'Recipient Last Name is required.', 'error');
+            return;
+        }
+        if (this.showCycleCheckboxes && this.newRecipient.cycles.length === 0) {
+            this.showToast('Error', 'At least one donation cycle must be selected.', 'error');
+            return;
+        }
+        try {
+            this.loadSpinner = true;
+            const apexMethod = this.isEditingRecipient ? editRecipient : addRecipient;
+            const recipientId = await apexMethod({
+                donorId: this.donorId,
+                recipientId: this.newRecipient.id,
+                firstName: this.newRecipient.firstName,
+                lastName: this.newRecipient.lastName,
+                phone: this.newRecipient.phone,
+                email: this.newRecipient.email,
+                additionalInfo: this.newRecipient.additionalInfo,
+                cycles: this.newRecipient.cycles
+            });
+            const newRecipient = {
+                ...this.newRecipient,
+                id: recipientId || this.newRecipient.id,
+                Name: `${this.newRecipient.firstName || ''} ${this.newRecipient.lastName || ''}`.trim(),
+                isEditable: true
+            };
+            if (this.isEditingRecipient) {
+                this.recipients = this.recipients.map((recipient, index) =>
+                    index === this.deleteItemIndex ? newRecipient : recipient
+                );
+            } else {
+                this.recipients = [...this.recipients, newRecipient];
+            }
+            this.showRecipientForm = false;
+            this.isEditingRecipient = false;
+            this.deleteItemIndex = -1;
+            this.updateCycleList();
+            this.calculateTotalSelectedCycles();
+            this.showToast('Success', `Recipient ${this.isEditingRecipient ? 'updated' : 'added'} successfully.`, 'success');
+        } catch (error) {
+            console.error('Error in handleAddNewRecipientClick:', error);
+            this.showToast('Error', `Error ${this.isEditingRecipient ? 'updating' : 'adding'} recipient: ${error.body?.message || error.message}`, 'error');
+        } finally {
+            this.loadSpinner = false;
+        }
+    }
+
     handleCancelRecipient() {
         this.showRecipientForm = false;
         this.isEditingRecipient = false;
+        this.deleteItemIndex = -1;
         this.newRecipient = {
             id: '',
             firstName: '',
@@ -1487,33 +1359,146 @@ export default class DonorPreRegHippa extends LightningElement {
         };
     }
 
-    handleConfirmationChange(event) {
-        this.isConfirmed = event.target.checked;
+    handleEditAgency(event) {
+        const index = parseInt(event.target.dataset.index, 10);
+        this.isEditingAgency = true;
+        this.deleteItemIndex = index;
+        this.newAgency = { ...this.agencies[index], disableInputs: !this.agencies[index].isEditable };
+        this.showAgencyForm = true;
+        this.showAgencyPicker = false;
+        this.showAgencyPlusButton = true;
     }
 
-    handleDonorHippaBack() {
-        this.dispatchEvent(new CustomEvent('donorhippaback'));
+    handleEditSperm(event) {
+        const index = parseInt(event.target.dataset.index, 10);
+        this.isEditingSperm = true;
+        this.deleteItemIndex = index;
+        this.newSperm = { ...this.sperms[index], disableInputs: !this.sperms[index].isEditable };
+        this.showSpermForm = true;
+        this.showSpermPicker = false;
+        this.showPlusButton = true;
     }
 
-    handleDonorHippaNext() {
-        if (!this.validateForm()) return;
-        if (this.showCycleCheckboxes && this.totalSelectedCycles < this.totalDonationsCount) {
-            this.unselectedCycles = this.cycleList.filter(cycle => !this.isCycleSelected(cycle.id));
-            if (this.unselectedCycles.length > 0) {
-                this.showMissedCycles = true;
-                return;
+    handleEditClinic(event) {
+        const index = parseInt(event.target.dataset.index, 10);
+        this.isEditingClinic = true;
+        this.deleteItemIndex = index;
+        this.newClinic = { ...this.clinics[index], disableInputs: !this.clinics[index].isEditable };
+        this.showClinicForm = true;
+        this.showClinicPicker = false;
+        this.showClinicPlusButton = true;
+    }
+
+    handleEditAttorney(event) {
+        const index = parseInt(event.target.dataset.index, 10);
+        this.isEditingAttorney = true;
+        this.deleteItemIndex = index;
+        this.newAttorney = { ...this.attorneys[index] };
+        this.showAttorneyForm = true;
+    }
+
+    handleEditRecipient(event) {
+        const index = parseInt(event.target.dataset.index, 10);
+        this.isEditingRecipient = true;
+        this.deleteItemIndex = index;
+        this.newRecipient = { ...this.recipients[index] };
+        this.showRecipientForm = true;
+    }
+
+    handleDeleteAgency(event) {
+        const index = parseInt(event.target.dataset.index, 10);
+        this.deleteItemType = 'Agency';
+        this.deleteItemIndex = index;
+        this.deleteItemName = this.agencies[index].agencyName;
+        this.deleteItemId = this.agencies[index].id;
+        this.showDeletePopup = true;
+    }
+
+    handleDeleteSperm(event) {
+        const index = parseInt(event.target.dataset.index, 10);
+        this.deleteItemType = 'Sperm Bank';
+        this.deleteItemIndex = index;
+        this.deleteItemName = this.sperms[index].spermBankName;
+        this.deleteItemId = this.sperms[index].id;
+        this.showDeletePopup = true;
+    }
+
+    handleDeleteClinic(event) {
+        const index = parseInt(event.target.dataset.index, 10);
+        this.deleteItemType = 'Clinic';
+        this.deleteItemIndex = index;
+        this.deleteItemName = this.clinics[index].clinicName;
+        this.deleteItemId = this.clinics[index].id;
+        this.showDeletePopup = true;
+    }
+
+    handleDeleteAttorney(event) {
+        const index = parseInt(event.target.dataset.index, 10);
+        this.deleteItemType = 'Attorney';
+        this.deleteItemIndex = index;
+        this.deleteItemName = this.attorneys[index].attorneyName;
+        this.deleteItemId = this.attorneys[index].id;
+        this.showDeletePopup = true;
+    }
+
+    handleDeleteRecipient(event) {
+        const index = parseInt(event.target.dataset.index, 10);
+        this.deleteItemType = 'Recipient';
+        this.deleteItemIndex = index;
+        this.deleteItemName = this.recipients[index].Name;
+        this.deleteItemId = this.recipients[index].id;
+        this.showDeletePopup = true;
+    }
+
+    async handleDeleteYes() {
+        try {
+            this.loadSpinner = true;
+            switch (this.deleteItemType) {
+                case 'Agency':
+                    await deleteAgency({ donorId: this.donorId, agencyId: this.deleteItemId });
+                    this.agencies = this.agencies.filter((_, index) => index !== this.deleteItemIndex);
+                    break;
+                case 'Sperm Bank':
+                    await deleteSpermBank({ donorId: this.donorId, spermBankId: this.deleteItemId });
+                    this.sperms = this.sperms.filter((_, index) => index !== this.deleteItemIndex);
+                    break;
+                case 'Clinic':
+                    await deleteClinic({ donorId: this.donorId, clinicId: this.deleteItemId });
+                    this.clinics = this.clinics.filter((_, index) => index !== this.deleteItemIndex);
+                    break;
+                case 'Attorney':
+                    await deleteAttorney({ donorId: this.donorId, attorneyId: this.deleteItemId });
+                    this.attorneys = this.attorneys.filter((_, index) => index !== this.deleteItemIndex);
+                    break;
+                case 'Recipient':
+                    await deleteRecipient({ donorId: this.donorId, recipientId: this.deleteItemId });
+                    this.recipients = this.recipients.filter((_, index) => index !== this.deleteItemIndex);
+                    break;
+                default:
+                    throw new Error('Invalid item type for deletion');
             }
+            this.updateCycleList();
+            this.calculateTotalSelectedCycles();
+            this.showToast('Success', `${this.deleteItemType} deleted successfully.`, 'success');
+        } catch (error) {
+            console.error(`Error deleting ${this.deleteItemType}:`, error);
+            this.showToast('Error', `Error deleting ${this.deleteItemType}: ${error.body?.message || error.message}`, 'error');
+        } finally {
+            this.showDeletePopup = false;
+            this.deleteItemType = '';
+            this.deleteItemIndex = -1;
+            this.deleteItemName = '';
+            this.deleteItemId = '';
+            this.loadSpinner = false;
         }
-        this.saveAndProceed();
     }
 
-    isCycleSelected(cycleId) {
-        return [
-            ...this.agencies.flatMap(agency => agency.cycles),
-            ...this.clinics.flatMap(clinic => clinic.cycles),
-            ...this.attorneys.flatMap(attorney => attorney.cycles),
-            ...this.recipients.flatMap(recipient => recipient.cycles)
-        ].includes(cycleId);
+    handleDeleteNo() {
+        this.showDeletePopup = false;
+        this.deleteItemType = '';
+        this.deleteItemIndex = -1;
+        this.deleteItemName = '';
+        this.deleteItemId = '';
     }
 
     handleMissedCycleYesClick(event) {
@@ -1530,11 +1515,42 @@ export default class DonorPreRegHippa extends LightningElement {
 
     handleBackFromMissedPopup() {
         this.showMissedCycles = false;
+        this.unselectedCycles = [];
+        this.dispatchEvent(new CustomEvent('donorhippaback'));
     }
 
     handleNextFromMissedPopup() {
         this.showMissedCycles = false;
         this.saveAndProceed();
+    }
+
+    handleConfirmationChange(event) {
+        this.isConfirmed = event.target.checked;
+    }
+
+    async handleDonorHippaNext() {
+        if (!this.validateForm()) return;
+        if (this.showCycleCheckboxes && this.totalSelectedCycles < this.totalDonationsCount) {
+            this.unselectedCycles = this.cycleList.filter(cycle => !this.isCycleSelected(cycle.cycleNumber));
+            if (this.unselectedCycles.length > 0) {
+                this.showMissedCycles = true;
+                return;
+            }
+        }
+        this.saveAndProceed();
+    }
+
+    handleDonorHippaBack() {
+        this.dispatchEvent(new CustomEvent('donorhippaback'));
+    }
+
+    isCycleSelected(cycleNumber) {
+        return [
+            ...this.agencies.flatMap(agency => agency.cycles),
+            ...this.clinics.flatMap(clinic => clinic.cycles),
+            ...this.attorneys.flatMap(attorney => attorney.cycles),
+            ...this.recipients.flatMap(recipient => recipient.cycles)
+        ].includes(cycleNumber);
     }
 
     async saveAndProceed() {
@@ -1584,6 +1600,7 @@ export default class DonorPreRegHippa extends LightningElement {
         });
         if (!this.dob || this.dobError) {
             this.dobError = this.dobError || 'Date of Birth is required.';
+            this.showToast('Error', 'Date of Birth is required.', 'error');
             isValid = false;
         }
         if (!this.address.state) {
@@ -1614,7 +1631,6 @@ export default class DonorPreRegHippa extends LightningElement {
     }
 
     showToast(title, message, variant) {
-        const evt = new ShowToastEvent({ title, message, variant });
-        this.dispatchEvent(evt);
+        this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
     }
 }

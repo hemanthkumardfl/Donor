@@ -1,5 +1,16 @@
 <template>
   <lightning-layout multiple-rows class="donationbasicscls" style="background: white;">
+
+    <div class="modalBackdrop" if:true={showFinalConfirmation}>
+      <div class="modalContainer slds-p-around_small">
+        <span class="headingcls slds-p-top_xx-small">Thank you for your interest in Donor 21. Please return to our site
+          and complete your registration once you are in cycle or are planning to complete a future donation. Thank you
+          again for your interest in helping others to grow their family.
+        </span>
+        <div class="nextbtncls textcls" onclick={handleFinalConfirm}>OK</div>
+      </div>
+    </div>
+
     <div class="slds-p-around_medium">
       <span class="headingcls">
         Donation Basics

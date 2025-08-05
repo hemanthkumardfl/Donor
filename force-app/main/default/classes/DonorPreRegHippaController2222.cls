@@ -205,6 +205,7 @@ public without sharing class DonorPreRegHippaController2222 {
                 recp.additionalInfo = '';
             }
             Recipientlist.add(recp);
+system.debug('Recipientlist>>>>>>>>>>>>>'+Recipientlist);
         }
         hipaaWrapperlist.Recipientlist = Recipientlist;
         
@@ -1025,4 +1026,87 @@ public static String addlookupClinic(
         throw new AuraHandledException('Error adding clinic: ' + e.getMessage());
     }
 }
+    
+ @AuraEnabled
+public static String addlookupAgency(
+    String donorId,
+    String agencyId,
+    String coordinatorId,
+    String coordinatorFirstName,
+    String coordinatorLastName,
+    String coordinatorPhone,
+    String coordinatorName
+) {
+    try {
+        // Validate required fields
+        if (String.isBlank(donorId) || String.isBlank(agencyId)) {
+            throw new AuraHandledException('Donor ID and Agency ID are required.');
+        }
+        if (String.isBlank(coordinatorId) && String.isBlank(coordinatorFirstName) && String.isNotBlank(coordinatorName)) {
+            throw new AuraHandledException('Coordinator first name is required when adding a new coordinator.');
+        }
+
+        // Verify Agency (Account) exists with the correct record type
+        Id agencyRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('d21_Agency').getRecordTypeId();
+        Account agency = [
+            SELECT Id, Name, d21_Coordinator_Name__c, RecordTypeId
+            FROM Account
+            WHERE Id = :agencyId 
+            LIMIT 1
+        ];
+        
+        if (agency.RecordTypeId != agencyRecordTypeId) {
+            throw new AuraHandledException('Invalid Agency ID: Account is not of Agency record type.');
+        }
+
+        // Create a new Coordinator Contact if ID not provided
+        if (String.isBlank(coordinatorId) && String.isNotBlank(coordinatorFirstName)) {
+            Contact newCoordinator = new Contact(
+                FirstName = coordinatorFirstName,
+                LastName = String.isBlank(coordinatorLastName) ? 'Coordinator' : coordinatorLastName,
+                Phone = coordinatorPhone,
+                AccountId = agency.Id
+            );
+            insert newCoordinator;
+            coordinatorId = newCoordinator.Id;
+        } else if (String.isNotBlank(coordinatorId)) {
+            // Update existing coordinator's AccountId if not set
+            Contact existingCoordinator = [SELECT Id, AccountId FROM Contact WHERE Id = :coordinatorId LIMIT 1];
+            if (existingCoordinator.AccountId == null) {
+                existingCoordinator.AccountId = agency.Id;
+                update existingCoordinator;
+            }
+        }
+
+        // Update Agency Account with coordinator info if provided
+        if (String.isNotBlank(coordinatorName)) {
+            agency.d21_Coordinator_Name__c = coordinatorName;
+            update agency;
+        }
+
+        // Check if junction already exists
+        List<d21_Donor_Agency__c> existingLinks = [
+            SELECT Id
+            FROM d21_Donor_Agency__c
+            WHERE d21_Egg_Donor__c = :donorId AND Agency__c = :agencyId
+            LIMIT 1
+        ];
+
+        if (!existingLinks.isEmpty()) {
+            throw new AuraHandledException('Agency already linked to this donor.');
+        }
+
+        // Create junction record
+        d21_Donor_Agency__c link = new d21_Donor_Agency__c(
+            d21_Egg_Donor__c = donorId,
+            Agency__c = agency.Id
+        );
+        insert link;
+        return link.Id;
+
+    } catch (Exception e) {
+        throw new AuraHandledException('Error adding agency: ' + e.getMessage());
+    }
+}   
+    
 }
