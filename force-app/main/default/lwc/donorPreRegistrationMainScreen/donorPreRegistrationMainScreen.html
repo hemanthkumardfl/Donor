@@ -68,7 +68,7 @@
                     <c-donor-pre-reg-code-submission if:true={showCodeSubmission} onback={handleCodeSubmissionBack}
                         onnext={handleCodeSubmissionNext} contact-obj={contactObj}></c-donor-pre-reg-code-submission>
                     <!-- showErrorCodeSubmission -->
-                    <c-donor-pre-reg-error-code-submission if:true={showErrorCodeSubmission}
+                    <c-donor-pre-reg-error-code-submission if:true={showErrorCodeSubmission} unmatched-codes={unmatchedCodes}
                         onback={handleErrorCodeSubmissionBack} onnext={handleErrorCodeSubmissionNext}
                         contact-obj={contactObj}></c-donor-pre-reg-error-code-submission>
                     <!-- showCodeError -->

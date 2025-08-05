@@ -140,7 +140,7 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
     async handleResendCode() {
         const response = await deleteOTPCode({ contactObj: JSON.stringify(this.contactObj) });
         console.log('Delete response >>>', JSON.stringify(response));
-        const isOtpType = !this.contactObj['alternateDetails'];
+        const isOtpType = !this.contactObj['unmatchedCodes'];
         const result = await sendOTPToEmailOrPhone({
             contactObj: JSON.stringify(this.contactObj),
             isOtpType: isOtpType
@@ -237,12 +237,14 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
 
     async handleVerifyotp(event) {
         try {
-            console.log('verify')
             this.contactObj = JSON.parse(JSON.stringify(event.detail));
-            console.log(JSON.stringify(this.contactObj));
             let emailData = '';
-            if (this.contactObj.alternateDetails) {
-                emailData = this.contactObj.alternateDetails.email;
+            if (this.contactObj.unmatchedCodes) {
+                for(let ele of this.contactObj.unmatchedCodes){
+                    if(!ele.isOptOut){
+                        emailData = ele.email;
+                    }
+                }
             }
             else {
                 emailData = this.contactObj.email;
@@ -250,12 +252,12 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
             let result = await verifyOTP({ email: emailData, verificationOTPinput: this.contactObj.message });
             if (result.isSuccess) {
                 this.isTwoFactor = false;
-                if (!this.contactObj.alternateDetails) {
+                if (!this.contactObj.unmatchedCodes) {
                     this.showCodeSubmission = true;
                     this.showDonationBasics = false;
                 }
                 else {
-                    this.contactObj['alternateDetails'] = null;
+                  //  this.contactObj['alternateDetails'] = null;
                     this.showDonationBasics = true;
                     this.showCodeSubmission = false;
                 }
@@ -269,10 +271,7 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
             }
         }
         catch (error) {
-            console.log(error.stack)
-            console.log('Error >>> ' + JSON.stringify(error));
-            console.log(error.message)
-            console.log(JSON.stringify(this.contactObj));
+            console.error(error.stack);
         }
     }
 
@@ -287,9 +286,9 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
         const donorType = this.donorType;
         const donationBasics = this.contactObj?.donationBasics?.[donorType];
         this.isOptOut = false;
-       //alert('bypassPass' + this.bypassStep);//bypassStep
+        //alert('bypassPass' + this.bypassStep);//bypassStep
         console.log('contactObj' + JSON.stringify(this.contactObj))
-        if (this.contactObj && this.contactObj.alternateDetails && this.contactObj.alternateDetails['isOptOut']) {
+        if (this.contactObj && this.contactObj.unmatchedCodes && this.contactObj['isSkipped']) {
             this.isOptOut = true;
         }
         // alert(isOptOut);
@@ -532,16 +531,16 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
     }
 
     handleSpermBankInfoBack(event) {
-        try{
+        try {
             this.contactObj = JSON.parse(JSON.stringify(event.detail));
             this.showSpermBankInfo = false;
             this.showDonationBasics = true;
         }
-          catch(e){
-                console.log('main >>>')
-                console.log(e.stack);
-                console.log(e.message);
-            }
+        catch (e) {
+            console.log('main >>>')
+            console.log(e.stack);
+            console.log(e.message);
+        }
     }
 
     async handleRecipientDetailsNext(event) {
@@ -693,7 +692,10 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
         this.bypassStep = false
     }
 
+    @track unmatchedCodes = [];
+
     async handleCodeSubmissionNext(event) {
+        this.unmatchedCodes = [];
         this.contactObj = JSON.parse(JSON.stringify(event.detail));
         this.bypassStep = false;
         if (!this.contactObj['isSkipped']) {
@@ -711,6 +713,15 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
                         this.showErrorCodeSubmission = false;
                     }
                     else {
+                        for (let code of JSON.parse(emailMatchResult.message)) {
+                            this.unmatchedCodes.push({
+                                code: code,
+                                email: '',
+                                phone: '',
+                                isOptOut : false
+                            })
+                        }
+                        console.log('emailMatchResult >>> ' + JSON.stringify(emailMatchResult));
                         this.showErrorCodeSubmission = true;
                         this.showDonationBasics = false;
                     }
@@ -754,7 +765,7 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
         this.bypassStep = false;
         this.showErrorCodeSubmission = false;
         console.log('Handle Error Code Submission >>> ' + JSON.stringify(this.contactObj))
-        if (this.contactObj['alternateDetails'].isOptOut) {
+        if (this.contactObj['isSkipped']) {
             this.showDonationBasics = true;
         }
         else {
@@ -770,7 +781,7 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
     }
 
     handleDonorHippaBack(event) {
-       // alert('Test Hippa Back')
+        // alert('Test Hippa Back')
         // this.contactObj = JSON.parse(JSON.stringify(event.detail));
         this.showHippaScreen = false;
         if (this.donorType == 'sperm') {
@@ -793,8 +804,8 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
 
     async handleDonorHippaNext(event) {
         //alert('Test Back')
-       //  this.contactObj = JSON.parse(JSON.stringify(event.detail));
-         //let result = await getRelatedRecords({ contactId : this.contactObj.donorId,donorType : this.contactObj.donorType });
+        //  this.contactObj = JSON.parse(JSON.stringify(event.detail));
+        //let result = await getRelatedRecords({ contactId : this.contactObj.donorId,donorType : this.contactObj.donorType });
         // console.log('Result >> ' + JSON.stringify(result));
         this.showHippaScreen = false;
         this.showHippaSign = true;
@@ -802,11 +813,11 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
 
     async handleDonorHippasignNext(event) {
         this.contactObj = JSON.parse(JSON.stringify(event.detail));
-          let result = await getRelatedRecords({ contactObj: JSON.stringify(this.contactObj) });
-          if(result.isSuccess && result.message){
+        let result = await getRelatedRecords({ contactObj: JSON.stringify(this.contactObj) });
+        if (result.isSuccess && result.message) {
             this.contactObj['DonorCodeSpecial'] = result.message;
-          }
-          console.log('Result >> ' + JSON.stringify(result));
+        }
+        console.log('Result >> ' + JSON.stringify(result));
         this.showHippaSign = false;
         this.showMatchVerification = true;
     }
@@ -914,7 +925,7 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
 
     async handleEggAgencyOrBankWithoutEDNNext(event) {
         this.contactObj = JSON.parse(JSON.stringify(event.detail));
-        console.log('this.contactObj >>> '+ JSON.stringify(this.contactObj))
+        console.log('this.contactObj >>> ' + JSON.stringify(this.contactObj))
         let result = await updateAgencyWithoutCode({ contactObj: JSON.stringify(this.contactObj) })
         console.log('result >>> ' + JSON.stringify(result));
         if (result.isSuccess) {
@@ -1217,7 +1228,7 @@ export default class DonorPreRegistrationMainScreen extends LightningElement {
         }
     }
 
-    handleEggHipaaNext(event){
+    handleEggHipaaNext(event) {
         this.contactObj = JSON.parse(JSON.stringify(event.detail));
         this.showEggHipaa = false;
         this.showHippaSign = true;

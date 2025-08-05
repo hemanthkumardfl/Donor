@@ -256,8 +256,12 @@ public without sharing class EggDonorPreRegistrationController {
                 phone = wrapper.Phone;
             }
             else{
-                email = wrapper.alternateDetails.email;
-                phone = wrapper.alternateDetails.phone;
+                for(UnmatchedWrapper code : wrapper.unmatchedCodes){
+                    if(!code.isOptOut){
+                    email = code.email;
+                    phone = code.phone;
+                    }
+                }
             }
             if(wrapper.verificationType == 'Both' || wrapper.verificationType == 'Phone'){
                 String accountSid = 'ACf7cf16139492ed2ae2af8b95e87743a9';
@@ -987,77 +991,85 @@ public without sharing class EggDonorPreRegistrationController {
     
     
     @AuraEnabled
-    public static Response verifyGivenCodesEmail(string contactObj){
+    public static Response verifyGivenCodesEmail(String contactObj) {
         try {
+            system.debug('contactObj >>> '+contactObj);
             DonorRegistrationWrapper donor = (DonorRegistrationWrapper) JSON.deserialize(contactObj, DonorRegistrationWrapper.class);  
             system.debug('Donor >>> '+donor);
-            list<string> codeList = new list<string>();
-            list<string> pmcList = new list<string>();
-            for(string code : donor.newCodeList){
-                if(code.contains('PMC')){
-                    pmcList.add(code);
-                }else{
-                    codeList.add(code);
+            List<String> codeList = new List<String>();
+            List<String> pmcList = new List<String>();
+            List<String> unmatchedCodes = new List<String>();
+
+
+            
+    
+            if(donor.newCodeList != null){
+            for (String code : donor.newCodeList) {
+                (code.contains('PMC') ? pmcList : codeList).add(code);
+            }
+        }
+        else{
+            pmcList.addAll(donor.codes.PMC);
+            codeList.addAll(donor.codes.EDN);
+            codeList.addAll(donor.codes.SDN);
+            codeList.addAll(donor.codes.EMB);
+            codeList.addAll(donor.codes.REC);
+        }
+    
+            List<d21_Associated_Codes__c> associateCodeList = [
+                SELECT Name, d21_PMC_Code__r.d21_SpermDonor__r.Email, d21_PMC_Code__r.d21_EggDonor__r.Email 
+                FROM d21_Associated_Codes__c 
+                WHERE Name IN :codeList
+            ];
+            List<d21_PMC__c> PMCRecords = [
+                SELECT Name, d21_SpermDonor__r.Email, d21_EggDonor__r.Email 
+                FROM d21_PMC__c 
+                WHERE Name IN :pmcList
+            ]; 
+    
+            String donorField = (donor.donorType == 'egg') ? 'd21_EggDonor__r.Email' : 'd21_SpermDonor__r.Email';
+    
+            // Check PMC records
+            for (d21_PMC__c rec : PMCRecords) {
+                if (getEmail(rec, donorField) != donor.email) {
+                    unmatchedCodes.add(rec.Name);
                 }
             }
-            list<d21_Associated_Codes__c> associateCodeList = [select Id,Name,d21_PMC_Code__r.d21_SpermDonor__r.Email,d21_PMC_Code__r.d21_EggDonor__r.Email from d21_Associated_Codes__c Where Name IN :codeList limit 1];
-            list<d21_PMC__c> PMCRecords = [Select Id,Name,d21_SpermDonor__r.Email,d21_EggDonor__r.Email from d21_PMC__c Where Name IN :pmcList limit 1]; 
-            if(donor.donorType == 'egg'){
-                if(!PMCRecords.isEmpty()){
-                    if(PMCRecords[0].d21_EggDonor__r.Email == donor.email){
-                        return new Response(true,'Email matched');
-                    }else if(!associateCodeList.isEmpty()){
-                        if(associateCodeList[0].d21_PMC_Code__r.d21_EggDonor__r.Email == donor.email){
-                            return new Response(true,'Email matched');
-                        }else{
-                            return new Response(false,'Email not matched');
-                        }
-                    }
-                    else{
-                        return new Response(false,'No Code Records');
-                    }
-                }
-                else if(!associateCodeList.isEmpty()){
-                    if(associateCodeList[0].d21_PMC_Code__r.d21_EggDonor__r.Email == donor.email){
-                        return new Response(true,'Email matched');
-                    }else{
-                        return new Response(false,'Email not matched');
-                    }
-                }
-                else{
-                    return new Response(false,'No Code Records');
+    
+            // Check Associated Codes
+            for (d21_Associated_Codes__c rec : associateCodeList) {
+                if (getEmail(rec.d21_PMC_Code__r, donorField) != donor.email) {
+                    unmatchedCodes.add(rec.Name);
                 }
             }
-            else{
-                if(!PMCRecords.isEmpty()){
-                    if(PMCRecords[0].d21_SpermDonor__r.Email == donor.email){
-                        return new Response(true,'Email matched');
-                    }else if(!associateCodeList.isEmpty()){
-                        if(associateCodeList[0].d21_PMC_Code__r.d21_SpermDonor__r.Email == donor.email){
-                            return new Response(true,'Email matched');
-                        }else{
-                            return new Response(false,'Email not matched');
-                        }
-                    }
-                    else{
-                        return new Response(false,'No Code Records');
-                    }
-                }
-                else if(!associateCodeList.isEmpty()){
-                    if(associateCodeList[0].d21_PMC_Code__r.d21_SpermDonor__r.Email == donor.email){
-                        return new Response(true,'Email matched');
-                    }else{
-                        return new Response(false,'Email not matched');
-                    }
-                }
-                else{
-                    return new Response(false,'No Code Records');
+    
+            if (!PMCRecords.isEmpty() || !associateCodeList.isEmpty()) {
+                if (unmatchedCodes.isEmpty()) {
+                    return new Response(true, 'Email matched for all codes');
+                } else {
+                    return new Response(false, JSON.serialize(unmatchedCodes));
                 }
             }
+            return new Response(false, 'No Code Records');
+    
         } catch (Exception e) {
             return new Response(false, e.getStackTraceString() + ' - ' + e.getMessage() + ' - ' + e.getLineNumber());
         }
     }
+    
+    private static String getEmail(SObject record, String donorType) {
+        if (record instanceof d21_PMC__c) {
+            d21_PMC__c pmc = (d21_PMC__c)record;
+            return donorType == 'egg' ? pmc.d21_EggDonor__r.Email : pmc.d21_SpermDonor__r.Email;
+        } else if (record instanceof d21_Associated_Codes__c) {
+            d21_Associated_Codes__c assoc = (d21_Associated_Codes__c)record;
+            return donorType == 'egg' ? assoc.d21_PMC_Code__r.d21_EggDonor__r.Email : assoc.d21_PMC_Code__r.d21_SpermDonor__r.Email;
+        }
+        return null;
+    }
+    
+    
+    
     
     
     @AuraEnabled 
@@ -1181,6 +1193,68 @@ public without sharing class EggDonorPreRegistrationController {
         }
         return picklistValues;
     }
+
+
+    @AuraEnabled 
+    public static Response checkPMCEmailAndPhone(string codeData,string donorType){
+        list<UnmatchedWrapper> unmatchedList = (list<UnmatchedWrapper>)JSON.deserialize(codeData,list<UnmatchedWrapper>.class);
+        Map<string,string> codeEmailMap = new Map<string,string>();
+        Map<string,string> codePhoneMap = new Map<string,string>();
+        Map<string,string> matchCodeEmailMap = new Map<string,string>();
+        Map<string,string> matchCodePhoneMap = new Map<string,string>();
+        
+        for(UnmatchedWrapper umObj : unmatchedList){
+            if(!umObj.isOptOut){
+                codeEmailMap.put(umObj.code,umObj.email);
+                codePhoneMap.put(umObj.code,umObj.phone);
+            }
+        }
+
+        for(d21_Associated_Codes__c  code : [
+                SELECT Id, Name,
+                d21_PMC_Code__r.d21_EggDonor__r.Email, d21_PMC_Code__r.d21_EggDonor__r.Phone,
+                d21_PMC_Code__r.d21_SpermDonor__r.Email, d21_PMC_Code__r.d21_SpermDonor__r.Phone 
+                FROM d21_Associated_Codes__c 
+                WHERE Name IN :codeEmailMap.keySet()
+            ]){
+                if(donorType == 'egg'){
+                    matchCodeEmailMap.put(code.Name, code.d21_PMC_Code__r.d21_EggDonor__r.Email);
+                    matchCodePhoneMap.put(code.Name, code.d21_PMC_Code__r.d21_EggDonor__r.Phone);
+                }
+                else if(donorType == 'sperm'){
+                    matchCodeEmailMap.put(code.Name, code.d21_PMC_Code__r.d21_SpermDonor__r.Email);
+                    matchCodePhoneMap.put(code.Name, code.d21_PMC_Code__r.d21_SpermDonor__r.Phone);
+                }
+            }
+            
+            for(d21_PMC__c code : [
+                SELECT Id, Name,
+                d21_EggDonor__r.Email, d21_EggDonor__r.Phone,
+                d21_SpermDonor__r.Email, d21_SpermDonor__r.Phone 
+                FROM d21_PMC__c 
+                WHERE Name IN :codeEmailMap.keySet()
+            ]){
+                if(donorType == 'egg'){
+                    matchCodeEmailMap.put(code.Name, code.d21_EggDonor__r.Email);
+                    matchCodePhoneMap.put(code.Name, code.d21_EggDonor__r.Phone);
+                }
+                else if(donorType == 'sperm'){
+                    matchCodeEmailMap.put(code.Name, code.d21_SpermDonor__r.Email);
+                    matchCodePhoneMap.put(code.Name, code.d21_SpermDonor__r.Phone);
+                }
+            }
+
+            for(string code : codeEmailMap.keySet()){
+                if(codeEmailMap.get(code) != matchCodeEmailMap.get(code)){
+                    return new Response(false,'Email not existed');
+                }
+                if(codePhoneMap.get(code) != matchCodePhoneMap.get(code)){
+                    return new Response(false,'Phone not existed');
+                }
+            }
+            
+            return new Response(true,'Success');
+    }
     
     
     public class BankDetails{
@@ -1226,6 +1300,7 @@ public without sharing class EggDonorPreRegistrationController {
         @AuraEnabled public AlternateObject alternateDetails;
         @AuraEnabled public ClinicDetails clinicsWithCodes;    
         @AuraEnabled public AgencyDetails agenciesWithCodes;
+        @AuraEnabled public list<UnmatchedWrapper> unmatchedCodes;
     }
     
     
@@ -1325,6 +1400,14 @@ public without sharing class EggDonorPreRegistrationController {
          @AuraEnabled public string parentId;
          @AuraEnabled public string coordinatorId;
          @AuraEnabled public string Phone;
+    }
+
+
+    public class UnmatchedWrapper{
+        @AuraEnabled public string code;
+        @AuraEnabled public string email;
+        @AuraEnabled public string phone;
+        @AuraEnabled public boolean isOptOut;
     }
     
     
