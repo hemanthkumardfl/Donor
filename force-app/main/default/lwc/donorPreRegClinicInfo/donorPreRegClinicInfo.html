@@ -83,6 +83,7 @@
                         record-type-name = "Clinic"
                         onvalueselected={handleValueSelectedOnAccount}
                         onlookupdata = {handleLookupData}
+                        oncancellookup = {handleCancelLookup}
                         class="recordPickerCls"
                         lookup-placeholder="Search your Clinic..."
                         is-disabled={noClinicChecked}
@@ -243,7 +244,7 @@
                                 data-clinicnumber={clinic.clinicNumber} onchange={handleCoordinatorInputs}></lightning-input>
                     <!-- save coordinator button  -->
                     <div class="saveCoordinatorBtnCls">
-                        <div class="savebtnCls textcls" data-clinicnumber={clinic.clinicNumber} onclick={handleCoordinatorSave}>Add your Coordinator</div>
+                        <div class="savebtnCls textcls" data-clinicnumber={clinic.clinicNumber} onclick={handleCoordinatorSave}>Save</div>
                     </div>
 
                 </div>

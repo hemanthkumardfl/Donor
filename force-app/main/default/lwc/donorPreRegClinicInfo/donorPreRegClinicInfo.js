@@ -121,6 +121,24 @@ export default class DonorPreRegClinicInfo extends LightningElement {
         console.log(JSON.stringify(this.clinics));
     }
 
+    handleCancelLookup(event){
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.clinics = this.clinics.map(clinic => {
+            if (clinic.clinicNumber == clinicNumber) {
+                 return { 
+                    ...clinic, 
+                    name: '',
+                    doctorName: '',
+                    website: '',
+                    phone: '',
+                    email: '',
+                    cityState: '',
+                    accountId : ''
+                };
+            }
+        })
+    }
+
 
     /****************************************************************************************************** */
     /*****************************************Coordinator lookup starts here******************************* */
@@ -279,6 +297,22 @@ export default class DonorPreRegClinicInfo extends LightningElement {
                 };
             });
             this.noClinicChecked = this.clinics[0]['noClinicCheckedDisableInputs'];
+            if(this.noClinicChecked){
+                this.clinics = this.spermBanks.map(clinic => {
+                    return {
+                        ... clinic,
+                        coordinatorUserInputsObj : {
+                            ...bank.coordinatorUserInputsObj,
+                            'firstName' : '',
+                            'lastName' : '', 
+                            'phone' : '', 
+                            'coordinatorId' : '', 
+                            'parentId' : '', 
+                            'fullName' : ''
+                        }
+                    }
+                })
+            }
             //alert()
             console.log(JSON.stringify(this.clinics));
         }

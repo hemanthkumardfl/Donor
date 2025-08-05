@@ -103,6 +103,22 @@ export default class SpermBankDetails extends LightningElement {
         console.log(JSON.stringify(this.spermBanks));
     }
 
+    handleCancelLookup(event){
+        let clinicNumber = event.target.dataset.clinicnumber;
+        this.spermBanks = this.spermBanks.map(bank => {
+            if (bank.clinicNumber == clinicNumber) {
+                return { 
+                    ...bank, 
+                    name: '',
+                    website: '',
+                    phone: '',
+                    email: '',
+                    accountId : ''
+                };
+            }
+        })
+    }
+
     handleAddSpermBankDetails(event){
         let clinicNumber = event.target.dataset.clinicnumber;
         this.spermBanks = this.spermBanks.map(bank => {
@@ -291,6 +307,22 @@ export default class SpermBankDetails extends LightningElement {
             });
             //alert()
             this.noSpermBankChecked = this.spermBanks[0]['noSpermBankCheckedDisableInputs']
+            if(this.noSpermBankChecked){
+                this.spermBanks = this.spermBanks.map(bank => {
+                    return {
+                        ... bank,
+                        coordinatorUserInputsObj : {
+                            ...bank.coordinatorUserInputsObj,
+                            'firstName' : '',
+                            'lastName' : '', 
+                            'phone' : '', 
+                            'coordinatorId' : '', 
+                            'parentId' : '', 
+                            'fullName' : ''
+                        }
+                    }
+                })
+            }
             //alert(this.spermBanks[0].coordinatorUserInputsObj.coordinatorId);
             console.log( 'callback >>> ' + JSON.stringify(this.spermBanks));
         }

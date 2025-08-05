@@ -1,6 +1,8 @@
 import { LightningElement, track, api } from 'lwc';
 import WARNING_ICON_LOGO from '@salesforce/resourceUrl/warningIcon';
-import deleteCycleAgency from '@salesforce/apex/EggDonorAgencyWithCodeController.deleteCycleAgency'
+import deleteCycleAgency from '@salesforce/apex/EggDonorAgencyWithCodeController.deleteCycleAgency';
+import getRecord from '@salesforce/apex/EggDonorAgencyWithCodeController.getRecord';
+import createCoordinator from '@salesforce/apex/UtilityClass.createCoordinator';
 
 export default class DonorPreRegEggClinic extends LightningElement {
     @track warningIcon = WARNING_ICON_LOGO;
@@ -39,7 +41,12 @@ export default class DonorPreRegEggClinic extends LightningElement {
         cycles: [],
         selectedCycles: [],
         headingIndex: 0,
-        clinicId: ''
+        clinicId: '',
+        isDisabled: true,
+        disableAddIcon: true,
+        disableContactAddIcon: true,
+        Coordinator: { lastName: '', firstName: '', phone: '', parentId: '', coordinatorId: '' },
+        openCoordinator: false
     };
 
 
@@ -126,6 +133,140 @@ export default class DonorPreRegEggClinic extends LightningElement {
             console.log(e.stack);
         }
     }
+
+    /******************************************************************************************/
+    async handleValueSelectedOnAccount(event) {
+        try {
+            if (event.detail) {
+                let datatype = event.target.dataset.type;
+                let index = parseInt(event.target.dataset.index, 10);
+                if (datatype == 'Account') {
+                    let accountRecord = await getRecord({ accountId: event.detail.id });
+                    console.log('Result getRecord >>> ' + JSON.stringify(accountRecord))
+                    console.log('this.donationOutcomes >>> ' + JSON.stringify(this.donationOutcomes[index]));
+                    this.donationOutcomes[index].isDisabled = true;
+                    this.donationOutcomes[index].ClinicName = accountRecord.Name;
+                    this.donationOutcomes[index].Website = accountRecord.Website;
+                    this.donationOutcomes[index].Phone = accountRecord.Phone;
+                    this.donationOutcomes[index].DoctorName = accountRecord.d21_Doctor_Name__c;
+                    this.donationOutcomes[index].Email = accountRecord.d21_Email__c;
+                    this.donationOutcomes[index].CityStateOfClinic = accountRecord.d21_City_State_Of_Clinic__c;
+                    this.donationOutcomes[index].clinicId = event.detail.id;
+                    this.donationOutcomes[index]['Coordinator']['parentId'] = event.detail.id;
+                }
+                else if (datatype == 'Contact') {
+                    this.donationOutcomes[index].CoordinatorName = event.detail.id;
+                }
+            }
+        }
+        catch (e) {
+            console.error(`handleValueSelectedOnAccount Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`);
+        }
+    }
+
+    handleLookupData(event){
+        try{
+            console.log(event.detail);
+            let index = event.target.dataset.index;
+            let datatype = event.target.dataset.type;
+            if (datatype == 'Account') {
+                this.donationOutcomes[index]['disableAddIcon'] = event.detail;
+                
+            }
+            else if (datatype == 'Contact') {
+                this.donationOutcomes[index]['disableContactAddIcon'] = event.detail;
+            }
+        }
+        catch(e){
+            console.log(e.stack);
+            console.log(e.message);
+        }
+    }
+
+    handleOpenCreateCoordinator(event){
+         try {
+            let index = parseInt(event.target.dataset.index);
+            let datatype = event.target.dataset.type;
+            if (datatype == 'Contact') {
+                this.donationOutcomes[index].openCoordinator = !this.donationOutcomes[index].openCoordinator;
+            }
+            else if (datatype == 'Account') {
+                this.donationOutcomes[index].isDisabled = false;
+                this.donationOutcomes[index].AgencyName = '';
+                this.donationOutcomes[index].Website = '';
+                this.donationOutcomes[index].Phone = '';
+                this.donationOutcomes[index].agencyId = '';
+            }
+        } catch (e) {
+            console.error(`connectedCallback Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`);
+        }
+    }
+
+    async handleCreateCoordinator(event) {
+        let isValid = true;
+        let index = parseInt(event.currentTarget.dataset.index);
+
+        for (let input of this.template.querySelectorAll('.CoordinatorClass')) {
+            const validations = {
+                lastName: () => !input.value.trim() && 'Last Name is required',
+                phone: () => input.value && !input.checkValidity() && 'Enter a valid phone number with country code, e.g: +911234567890.'
+            };
+            const errorMsg = validations[input.name]?.() || '';
+            input.setCustomValidity(errorMsg);
+            input.reportValidity();
+            if (errorMsg) {
+                isValid = false;
+                break;
+            }
+        }
+
+        if (isValid) {
+            let result = await createCoordinator({ coordinateData: JSON.stringify(this.donationOutcomes[index].Coordinator) });
+            console.log('Result createCoordinator >>> ' + JSON.stringify(result));
+            if (result.isSuccess) {
+                let coordinatorRecord = JSON.parse(result.message);
+                if (this.donationOutcomes[index]['CoordinatorName']) {
+                    let res = await deleteCoordinator({ coordinatorId: this.donationOutcomes[index]['CoordinatorName'] });
+                    console.log('Result deleteCoordinator >>> ' + JSON.stringify(res));
+                }
+                this.donationOutcomes[index]['CoordinatorName'] = coordinatorRecord.coordinatorId;
+                this.donationOutcomes[index]['Coordinator']['coordinatorId'] = coordinatorRecord.coordinatorId;
+                this.donationOutcomes[index]['openCoordinator'] = false;
+            }
+        }
+    }
+
+    handleCoordinatorChange(event) {
+        let { name, dataset, value } = event.currentTarget;
+        this.donationOutcomes[parseInt(dataset.index)].Coordinator[name] = value;
+    }
+
+    /***************************************************************************************************************************/
+
+    handleCancelLookup(event){
+         try{
+            let index = parseInt(event.target.dataset.index);
+            this.donationOutcomes = this.donationOutcomes.map((outcome, outcomeIndex) => {
+                if(outcomeIndex == index){
+                    return{
+                        ... outcome,
+                        ClinicName: '',
+                        Website: '',
+                        Phone: '',
+                        Email: '',
+                        DoctorName:'',
+                        CityStateOfClinic:''
+                    }
+                }
+                return outcome;
+            })
+        }
+        catch(e){
+            console.log(e.stack);
+            console.log(e.message);
+        }
+    }
+    /******************************************************************************************/
 
     handleAddAnotherClinic() {
         console.log('this.donationOutcomes before >>> ' + JSON.stringify(this.donationOutcomes));

@@ -12,7 +12,14 @@
 
             <!-- Logo -->
             <lightning-layout-item padding="around-small" size="12">
+                <template if:true={isDonor}>
                 <img src={parentLogo} style="border-radius:5px;width:-webkit-fill-available;" />
+                </template>
+                  <template if:false={isDonor}>
+                <img src={offSpringLogo} style="border-radius:5px;width:-webkit-fill-available;" />
+                </template>
+
+                
             </lightning-layout-item>
 
             <!-- Name Inputs -->

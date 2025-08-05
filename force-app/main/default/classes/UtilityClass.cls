@@ -72,7 +72,7 @@ public without sharing class UtilityClass {
     public static List<ResultWrapper> fetchRecords(SearchWrapper inputWrapper, string recordTypeName) {
         try {
             if(inputWrapper != null){
-                String fieldsToQuery = 'SELECT Id, ';
+                /*String fieldsToQuery = 'SELECT Id, ';
                 if(string.isNotBlank(inputWrapper.fieldApiName)){
                     fieldsToQuery = fieldsToQuery + inputWrapper.fieldApiName;
                 }
@@ -101,7 +101,46 @@ public without sharing class UtilityClass {
                     query += ' AND '+ filterCriteria;
                     }
                 }
-                system.debug(query);
+                system.debug(query);*/
+                /*******************************************************************************************/
+                String fieldsToQuery = 'SELECT Id';
+                if (String.isNotBlank(inputWrapper.fieldApiName)) {
+                    fieldsToQuery += ', ' + inputWrapper.fieldApiName;
+                }
+                if (String.isNotBlank(inputWrapper.otherFieldApiName)) {
+                    if (!(inputWrapper.objectApiName == 'Contact' && inputWrapper.otherFieldApiName == 'Industry')) {
+                        fieldsToQuery += ', ' + inputWrapper.otherFieldApiName;
+                    }
+                }
+                
+                String query = fieldsToQuery + ' FROM ' + inputWrapper.objectApiName;
+                List<String> whereConditions = new List<String>();
+                
+                // Add RecordType filter
+                whereConditions.add('RecordType.Name = \'' + String.escapeSingleQuotes(recordTypeName) + '\'');
+                
+                // Add filters
+                if (String.isNotBlank(inputWrapper.selectedRecordId)) {
+                    whereConditions.add('Id = \'' + inputWrapper.selectedRecordId + '\'');
+                } else if (String.isNotBlank(inputWrapper.parentFieldApiName) && String.isNotBlank(inputWrapper.parentRecordId)) {
+                    whereConditions.add(inputWrapper.parentFieldApiName + ' = \'' + inputWrapper.parentRecordId + '\'');
+                    whereConditions.add(inputWrapper.fieldApiName + ' LIKE \'' + String.escapeSingleQuotes(inputWrapper.searchString.trim()) + '%\'');
+                } else {
+                    whereConditions.add(inputWrapper.fieldApiName + ' LIKE \'' + String.escapeSingleQuotes(inputWrapper.searchString.trim()) + '%\'');
+                    if (inputWrapper.objectApiName == 'Contact') {
+                        whereConditions.add('AccountId != NULL');
+                    }
+                }
+                
+                // Append WHERE clause
+                if (!whereConditions.isEmpty()) {
+                    query += ' WHERE ' + String.join(whereConditions, ' AND ');
+                }
+                
+                // Append LIMIT at the end
+                query += ' LIMIT 10';
+                
+                /********************************************************************************************/
                 system.debug(Database.query(query));
                 List<ResultWrapper> returnWrapperList = new List<ResultWrapper>();
                 for(SObject s : Database.query(query)) {

@@ -164,7 +164,7 @@ public without sharing class EggDonorAgencyWithCodeController {
     @AuraEnabled
     public static Account getRecord(string accountId){
         try {
-            return [select Id,Name,Phone,Website from Account Where Id =: accountId limit 1];
+            return [select Id,Name,Phone,Website, d21_Doctor_Name__c, d21_Email__c, d21_City_State_Of_Clinic__c	 from Account Where Id =: accountId limit 1];
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }

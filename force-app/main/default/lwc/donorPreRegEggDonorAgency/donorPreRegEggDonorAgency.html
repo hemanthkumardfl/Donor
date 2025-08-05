@@ -123,6 +123,7 @@
                             other-field-api-name="Phone" selected-record-id={outcome.agencyId}
                             selected-record-id-change={outcome.agencyId} record-type-name="Agency"
                             onvalueselected={handleValueSelectedOnAccount} onlookupdata={handleLookupData}
+                            oncancellookup = {handleCancelLookup}
                             data-type="Account" data-index={outcome.index} class="recordPickerCls"
                             lookup-placeholder="Search your Egg agency...">
                         </c-d21_-dynamic-custom-lookup>
@@ -185,7 +186,7 @@
                     <lightning-layout-item size="1" class="slds-p-left_medium slds-p-top_medium">
                         <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add"
                             disabled={outcome.disableContactAddIcon} onclick={handleOpenCreateCoordinator}
-                            style="cursor:pointer" data-index={index} data-type="Contact" size="medium"></lightning-button-icon>
+                            style="cursor:pointer;position:relative;bottom:0.7em" data-index={index} data-type="Contact" size="medium"></lightning-button-icon>
                     </lightning-layout-item>
                 </lightning-layout>
             </lightning-layout-item>

@@ -1,10 +1,13 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import DONOR_PRE_REG_GET_STARTED_LOGO from '@salesforce/resourceUrl/donorPreRegGetStartedLogo';
-import getAgePicklistValues from '@salesforce/apex/EggDonorPreRegistrationController.getAgePicklistValues';
+import DONOR_PRE_REG_GET_STARTED_OFFSPRING_LOGO from '@salesforce/resourceUrl/donorPreRegGetStartedOffspringLogo';
+
+import getAgePicklistValues from '@salesforce/apex/EggDonorPreRegistrationController_Clone.getAgePicklistValues';
 
 export default class DonorPreRegGetStarted extends LightningElement {
 
     @track parentLogo = DONOR_PRE_REG_GET_STARTED_LOGO;
+    @track offSpringLogo = DONOR_PRE_REG_GET_STARTED_OFFSPRING_LOGO;
     @track showTermsPopup = false;
     @api contactObj;
     @api userdetails;

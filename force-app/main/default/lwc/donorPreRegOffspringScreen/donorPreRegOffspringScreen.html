@@ -10,7 +10,7 @@
         </lightning-layout-item>
 
         <!-- Donor Video Section (Desktop) -->
-        <lightning-layout-item size="12" if:true={showDonorVideo} class="slds-p-around_x-large slds-m-top_xx-large laptopvideocls videoWrapperScrollable">
+        <lightning-layout-item size="12" if:true={showDonorVideo} class="slds-p-around_x-large slds-m-top_xx-large laptopvideocls videoWrapperScrollable" style="background:#E8E3DC">
             <lightning-layout-item size="2"></lightning-layout-item>
             <lightning-layout-item size="8">
                     <c-donor-pre-reg-Offspring-videos oncontinue={handleDonorVideoContinue} onback={handleDonorVideoBack}></c-donor-pre-reg-Offspring-videos>
@@ -19,7 +19,7 @@
         </lightning-layout-item>
 
         <!-- Donor Video Section (Mobile) -->
-        <lightning-layout-item size="12" if:true={showDonorVideo} class="slds-p-around_medium mobilecls">
+        <lightning-layout-item size="12" if:true={showDonorVideo} class="slds-p-around_medium mobilecls" style="background:#E8E3DC">
             <div style="min-height: 5em;"></div>
             <c-donor-pre-reg-Offspring-videos oncontinue={handleDonorVideoContinue} onback={handleDonorVideoBack}></c-donor-pre-reg-Offspring-videos>
         </lightning-layout-item>

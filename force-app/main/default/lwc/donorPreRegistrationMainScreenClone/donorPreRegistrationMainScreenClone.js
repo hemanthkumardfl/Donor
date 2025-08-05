@@ -1,26 +1,26 @@
 import { LightningElement, track, api } from 'lwc';
-import updateGetStarted from '@salesforce/apex/EggDonorPreRegistrationController.updateGetStarted';
-import sendOTPToEmailOrPhone from '@salesforce/apex/EggDonorPreRegistrationController.sendOTPToEmailOrPhone';
-import verifyOTP from '@salesforce/apex/EggDonorPreRegistrationController.verifyOTP';
-import updateDonationBasics from '@salesforce/apex/EggDonorPreRegistrationController.updateDonationBasics';
-import deleteOtp from '@salesforce/apex/EggDonorPreRegistrationController.deleteOtp';
-import resendCode from '@salesforce/apex/EggDonorPreRegistrationController.resendCode';
+import updateGetStarted from '@salesforce/apex/EggDonorPreRegistrationController_Clone.updateGetStarted';
+import sendOTPToEmailOrPhone from '@salesforce/apex/EggDonorPreRegistrationController_Clone.sendOTPToEmailOrPhone';
+import verifyOTP from '@salesforce/apex/EggDonorPreRegistrationController_Clone.verifyOTP';
+import updateDonationBasics from '@salesforce/apex/EggDonorPreRegistrationController_Clone.updateDonationBasics';
+import deleteOtp from '@salesforce/apex/EggDonorPreRegistrationController_Clone.deleteOtp';
+import resendCode from '@salesforce/apex/EggDonorPreRegistrationController_Clone.resendCode';
 import createSpermBank from '@salesforce/apex/SpermDonorPreRegistrationController.createSpermBank';
 import createSpermDonorClinic from '@salesforce/apex/SpermDonorPreRegistrationController.createSpermDonorClinic';
 import createSpermDonorRecipients from '@salesforce/apex/SpermDonorPreRegistrationController.createSpermDonorRecipients';
 import createSpermDonorDonationOutcome from '@salesforce/apex/SpermDonorPreRegistrationController.createSpermDonorDonationOutcome';
-import deleteOTPCode from '@salesforce/apex/EggDonorPreRegistrationController.deleteOTPCode';
-import validateCodeSubmission from '@salesforce/apex/EggDonorPreRegistrationController.validateCodeSubmission';
-import verifyReEnterCodes from '@salesforce/apex/EggDonorPreRegistrationController.verifyReEnterCodes';
-import updateAgencyWithoutCode from '@salesforce/apex/EggDonorPreRegistrationController.updateAgencyWithoutCode';
-import updateDonationCycles from '@salesforce/apex/EggDonorPreRegistrationController.updateDonationCycles';
-import updateClinicWithoutCode from '@salesforce/apex/EggDonorPreRegistrationController.updateClinicWithoutCode';
-import updateAttorneyWithoutCode from '@salesforce/apex/EggDonorPreRegistrationController.updateAttorneyWithoutCode';
-import updateRecipientWithoutCode from '@salesforce/apex/EggDonorPreRegistrationController.updateRecipientWithoutCode';
-import fetchSpermDonorDetails from '@salesforce/apex/EggDonorPreRegistrationController.fetchSpermDonorDetails';
-import fetchSpermDonorClinicDetails from '@salesforce/apex/EggDonorPreRegistrationController.fetchSpermDonorClinicDetails';
-import verifyGivenCodesEmail from '@salesforce/apex/EggDonorPreRegistrationController.verifyGivenCodesEmail';
-import getRelatedRecords from '@salesforce/apex/EggDonorPreRegistrationController.getRelatedRecords';
+import deleteOTPCode from '@salesforce/apex/EggDonorPreRegistrationController_Clone.deleteOTPCode';
+import validateCodeSubmission from '@salesforce/apex/EggDonorPreRegistrationController_Clone.validateCodeSubmission';
+import verifyReEnterCodes from '@salesforce/apex/EggDonorPreRegistrationController_Clone.verifyReEnterCodes';
+import updateAgencyWithoutCode from '@salesforce/apex/EggDonorPreRegistrationController_Clone.updateAgencyWithoutCode';
+import updateDonationCycles from '@salesforce/apex/EggDonorPreRegistrationController_Clone.updateDonationCycles';
+import updateClinicWithoutCode from '@salesforce/apex/EggDonorPreRegistrationController_Clone.updateClinicWithoutCode';
+import updateAttorneyWithoutCode from '@salesforce/apex/EggDonorPreRegistrationController_Clone.updateAttorneyWithoutCode';
+import updateRecipientWithoutCode from '@salesforce/apex/EggDonorPreRegistrationController_Clone.updateRecipientWithoutCode';
+import fetchSpermDonorDetails from '@salesforce/apex/EggDonorPreRegistrationController_Clone.fetchSpermDonorDetails';
+import fetchSpermDonorClinicDetails from '@salesforce/apex/EggDonorPreRegistrationController_Clone.fetchSpermDonorClinicDetails';
+import verifyGivenCodesEmail from '@salesforce/apex/EggDonorPreRegistrationController_Clone.verifyGivenCodesEmail';
+import getRelatedRecords from '@salesforce/apex/EggDonorPreRegistrationController_Clone.getRelatedRecords';
 
 
 export default class DonorPreRegistrationMainScreen_Clone extends LightningElement {

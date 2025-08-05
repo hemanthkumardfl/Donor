@@ -1,5 +1,5 @@
 import { LightningElement, track, api } from 'lwc';
-import deleteCycleAgency from '@salesforce/apex/EggDonorAgencyWithCodeController.deleteCycleAgency'; getRecord
+import deleteCycleAgency from '@salesforce/apex/EggDonorAgencyWithCodeController.deleteCycleAgency';// getRecord
 import getRecord from '@salesforce/apex/EggDonorAgencyWithCodeController.getRecord';
 import createCoordinator from '@salesforce/apex/UtilityClass.createCoordinator';
 
@@ -179,6 +179,30 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
             console.error(`connectedCallback Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`);
         }
     }
+    /**********************************************************************************************************************/
+    handleCancelLookup(event){
+        try{
+            let index = parseInt(event.target.dataset.index);
+            this.donationOutcomes = this.donationOutcomes.map((outcome, outcomeIndex) => {
+                if(outcomeIndex == index){
+                    return{
+                        ... outcome,
+                        AgencyName: '',
+                        Website: '',
+                        Phone: '',
+                        Email: ''
+                    }
+                }
+                return outcome;
+            })
+        }
+        catch(e){
+            console.log(e.stack);
+            console.log(e.message);
+        }
+
+    }
+    /**********************************************************************************************************************/
 
 
     async handleValueSelectedOnAccount(event) {

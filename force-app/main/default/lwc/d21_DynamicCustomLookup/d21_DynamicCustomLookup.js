@@ -126,6 +126,11 @@ export default class D21_DynamicCustomLookup extends LightningElement {
 
     //handler for deselection of the selected item
     handleCommit() {
+        console.log('clicked >>>>')
+        const selectedEvent = new CustomEvent('cancellookup', {
+            detail: 'cancelled'
+        });
+        this.dispatchEvent(selectedEvent);
         this.selectedRecordId = "";
         this.selectedRecordName = "";
     }

@@ -1,5 +1,7 @@
 <template>
+    
     <lightning-layout multiple-rows class="offspringcls">
+        <template if:true={showAge}>
         <lightning-layout-item size="12" padding="around-small" class="headerParentCls">
             <span class="headercls">Age Verification</span>
         </lightning-layout-item>
@@ -19,17 +21,45 @@
         <lightning-layout-item size="12" padding="around-small" class="dateOfBirthParentCls">
             <span>Date Of Birth</span>
             <div>
-                <lightning-input type="number" placeholder="MM" class="monthcls"></lightning-input>
+                <lightning-input type="number" placeholder="MM" class="monthcls" onchange={handleDobChange}></lightning-input>
                 <span class="slds-p-top_small"> / </span>
-                <lightning-input type="text" placeholder="DD" class="daycls"></lightning-input>
+                <lightning-input type="text" placeholder="DD" class="daycls" onchange={handleDobChange}></lightning-input>
                 <span class="slds-p-top_small"> / </span>
-                <lightning-input type="text" placeholder="YYYY" class="yearcls"></lightning-input>
+                <lightning-input type="text" placeholder="YYYY" class="yearcls" onchange={handleDobChange}></lightning-input>
             </div>
+
         </lightning-layout-item>
          <!-- buttons-->
-         <lightning-layout-item size="12" padding="around-small" class="buttonscls">
-            <div  class="nextbtncls">Continue</div>
+          <lightning-layout-item size="12" padding="around-small" class="buttonscls">
+            <div class="nextbtncls" onclick={handleContinueClick}>Continue</div>
         </lightning-layout-item>
+        </template>
         <!-- Inputs ends here-->
+         <!-- Child components shown conditionally -->
+            <template if:true={showUnder18}>
+                 <lightning-layout-item size="12" padding="around-small" class="offspringdescriptioncls">
+                <c-donor-pre-reg-offspring-age-under18
+                    onback={handleAgeVerificationBack}
+                    onnext={handleAgeVerificationNext}
+                    contact-obj={contactObject}>
+                </c-donor-pre-reg-offspring-age-under18>
+                 </lightning-layout-item>
+            </template>
+
+            <template if:true={show18OrOlder}>
+                 <lightning-layout-item size="12" padding="around-small" class="offspringdescriptioncls">
+                <c-donor-pre-reg-offspring-age-remind-screen
+                    onback={handleAgeVerificationBack}
+                    onnext={handleAgeVerificationNext}
+                    contact-obj={contactObject}>
+                </c-donor-pre-reg-offspring-age-remind-screen>
+                 </lightning-layout-item>
+            </template>
     </lightning-layout>
+
+    
+
+    
+
+
 </template>

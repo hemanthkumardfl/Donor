@@ -109,12 +109,15 @@
                                         object-label="Account"
                                         field-api-name="Name"
                                         other-field-api-name="Phone"
+                                        record-type-name = "Sperm Bank"
+                                        selected-record-id={newAgency.accountId}
                                         onvalueselected={handleAgencySelect}
                                         onlookupdata={handleNoAgencyData}
+                                        data-type="agency"
                                     ></c-d21_-dynamic-custom-lookup>
                                 </lightning-layout-item>
                                 <lightning-layout-item padding="horizontal-small" size="2" class="slds-align-bottom" if:true={showAgencyPlusButton}>
-                                    <lightning-button-icon icon-name="utility:add" variant="border-filled" onclick={handlePlusAgencyClick} title="Add New Agency"></lightning-button-icon>
+                                    <lightning-button-icon icon-name="utility:add" variant="border-filled" onclick={handlePlusAgencyClick} title="Add New Agency" disabled={newAgency.disableAddIcon}></lightning-button-icon>
                                 </lightning-layout-item>
                             </lightning-layout>
                         </div>
@@ -132,7 +135,72 @@
                                 </lightning-layout-item>
                                 <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
                                     <span class="inputscls textcls">Coordinator Name</span>
-                                    <lightning-input label="" value={newAgency.coordinatorName} data-field="coordinatorName" onchange={handleAgencyFieldChange} disabled={newAgency.disableInputs}></lightning-input>
+                                    <div class="lookupConainerParentcls">
+                                        <c-d21_-dynamic-custom-lookup
+                                            label="" 
+                                            selected-icon-name="standard:contact"
+                                            object-label="Contact" 
+                                            object-api-name="Contact" 
+                                            field-api-name="Name"
+                                            parent-record-id={newAgency.accountId} 
+                                            parent-field-api-name="AccountId"
+                                            selected-record-id={newAgency.coordinatorId}
+                                            selected-coordinator-record-name={newAgency.coordinatorUserInputsObj}
+                                            lookup-placeholder="Search your coordinator..."
+                                            other-field-api-name="Phone"
+                                            onvalueselected={handleCoordinatorSelect}
+                                            onlookupdata={handleNoCoordinatorData}
+                                            class="recordPickerCls"
+                                            is-disabled={noAgencyChecked}
+                                            data-type="agency"
+                                        ></c-d21_-dynamic-custom-lookup>
+                                        <lightning-button-icon 
+                                            icon-name="utility:add" 
+                                            alternative-text="Add!" 
+                                            title="Add Coordinator" 
+                                            disabled={newAgency.disableAddCoordinatorIcon}
+                                            onclick={handleAddCoordinator} 
+                                            style="cursor:pointer" 
+                                            data-type="agency"
+                                            class="addIconCls slds-p-top_medium"
+                                            size='medium'
+                                        ></lightning-button-icon>
+                                    </div>
+                                    <p if:true={newAgency.showNoCoordinatorRecordsErrorMessage} class="textcls" style="color:red;font-size:13px">No Coordinators Found. Click the Add Icon to Add a Coordinator Manually.</p>
+                                    <div if:true={newAgency.isAdditionalCoordinators} class="coordinatorInputsContainerCls">
+                                        <div class="coordinatorFirstNameCls">
+                                            <lightning-input 
+                                                type="text" 
+                                                placeholder="First Name"
+                                                name="firstName" 
+                                                value={newAgency.coordinatorUserInputsObj.firstName}
+                                                data-type="agency" 
+                                                onchange={handleCoordinatorInputs}
+                                            ></lightning-input>
+                                            <span if:true={newAgency.coordinatorUserInputsObj.isCoordinatorFirstNameBlank} class="textcls" style="color:red;font-size:13px">Please enter the first name</span>
+                                        </div>
+                                        <lightning-input 
+                                            type="text" 
+                                            placeholder="Last Name"
+                                            name="lastName" 
+                                            value={newAgency.coordinatorUserInputsObj.lastName}
+                                            data-type="agency" 
+                                            onchange={handleCoordinatorInputs}
+                                        ></lightning-input>
+                                        <lightning-input 
+                                            type="tel" 
+                                            placeholder="Phone"
+                                            pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                                            message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                                            name="phone" 
+                                            value={newAgency.coordinatorUserInputsObj.phone}
+                                            data-type="agency" 
+                                            onchange={handleCoordinatorInputs}
+                                        ></lightning-input>
+                                        <div class="saveCoordinatorBtnCls slds-p-top_medium">
+                                            <div class="savebtnCls textcls" data-type="agency" onclick={handleCoordinatorSave}>Add your Coordinator</div>
+                                        </div>
+                                    </div>
                                 </lightning-layout-item>
                                 <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
                                     <span class="inputscls textcls">Agency/Egg Bank Website</span>
@@ -169,7 +237,7 @@
                             <div key={sperm.id} class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
                                 <span>{sperm.spermBankName} <template if:true={sperm.pmcNumber}>({sperm.pmcNumber})</template></span>
                                 <div>
-                                    <template if:true={sperm.isFromPrimaryBanks}>
+                                    <template if:false={sperm.isFromPrimaryBanks} if:true={sperm.isEditable}>
                                         <lightning-button-icon icon-name="utility:edit" variant="bare" onclick={handleEditSperm} data-index={index} class="slds-m-right_x-small" title="Edit Sperm Bank"></lightning-button-icon>
                                     </template>
                                     <lightning-button-icon icon-name="action:delete" variant="bare" onclick={handleDeleteSperm} data-index={index} title="Delete Sperm Bank" class="delete-icon"></lightning-button-icon>
@@ -195,12 +263,15 @@
                                         object-label="Account"
                                         field-api-name="Name"
                                         other-field-api-name="Phone"
+                                        record-type-name = "Sperm Bank"
+                                        selected-record-id={newSperm.accountId}
                                         onvalueselected={handleSpermBankSelect}
                                         onlookupdata={handleNoData}
+                                        data-type="sperm"
                                     ></c-d21_-dynamic-custom-lookup>
                                 </lightning-layout-item>
                                 <lightning-layout-item padding="horizontal-small" size="2" class="slds-align-bottom" if:true={showPlusButton}>
-                                    <lightning-button-icon icon-name="utility:add" variant="border-filled" onclick={handlePlusIconClick} title="Add New Sperm Bank"></lightning-button-icon>
+                                    <lightning-button-icon  icon-name="utility:add" variant="border-filled" onclick={handlePlusIconClick} title="Add New Sperm Bank" disabled={newSperm.disableAddIcon}></lightning-button-icon>
                                 </lightning-layout-item>
                             </lightning-layout>
                         </div>
@@ -216,17 +287,168 @@
                                     <span class="inputscls textcls">Sperm Bank Phone</span>
                                     <lightning-input label="" value={newSperm.spermBankPhone} data-field="spermBankPhone" onchange={handleSpermFieldChange} type="tel" disabled={newSperm.disableInputs}></lightning-input>
                                 </lightning-layout-item>
-                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                <!-- <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
                                     <span class="inputscls textcls">Coordinator Name</span>
-                                    <lightning-input label="" value={newSperm.coordinatorName} data-field="coordinatorName" onchange={handleSpermFieldChange} disabled={newSperm.disableInputs}></lightning-input>
-                                </lightning-layout-item>
-                                <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                    <div class="lookupConainerParentcls">
+                                        <c-d21_-dynamic-custom-lookup
+                                            label="" 
+                                            selected-icon-name="standard:contact"
+                                            object-label="Contact" 
+                                            object-api-name="Contact" 
+                                            field-api-name="Name"
+                                            parent-record-id={newSperm.accountId} 
+                                            parent-field-api-name="AccountId"
+                                            selected-record-id={newSperm.coordinatorId}
+                                            selected-coordinator-record-name={newSperm.coordinatorUserInputsObj}
+                                            lookup-placeholder="Search your coordinator..."
+                                            other-field-api-name="Phone"
+                                            record-type-name = "coordinator"
+                                            onvalueselected={handleCoordinatorSelect}
+                                            onlookupdata={handleNoCoordinatorData}
+                                            class="recordPickerCls"
+                                            is-disabled={noSpermChecked}
+                                            data-type="sperm"
+                                        ></c-d21_-dynamic-custom-lookup>
+                                        <lightning-button-icon 
+                                            icon-name="utility:add" 
+                                            alternative-text="Add!" 
+                                            title="Add Coordinator" 
+                                            disabled={newSperm.disableAddCoordinatorIcon}
+                                            onclick={handleAddCoordinator} 
+                                            style="cursor:pointer" 
+                                            data-type="sperm"
+                                            class="addIconCls slds-p-top_medium"
+                                            size='medium'
+                                        ></lightning-button-icon>
+                                    </div>
+                                    <p if:true={newSperm.showNoCoordinatorRecordsErrorMessage} class="textcls" style="color:red;font-size:13px">No Coordinators Found. Click the Add Icon to Add a Coordinator Manually.</p>
+                                    <div if:true={newSperm.isAdditionalCoordinators} class="coordinatorInputsContainerCls">
+                                        <div class="coordinatorFirstNameCls">
+                                            <lightning-input 
+                                                type="text" 
+                                                placeholder="First Name"
+                                                name="firstName" 
+                                                value={newSperm.coordinatorUserInputsObj.firstName}
+                                                data-type="sperm" 
+                                                onchange={handleCoordinatorInputs}
+                                            ></lightning-input>
+                                            <span if:true={newSperm.coordinatorUserInputsObj.isCoordinatorFirstNameBlank} class="textcls" style="color:red;font-size:13px">Please enter the first name</span>
+                                        </div>
+                                        <lightning-input 
+                                            type="text" 
+                                            placeholder="Last Name"
+                                            name="lastName" 
+                                            value={newSperm.coordinatorUserInputsObj.lastName}
+                                            data-type="sperm" 
+                                            onchange={handleCoordinatorInputs}
+                                        ></lightning-input>
+                                        <lightning-input 
+                                            type="tel" 
+                                            placeholder="Phone"
+                                            pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                                            message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                                            name="phone" 
+                                            value={newSperm.coordinatorUserInputsObj.phone}
+                                            data-type="sperm" 
+                                            onchange={handleCoordinatorInputs}
+                                        ></lightning-input>
+                                        <div class="saveCoordinatorBtnCls slds-p-top_medium">
+                                            <div class="savebtnCls textcls" data-type="sperm" onclick={handleCoordinatorSave}>Add your Coordinator</div>
+                                        </div>
+                                    </div>
+                                </lightning-layout-item> -->
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
                                     <span class="inputscls textcls">Sperm Bank Website</span>
-                                    <lightning-input label="" value={newSperm.spermBankWebsite} data-field="spermBankWebsite" onchange={handleSpermFieldChange} type="url"  disabled={newSperm.disableInputs}></lightning-input>
+                                    <lightning-input label="" value={newSperm.spermBankWebsite} data-field="spermBankWebsite" onchange={handleSpermFieldChange} type="url" disabled={newSperm.disableInputs}></lightning-input>
                                 </lightning-layout-item>
                                 <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
                                     <span class="inputscls textcls">Sperm Bank Email</span>
                                     <lightning-input label="" value={newSperm.spermBankEmail} data-field="spermBankEmail" onchange={handleSpermFieldChange} type="email" disabled={newSperm.disableInputs}></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="12" large-device-size="12">
+                                    <span class="inputscls textcls">Coordinator Name</span>
+                                    <lightning-layout horizontal-align="spread">
+                                         <lightning-layout-item size="10" class="slds-p-right_small">
+                                        <c-d21_-dynamic-custom-lookup
+                                            label="" 
+                                            selected-icon-name="standard:contact"
+                                            object-label="Contact" 
+                                            object-api-name="Contact" 
+                                            field-api-name="Name"
+                                            parent-record-id={newSperm.accountId} 
+                                            parent-field-api-name="AccountId"
+                                            selected-record-id={newSperm.coordinatorId}
+                                            selected-coordinator-record-name={newSperm.coordinatorUserInputsObj}
+                                            lookup-placeholder="Search your coordinator..."
+                                            other-field-api-name="Phone"
+                                            record-type-name = "coordinator"
+                                            onvalueselected={handleCoordinatorSelect}
+                                            onlookupdata={handleNoCoordinatorData}
+                                            class="recordPickerCls"
+                                            is-disabled={noSpermChecked}
+                                            data-type="sperm"
+                                        ></c-d21_-dynamic-custom-lookup>
+                                         </lightning-layout-item>
+                                         <lightning-layout-item size="2" class="slds-align-middle">
+                                        <lightning-button-icon 
+                                            icon-name="utility:add" 
+                                            alternative-text="Add!" 
+                                            title="Add Coordinator" 
+                                            disabled={newSperm.disableAddCoordinatorIcon}
+                                            onclick={handleAddCoordinator} 
+                                            style="cursor:pointer" 
+                                            data-type="sperm"
+                                            class="addIconCls slds-p-top_medium"
+                                            size='medium'
+                                        ></lightning-button-icon>
+                                      </lightning-layout-item>
+                                       </lightning-layout>
+                                    
+    
+                                    <p if:true={newSperm.showNoCoordinatorRecordsErrorMessage} class="textcls" style="color:red;font-size:13px">No Coordinators Found. Click the Add Icon to Add a Coordinator Manually.</p>
+                                    <div if:true={newSperm.isAdditionalCoordinators} class="coordinatorInputsContainerCls">
+                                        
+                                        <lightning-layout>
+                                          <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                           <div class="coordinatorFirstNameCls">
+                                            <lightning-input 
+                                                type="text" 
+                                                placeholder="First Name"
+                                                name="firstName" 
+                                                value={newSperm.coordinatorUserInputsObj.firstName}
+                                                data-type="sperm" 
+                                                onchange={handleCoordinatorInputs}
+                                            ></lightning-input>
+                                            <span if:true={newSperm.coordinatorUserInputsObj.isCoordinatorFirstNameBlank} class="textcls" style="color:red;font-size:13px">Please enter the first name</span>
+                                           </div>
+                                          </lightning-layout-item>
+                                     <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                        <lightning-input 
+                                            type="text" 
+                                            placeholder="Last Name"
+                                            name="lastName" 
+                                            value={newSperm.coordinatorUserInputsObj.lastName}
+                                            data-type="sperm" 
+                                            onchange={handleCoordinatorInputs}
+                                        ></lightning-input>
+                                     </lightning-layout-item>
+                                    <!-- <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                                        <lightning-input 
+                                            type="tel" 
+                                            placeholder="Phone"
+                                            pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                                            message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                                            name="phone" 
+                                            value={newSperm.coordinatorUserInputsObj.phone}
+                                            data-type="sperm" 
+                                            onchange={handleCoordinatorInputs}
+                                        ></lightning-input>
+                                     </lightning-layout-item>-->
+                                </lightning-layout>
+                                        <div class="saveCoordinatorBtnCls slds-p-top_medium slds-justify-center">
+                                            <div class=" nextbtncls savebtnCls textcls" data-type="sperm" onclick={handleCoordinatorSave}>Add your Coordinator</div>
+                                        </div>
+                                    </div>
                                 </lightning-layout-item>
                             </lightning-layout>
                             <lightning-layout class="slds-m-top_medium">
@@ -251,7 +473,7 @@
                             <div key={clinic.id} class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
                                 <span>{clinic.clinicName} <template if:true={clinic.pmcNumber}>({clinic.pmcNumber})</template></span>
                                 <div>
-                                    <template if:false={clinic.isFromPrimaryBanks}>
+                                    <template if:false={clinic.isFromPrimaryBanks} if:true={clinic.isEditable}>
                                         <lightning-button-icon icon-name="utility:edit" variant="bare" onclick={handleEditClinic} data-index={index} class="slds-m-right_x-small" title="Edit Clinic"></lightning-button-icon>
                                     </template>
                                     <lightning-button-icon icon-name="action:delete" variant="bare" onclick={handleDeleteClinic} data-index={index} title="Delete Clinic" class="delete-icon"></lightning-button-icon>
@@ -277,12 +499,15 @@
                                         object-label="Account"
                                         field-api-name="Name"
                                         other-field-api-name="Phone"
+                                        record-type-name = "Clinic"
+                                        selected-record-id={newClinic.accountId}
                                         onvalueselected={handleClinicSelect}
                                         onlookupdata={handleNoClinicData}
+                                        data-type="clinic"
                                     ></c-d21_-dynamic-custom-lookup>
                                 </lightning-layout-item>
                                 <lightning-layout-item padding="horizontal-small" size="2" class="slds-align-bottom" if:true={showClinicPlusButton}>
-                                    <lightning-button-icon icon-name="utility:add" variant="border-filled" onclick={handlePlusClinicClick} title="Add New Clinic"></lightning-button-icon>
+                                    <lightning-button-icon icon-name="utility:add" variant="border-filled" onclick={handlePlusClinicClick} title="Add New Clinic" disabled={newClinic.disableAddIcon}></lightning-button-icon>
                                 </lightning-layout-item>
                             </lightning-layout>
                         </div>
@@ -300,7 +525,73 @@
                                 </lightning-layout-item>
                                 <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
                                     <span class="inputscls textcls">Coordinator/Nurse Name</span>
-                                    <lightning-input label="" value={newClinic.coordinatorName} data-field="coordinatorName" onchange={handleClinicFieldChange} disabled={newClinic.disableInputs}></lightning-input>
+                                    <div class="lookupConainerParentcls">
+                                        <c-d21_-dynamic-custom-lookup
+                                            label="" 
+                                            selected-icon-name="standard:contact"
+                                            object-label="Contact" 
+                                            object-api-name="Contact" 
+                                            field-api-name="Name"
+                                            parent-record-id={newClinic.accountId} 
+                                            parent-field-api-name="AccountId"
+                                            record-type-name = "coordinator"
+                                            selected-record-id={newClinic.coordinatorId}
+                                            selected-coordinator-record-name={newClinic.coordinatorUserInputsObj}
+                                            lookup-placeholder="Search your coordinator..."
+                                            other-field-api-name="Phone"
+                                            onvalueselected={handleCoordinatorSelect}
+                                            onlookupdata={handleNoCoordinatorData}
+                                            class="recordPickerCls"
+                                            is-disabled={noClinicChecked}
+                                            data-type="clinic"
+                                        ></c-d21_-dynamic-custom-lookup>
+                                        <lightning-button-icon 
+                                            icon-name="utility:add" 
+                                            alternative-text="Add!" 
+                                            title="Add Coordinator" 
+                                            disabled={newClinic.disableAddCoordinatorIcon}
+                                            onclick={handleAddCoordinator} 
+                                            style="cursor:pointer" 
+                                            data-type="clinic"
+                                            class="addIconCls slds-p-top_medium"
+                                            size='medium'
+                                        ></lightning-button-icon>
+                                    </div>
+                                    <p if:true={newClinic.showNoCoordinatorRecordsErrorMessage} class="textcls" style="color:red;font-size:13px">No Coordinators Found. Click the Add Icon to Add a Coordinator Manually.</p>
+                                    <div if:true={newClinic.isAdditionalCoordinators} class="coordinatorInputsContainerCls">
+                                        <div class="coordinatorFirstNameCls">
+                                            <lightning-input 
+                                                type="text" 
+                                                placeholder="First Name"
+                                                name="firstName" 
+                                                value={newClinic.coordinatorUserInputsObj.firstName}
+                                                data-type="clinic" 
+                                                onchange={handleCoordinatorInputs}
+                                            ></lightning-input>
+                                            <span if:true={newClinic.coordinatorUserInputsObj.isCoordinatorFirstNameBlank} class="textcls" style="color:red;font-size:13px">Please enter the first name</span>
+                                        </div>
+                                        <lightning-input 
+                                            type="text" 
+                                            placeholder="Last Name"
+                                            name="lastName" 
+                                            value={newClinic.coordinatorUserInputsObj.lastName}
+                                            data-type="clinic" 
+                                            onchange={handleCoordinatorInputs}
+                                        ></lightning-input>
+                                        <lightning-input 
+                                            type="tel" 
+                                            placeholder="Phone"
+                                            pattern="^\+?\d{0,3}[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}$"
+                                            message-when-pattern-mismatch="Enter a valid phone number format: e.g., +91 9876543210, +1 (123) 456-7890, 123-456-7890, or (123) 456-7890."
+                                            name="phone" 
+                                            value={newClinic.coordinatorUserInputsObj.phone}
+                                            data-type="clinic" 
+                                            onchange={handleCoordinatorInputs}
+                                        ></lightning-input>
+                                        <div class="saveCoordinatorBtnCls slds-p-top_medium">
+                                            <div class="savebtnCls textcls" data-type="clinic" onclick={handleCoordinatorSave}>Add your Coordinator</div>
+                                        </div>
+                                    </div>
                                 </lightning-layout-item>
                                 <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
                                     <span class="inputscls textcls">Clinic Website</span>
@@ -329,7 +620,7 @@
             </template>
 
             <!-- Fertility Attorneys -->
-            <template if:true={showattorneySection}>
+            <!--<template if:true={showattorneySection}>
                 <div class="slds-m-top_medium">
                     <p class="textcls inputscls">You said you worked with the following fertility attorneys:</p>
                     <template if:true={attorneys.length}>
@@ -410,10 +701,131 @@
                         </div>
                     </template>
                 </div>
+            </template>-->
+            <!-- Recipient Details -->
+<template if:true={showrecipientSection}>
+    <div class="slds-m-top_medium">
+        <p class="textcls inputscls">You said you worked with the following Recipient Details:</p>
+        <template if:true={recipients.length}>
+            <template for:each={recipients} for:item="recipient" for:index="index">
+                <div key={recipient.id} class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
+                    <span>{recipient.Name}</span>
+                    <div>
+                        <template if:true={recipient.isEditable}>
+                            <lightning-button-icon icon-name="utility:edit" variant="bare" onclick={handleEditRecipient} data-index={index} class="slds-m-right_x-small" title="Edit Recipient"></lightning-button-icon>
+                        </template>
+                        <lightning-button-icon icon-name="action:delete" variant="bare" onclick={handleDeleteRecipient} data-index={index} title="Delete Recipient" class="delete-icon"></lightning-button-icon>
+                    </div>
+                </div>
             </template>
+        </template>
+        <template if:false={recipients.length}>
+            <p class="textcls slds-m-top_small">No recipients added yet.</p>
+        </template>
+        <div class="textcls slds-m-top_small addagencycls" onclick={handleAddRecipientClick}>
+            + I need to add a recipient
+        </div>
+        <template if:true={showRecipientForm}>
+            <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC;">
+                <lightning-layout multiple-rows="true" class="parentlayoutcls">
+                    <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                        <span class="inputscls textcls">Recipient First Name</span>
+                        <lightning-input label="" value={newRecipient.firstName} data-field="firstName" onchange={handleRecipientFieldChange} placeholder="First Name"></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                        <span class="inputscls textcls">Recipient Last Name <span style="color:red;">*</span></span>
+                        <lightning-input label="" value={newRecipient.lastName} data-field="lastName" onchange={handleRecipientFieldChange} placeholder="Last Name" required></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                        <span class="inputscls textcls">Phone</span>
+                        <lightning-input label="" value={newRecipient.phone} data-field="phone" onchange={handleRecipientFieldChange} type="tel" placeholder="Phone"></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                        <span class="inputscls textcls">Email</span>
+                        <lightning-input label="" value={newRecipient.email} data-field="email" onchange={handleRecipientFieldChange} type="email" placeholder="Email"></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="12" large-device-size="12">
+                        <span class="inputscls textcls">Additional Information</span>
+                        <lightning-textarea label="" value={newRecipient.additionalInfo} data-field="additionalInfo" onchange={handleRecipientFieldChange} placeholder="Additional information"></lightning-textarea>
+                    </lightning-layout-item>
+                </lightning-layout>
+                <lightning-layout class="slds-m-top_medium">
+                    <lightning-layout-item size="12" padding="around-small">
+                        <div class="buttonscls">
+                            <div class="backbtn savebtnCls textcls" style="place-content: center;" onclick={handleCancelRecipient}>Cancel</div>
+                            <div class="nextbtncls savebtnCls textcls" style="place-content: center;" onclick={handleAddNewRecipientClick}>{recipientButtonLabel}</div>
+                        </div>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </div>
+        </template>
+    </div>
+</template>
+<!-- Fertility Attorneys -->
+<template if:true={showattorneySection}>
+    <div class="slds-m-top_medium">
+        <p class="textcls inputscls">You said you worked with the following fertility attorneys:</p>
+        <template if:true={attorneys.length}>
+            <template for:each={attorneys} for:item="attorney" for:index="index">
+                <div key={attorney.id} class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
+                    <span>{attorney.attorneyName}</span>
+                    <div>
+                        <lightning-button-icon icon-name="utility:edit" variant="bare" onclick={handleEditAttorney} data-index={index} class="slds-m-right_x-small" title="Edit Attorney"></lightning-button-icon>
+                        <lightning-button-icon icon-name="action:delete" variant="bare" onclick={handleDeleteAttorney} data-index={index} title="Delete Attorney" class="delete-icon"></lightning-button-icon>
+                    </div>
+                </div>
+            </template>
+        </template>
+        <template if:false={attorneys.length}>
+            <p class="textcls slds-m-top_small">No fertility attorneys added yet.</p>
+        </template>
+        <div class="textcls slds-m-top_small addagencycls" onclick={handleAddAttorneyClick}>
+            + I need to add a fertility attorney
+        </div>
+        <template if:true={showAttorneyForm}>
+            <div class="slds-box slds-theme_shade slds-m-top_medium" style="background-color: #E8E3DC;">
+                <lightning-layout multiple-rows="true" class="parentlayoutcls">
+                    <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                        <span class="inputscls textcls">Attorney Name <span style="color:red;">*</span></span>
+                        <lightning-input label="" value={newAttorney.attorneyName} data-field="attorneyName" onchange={handleAttorneyFieldChange} placeholder="Attorney Name" required></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                        <span class="inputscls textcls">Attorney Phone</span>
+                        <lightning-input label="" value={newAttorney.phone} data-field="phone" onchange={handleAttorneyFieldChange} type="tel" placeholder="Phone"></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                        <span class="inputscls textcls">Law Firm (if known)</span>
+                        <lightning-input label="" value={newAttorney.lawFirm} data-field="lawFirm" onchange={handleAttorneyFieldChange} placeholder="Law Firm"></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                        <span class="inputscls textcls">Website</span>
+                        <lightning-input label="" value={newAttorney.website} data-field="website" onchange={handleAttorneyFieldChange} type="url" placeholder="Website"></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="slds-p-top_small recipientinputcls1 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                        <span class="inputscls textcls">State they are located in</span>
+                        <lightning-input label="" value={newAttorney.cityState} data-field="cityState" onchange={handleAttorneyFieldChange} placeholder="City/State"></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="slds-p-top_small recipientinputcls2 inputparentCls" size="12" small-device-size="12" medium-device-size="6" large-device-size="6">
+                        <span class="inputscls textcls">Attorney Email</span>
+                        <lightning-input label="" value={newAttorney.email} data-field="email" onchange={handleAttorneyFieldChange} type="email" placeholder="Email"></lightning-input>
+                    </lightning-layout-item>
+                </lightning-layout>
+                <lightning-layout class="slds-m-top_medium">
+                    <lightning-layout-item size="12" padding="around-small">
+                        <div class="buttonscls">
+                            <div class="backbtn textcls" style="place-content: center;" onclick={handleCancelAttorney}>Cancel</div>
+                            <div class="nextbtncls textcls" style="place-content: center;" onclick={handleAddNewAttorneyClick}>{attorneyButtonLabel}</div>
+                        </div>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </div>
+        </template>
+    </div>
+</template>
+
 
             <!-- Recipient Details -->
-            <template if:true={showrecipientSection}>
+           <!-- <template if:true={showrecipientSection}>
                 <div class="slds-m-top_medium">
                     <p class="textcls inputscls">You said you worked with the following Recipient Details:</p>
                     <template if:true={recipients.length}>
@@ -421,7 +833,7 @@
                             <div key={recipient.id} class="section-border slds-grid slds-grid_align-spread slds-m-top_small slds-p-around_x-small">
                                 <span>{recipient.Name}</span>
                                 <div>
-                                    <template if:false={recipient.isFromPrimaryBanks}>
+                                    <template if:false={recipient.isFromPrimaryBanks} if:true={recipient.isEditable}>
                                         <lightning-button-icon icon-name="utility:edit" variant="bare" onclick={handleEditRecipient} data-index={index} class="slds-m-right_x-small" title="Edit Recipient"></lightning-button-icon>
                                     </template>
                                     <lightning-button-icon icon-name="action:delete" variant="bare" onclick={handleDeleteRecipient} data-index={index} title="Delete Recipient" class="delete-icon"></lightning-button-icon>
@@ -492,7 +904,7 @@
                         </div>
                     </template>
                 </div>
-            </template>
+            </template>-->
 
             <!-- Confirmation Checkbox -->
             <lightning-input type="checkbox" class="slds-m-top_medium" name="confirmation" checked={isConfirmed} onchange={handleConfirmationChange} label="I have reviewed and this information is accurate."></lightning-input>

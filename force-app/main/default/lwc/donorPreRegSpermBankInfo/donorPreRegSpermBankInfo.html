@@ -82,6 +82,7 @@
                         record-type-name = "Sperm Bank"
                         onvalueselected={handleValueSelectedOnAccount}
                         onlookupdata = {handleLookupData}
+                        oncancellookup = {handleCancelLookup}
                         class="recordPickerCls"
                         lookup-placeholder="Search your Sperm bank..."
                         is-disabled={noSpermBankChecked}
@@ -220,7 +221,7 @@
                                 data-clinicnumber={spermBank.clinicNumber} onchange={handleCoordinatorInputs}></lightning-input>
                     <!-- save coordinator button  -->
                     <div class="saveCoordinatorBtnCls slds-p-top_medium">
-                        <div class="savebtnCls textcls" data-clinicnumber={spermBank.clinicNumber} onclick={handleCoordinatorSave}>Add your Coordinator</div>
+                        <div class="savebtnCls textcls" data-clinicnumber={spermBank.clinicNumber} onclick={handleCoordinatorSave}>save</div>
                     </div>
 
                 </div>
