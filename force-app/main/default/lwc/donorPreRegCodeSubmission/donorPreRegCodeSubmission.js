@@ -10,6 +10,81 @@ export default class DonorPreRegCodeSubmission extends LightningElement {
     @api codeSumbissionUserInput;
     @api contactObj;
 
+    /************************************Embryo type starts************************************************ */
+    @track isEmbryoDonor = false;
+    @track connectionTypevalue = "Please select...";
+    @track embryoOptionsObj = {'connectionTypevalue' : 'Please select...', 'contributedEggOptionValue' : 'Please select...', 
+                                'contributedSpermOptionValue' : 'Please select...', 'embryoDonationProgramValue' : '', 'embryoFertilityAttorneyValue' : ''}
+
+    get coonectionTypeOptions() {
+        return [
+            { label: 'I contributed the egg(s)', value: 'I contributed the egg(s)' },
+            { label: 'I contributed the sperm', value: 'I contributed the sperm' },
+            { label: 'I was connected to the embryos by love but not genetics', value: 'I was connected to the embryos by love but not genetics' },
+        ];
+    }
+
+    get contributedEggOptions() {
+        return [
+            { label: 'Egg donor known', value: 'Egg donor known' },
+            { label: 'Egg donor unknown', value: 'Egg donor unknown' },
+            { label: 'Recipient Mother', value: 'Recipient Mother' },
+        ];
+    }
+
+     get contributedSpermOptions() {
+        return [
+            { label: 'Sperm donor known', value: 'Sperm donor known' },
+            { label: 'Anonymous Sperm donor', value: 'Anonymous Sperm donor' },
+            { label: 'Recipient father', value: 'Recipient father' },
+        ];
+    }
+
+     get donationProgramOptions() {
+        return [
+            { label: 'Yes', value: 'Yes' },
+            { label: 'No', value: 'No' },
+        ];
+    }
+
+    get donationProgramOptions() {
+        return [
+            { label: 'Yes', value: 'Yes' },
+            { label: 'No', value: 'No' },
+        ];
+    }
+
+    get fertilityAttorneyOptions() {
+        return [
+            { label: 'Yes', value: 'Yes' },
+            { label: 'No', value: 'No' },
+        ];
+    }
+
+
+
+    handleConnectionTypeChange(event){
+         this.embryoOptionsObj.connectionTypevalue = event.detail.value;
+    }
+
+    handleContributedEggOptionsChange(event){
+         this.embryoOptionsObj.contributedEggOptionValue = event.detail.value;
+    }
+
+    handleContributedSpermOptionsChange(event){
+         this.embryoOptionsObj.contributedSpermOptionValue = event.detail.value;
+    }
+
+    handleFertilityAttorneyChange(event){
+        this.embryoOptionsObj.embryoDonationProgramValue = event.detail.value;
+    }
+
+    handleDonationProgramChange(event){
+        this.embryoOptionsObj.embryoFertilityAttorneyValue = event.detail.value;
+    }
+
+    /***********************************Embryo type ends************************************************************/
+
 
     connectedCallback() {
         this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
@@ -17,6 +92,11 @@ export default class DonorPreRegCodeSubmission extends LightningElement {
             this.isSkipped = this.contactObj['isSkipped'];
         }
         this.contactObj['bypassStep'] = false;
+        this.isEmbryoDonor = this.contactObj['donorType'] == "embryo" ? true : false;
+        
+        if(this.contactObj['donorType'] == "embryo" && this.contactObj['embryoOptionsObj']){
+            this.embryoOptionsObj = this.contactObj['embryoOptionsObj'];
+        }
 
         const codeMap = {
             PMC: this.pmcCodes,
@@ -275,9 +355,16 @@ export default class DonorPreRegCodeSubmission extends LightningElement {
             this.contactObj['codes'] = null;
         }
         this.contactObj['isSkipped'] = this.isSkipped;
+        
+        if(this.contactObj['donorType'] == "embryo"){
+            this.contactObj['embryoOptionsObj'] = this.embryoOptionsObj
+        }
+
         if (!isError || this.isSkipped) {
             this.dispatchEvent(new CustomEvent('next', { detail: this.contactObj }));
         }
+
+        
     }
 
 

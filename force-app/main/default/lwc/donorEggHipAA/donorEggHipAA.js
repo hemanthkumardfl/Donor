@@ -1,28 +1,28 @@
 import { LightningElement, track, api } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import spermDonor from '@salesforce/apex/DonorPreRegHippaController2222.spermDonor';
-import updateDonorName from '@salesforce/apex/DonorPreRegHippaController2222.updateDonorName';
-import deleteSpermBank from '@salesforce/apex/DonorPreRegHippaController2222.deleteSpermBank';
-import addSpermBank from '@salesforce/apex/DonorPreRegHippaController2222.addSpermBank';
-import editSpermBank from '@salesforce/apex/DonorPreRegHippaController2222.editSpermBank';
-import deleteAgency from '@salesforce/apex/DonorPreRegHippaController2222.deleteAgency';
-import addAgency from '@salesforce/apex/DonorPreRegHippaController2222.addAgency';
-import editAgency from '@salesforce/apex/DonorPreRegHippaController2222.editAgency';
-import deleteClinic from '@salesforce/apex/DonorPreRegHippaController2222.deleteClinic';
-import addClinic from '@salesforce/apex/DonorPreRegHippaController2222.addClinic';
-import editClinic from '@salesforce/apex/DonorPreRegHippaController2222.editClinic';
-import deleteAttorney from '@salesforce/apex/DonorPreRegHippaController2222.deleteAttorney';
-import addAttorney from '@salesforce/apex/DonorPreRegHippaController2222.addAttorney';
-import editAttorney from '@salesforce/apex/DonorPreRegHippaController2222.editAttorney';
-import deleteRecipient from '@salesforce/apex/DonorPreRegHippaController2222.deleteRecipient';
-import addRecipient from '@salesforce/apex/DonorPreRegHippaController2222.addRecipient';
-import editRecipient from '@salesforce/apex/DonorPreRegHippaController2222.editRecipient';
+import spermDonor from '@salesforce/apex/HipAAUtilityClass.spermDonor';
+import updateDonorName from '@salesforce/apex/HipAAUtilityClass.updateDonorName';
+import deleteSpermBank from '@salesforce/apex/HipAAUtilityClass.deleteSpermBank';
+import addSpermBank from '@salesforce/apex/HipAAUtilityClass.addSpermBank';
+import editSpermBank from '@salesforce/apex/HipAAUtilityClass.editSpermBank';
+import deleteAgency from '@salesforce/apex/HipAAUtilityClass.deleteAgency';
+import addAgency from '@salesforce/apex/HipAAUtilityClass.addAgency';
+import editAgency from '@salesforce/apex/HipAAUtilityClass.editAgency';
+import deleteClinic from '@salesforce/apex/HipAAUtilityClass.deleteClinic';
+import addClinic from '@salesforce/apex/HipAAUtilityClass.addClinic';
+import editClinic from '@salesforce/apex/HipAAUtilityClass.editClinic';
+import deleteAttorney from '@salesforce/apex/HipAAUtilityClass.deleteAttorney';
+import addAttorney from '@salesforce/apex/HipAAUtilityClass.addAttorney';
+import editAttorney from '@salesforce/apex/HipAAUtilityClass.editAttorney';
+import deleteRecipient from '@salesforce/apex/HipAAUtilityClass.deleteRecipient';
+import addRecipient from '@salesforce/apex/HipAAUtilityClass.addRecipient';
+import editRecipient from '@salesforce/apex/HipAAUtilityClass.editRecipient';
 import fetchSpermBankRecord from '@salesforce/apex/UtilityClass.fetchSpermBankRecord';
-//import fetchAgencyRecord from '@salesforce/apex/DonorPreRegHippaController2222.fetchAgencyRecord';
-//import fetchClinicRecord from '@salesforce/apex/DonorPreRegHippaController2222.fetchClinicRecord';
-import addlookupSpermBank from '@salesforce/apex/DonorPreRegHippaController2222.addlookupSpermBank';
-//import addlookupAgency from '@salesforce/apex/DonorPreRegHippaController2222.addlookupAgency';
-import addlookupClinic from '@salesforce/apex/DonorPreRegHippaController2222.addlookupClinic';
+//import fetchAgencyRecord from '@salesforce/apex/HipAAUtilityClass.fetchAgencyRecord';
+//import fetchClinicRecord from '@salesforce/apex/HipAAUtilityClass.fetchClinicRecord';
+import addlookupSpermBank from '@salesforce/apex/HipAAUtilityClass.addlookupSpermBank';
+//import addlookupAgency from '@salesforce/apex/HipAAUtilityClass.addlookupAgency';
+import addlookupClinic from '@salesforce/apex/HipAAUtilityClass.addlookupClinic';
 import createCoordinator from '@salesforce/apex/UtilityClass.createCoordinator';
 
 export default class DonorPreRegHippa extends LightningElement {
@@ -159,7 +159,19 @@ export default class DonorPreRegHippa extends LightningElement {
 
     async connectedCallback() {
         try {
-            this.contactObj = JSON.parse(JSON.stringify(this.contactObj || {}));
+
+            this.contactObj = JSON.parse(JSON.stringify(this.contactObj))
+
+            let isEgg = (this.contactObj.donorType == 'egg');
+            let isSperm = (this.contactObj.donorType == 'sperm');
+            let spermBankList = [];
+            let eggAgencyList = [];
+            let clinicList = [];
+            let attorneyList = [];
+            let recipientList = [];
+
+
+            
             this.donorId = this.contactObj.donorId || '003QL00000wvXvbYAE';
             this.showagencySection = this.donorType === 'egg';
             this.showSpermBankSection = this.donorType !== 'egg';

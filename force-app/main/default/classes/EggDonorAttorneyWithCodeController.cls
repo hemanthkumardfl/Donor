@@ -67,6 +67,7 @@ public without sharing class EggDonorAttorneyWithCodeController {
                         att.Email = accountMap.get(pmcAgencyIdMap.get(pmc)).Email;
                         att.LawFirm = accountMap.get(pmcAgencyIdMap.get(pmc)).Account.Name;
                         att.State = accountMap.get(pmcAgencyIdMap.get(pmc)).Account.d21_City_State_Of_Clinic__c;
+                        att.PMC = pmc;
                         agencies.add(att);
                     }
                 }
@@ -235,6 +236,7 @@ public without sharing class EggDonorAttorneyWithCodeController {
         @AuraEnabled public string attorneyId;
         @AuraEnabled public string LawFirm;
         @AuraEnabled public string State;
+        @AuraEnabled public string PMC;
     }
     
     public class AgencyDetails{

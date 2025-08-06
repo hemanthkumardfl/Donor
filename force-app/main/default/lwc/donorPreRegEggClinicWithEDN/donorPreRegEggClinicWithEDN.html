@@ -107,23 +107,32 @@
                     class="slds-p-left_small slds-p-right_small slds-p-top_small clinicinputcls">
                     <span class="textcls inputscls inputfontcls">Coordinator/Nurse Name</span>
                 </lightning-layout-item>
-                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7">
-                    <lightning-layout multiple-rows horizontal-align="spread">
-                        <lightning-layout-item size="11">
-                            <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact"
-                                object-label="Contact" object-api-name="Contact" field-api-name="Name"
-                                parent-record-id={outcome.clinicId} parent-field-api-name="AccountId"
-                                onlookupdata={handleAddIcon} selected-record-id={outcome.CoordinatorName} record-type-name="coordinator"
-                                data-index={outcome.index} selected-record-id-change={outcome.CoordinatorName}
-                                other-field-api-name="Phone" onvalueselected={handleValueSelectedOnAccount}>
-                            </c-d21_-dynamic-custom-lookup>
-                        </lightning-layout-item>
-                        <lightning-layout-item size="1" class="slds-p-left_medium slds-p-top_medium">
-                            <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add"
-                                disabled={outcome.disableAddIcon} onclick={handleOpenCreateCoordinator}
-                                style="cursor:pointer;position:relative;bottom:0.7em" data-index={index} size="medium"></lightning-button-icon>
-                        </lightning-layout-item>
-                    </lightning-layout>
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7"
+                    class="slds-p-left_small slds-p-right_small" style="display:flex;justify-content:space-between">
+
+                    <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact" style="width:100%"
+                        object-label="Contact" object-api-name="Contact" field-api-name="Name"
+                        parent-record-id={outcome.clinicId} parent-field-api-name="AccountId"
+                        onlookupdata={handleAddIcon} selected-record-id={outcome.CoordinatorName}
+                        record-type-name="coordinator" data-index={outcome.index}
+                        selected-record-id-change={outcome.CoordinatorName} other-field-api-name="Phone"
+                        onvalueselected={handleValueSelectedOnAccount}>
+                    </c-d21_-dynamic-custom-lookup>
+
+                    <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add"
+                        class="slds-p-left_medium slds-p-top_large" disabled={outcome.disableAddIcon}
+                        onclick={handleOpenCreateCoordinator} style="cursor:pointer;position:relative;bottom:0.7em"
+                        data-index={index} size="medium"></lightning-button-icon>
+
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"
+                    if:false={outcome.disableAddIcon} padding="around-small">
+                </lightning-layout-item>
+                <lightning-layout-item size="12" small-device-size="12" medium-device-size="7" large-device-size="7"
+                    if:false={outcome.disableAddIcon}>
+                    <p class="error-message">No Clinics Are Found With Your Search You Can Click On Add Icon Button
+                        To Add Clinic Manually.</p>
                 </lightning-layout-item>
 
                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="4" large-device-size="4"

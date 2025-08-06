@@ -42,6 +42,7 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
         headingIndex: 0,
         agencyId: '',
         isDisabled: false,
+        isContactDisabled: false,
         disableAddIcon: true,
         disableContactAddIcon: true,
         Coordinator: { lastName: '', firstName: '', phone: '', parentId: '', coordinatorId: '' },
@@ -57,7 +58,7 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
         this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
         this.totalDonationsCount = this.contactObj.donationBasics.egg.liveBirths;
         if (this.contactObj && this.contactObj['agenciesWithoutCode'] && this.contactObj['agenciesWithoutCode'].length > 0) {
-            console.log('Connected Call >>> '+JSON.stringify(this.contactObj['agenciesWithoutCode']));
+            console.log('Connected Call >>> ' + JSON.stringify(this.contactObj['agenciesWithoutCode']));
             this.donationOutcomes = this.contactObj['agenciesWithoutCode'].map(outcome => ({
                 ...outcome,
                 cycles: outcome.cycles.map(cycle => ({
@@ -180,29 +181,27 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
         }
     }
     /**********************************************************************************************************************/
-    handleCancelLookup(event){
-        try{
+    handleCancelLookup(event) {
+        try {
             let index = parseInt(event.target.dataset.index);
             this.donationOutcomes = this.donationOutcomes.map((outcome, outcomeIndex) => {
-                if(outcomeIndex == index){
-                    return{
-                        ... outcome,
+                if (outcomeIndex == index) {
+                    return {
+                        ...outcome,
                         AgencyName: '',
                         Website: '',
                         Phone: '',
-                        Email: ''
+                        CoordinatorName: '',
+                        isDisabled: false
                     }
                 }
                 return outcome;
             })
         }
-        catch(e){
-            console.log(e.stack);
-            console.log(e.message);
+        catch (e) {
+            console.error(e.stack);
         }
-
     }
-    /**********************************************************************************************************************/
 
 
     async handleValueSelectedOnAccount(event) {
@@ -418,55 +417,45 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
 
     handleNoAgencyChange(event) {
         this.noAgencyChecked = event.target.checked;
+        const cycleCheckboxList = this.template.querySelectorAll('.cycleCheckboxcls');
 
-        if (event.target.checked) {
-            let cycleCheckboxclsList = this.template.querySelectorAll('.cycleCheckboxcls');
-            if (cycleCheckboxclsList.length > 0) {
-                let anyChecked = false;
-                cycleCheckboxclsList.forEach(cycle => {
-                    if (cycle.checked) {
-                        anyChecked = true;
-                    }
-                });
-                if (anyChecked == false) {
-                    cycleCheckboxclsList.forEach(cycle => {
-                        cycle.disabled = true
-                    });
-                    this.showInformation = false;
-                }
-                else {
-                    this.template.querySelector('.checkboxPrimaryCls').checked = false;
-                    this.noAgencyChecked = false;
-                    this.showInformation = true;
-                }
-
-            }
+        for (let ele of this.donationOutcomes) {
+            ele.isDisabled = this.noAgencyChecked;
+            ele.isContactDisabled = this.noAgencyChecked;
         }
-        else {
-            let cycleCheckboxclsList = this.template.querySelectorAll('.cycleCheckboxcls');
-            if (cycleCheckboxclsList.length > 0) {
-                cycleCheckboxclsList.forEach(cycle => {
-                    cycle.disabled = false
-                });
+
+        if (!cycleCheckboxList.length) return;
+
+        if (this.noAgencyChecked) {
+            const anyChecked = [...cycleCheckboxList].some(cycle => cycle.checked);
+
+            if (!anyChecked) {
+                cycleCheckboxList.forEach(cycle => cycle.disabled = true);
+                this.showInformation = false;
+            } else {
+                this.template.querySelector('.checkboxPrimaryCls').checked = false;
+                this.noAgencyChecked = false;
+                this.showInformation = true;
             }
-            if (this.donationOutcomes.length == 1) {
-                const cyclesList = Array(this.totalDonationsCount)
-                    .fill()
-                    .map((_, index) => ({
-                        index: index,
+        } else {
+            cycleCheckboxList.forEach(cycle => cycle.disabled = false);
+
+            if (this.donationOutcomes.length === 1) {
+                this.donationOutcomes = this.donationOutcomes.map(outcome => ({
+                    ...outcome,
+                    cycles: Array.from({ length: this.totalDonationsCount }, (_, index) => ({
+                        index,
                         cycleId: `${index + 1}`,
                         cycleName: `Cycle ${index + 1}`,
                         disabled: false,
                         checked: false
-                    }));
-                this.donationOutcomes = this.donationOutcomes.map(outcome => ({
-                    ...outcome,
-                    cycles: cyclesList
+                    }))
                 }));
             }
             this.clsNamestring = 'textcls addagencycls inputscls';
         }
     }
+
 
     handleInputChange(event) {
         this.donationOutcomes = this.donationOutcomes.map(outcome => ({
@@ -522,17 +511,7 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
     }
 
     handleEggAgencyOrBankWithoutEDNNext() {
-        // let cycleCheckboxclsList = this.template.querySelectorAll('.cycleCheckboxcls');
-        // if(cycleCheckboxclsList.length > 0){
-        //     let isValidated = true;
-        //     cycleCheckboxclsList.forEach(cycle => {
-        //         if ((cycle.checked == false) && (cycle.disabled == false)) {
-        //             isValidated = false;
-        //         }
-        //     })
-        //     this.showInformation = !isValidated;
-        // }
-        // if(!this.showInformation){
+
         if (this.template.querySelector('.checkboxPrimaryCls') && this.template.querySelector('.checkboxPrimaryCls').checked) {
             console.log('If Condition')
             this.donationOutcomes[0]['noAgencyChecked'] = true;
@@ -540,15 +519,9 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
             this.dispatchEvent(new CustomEvent('next', { detail: this.contactObj }));
         }
         else {
-            console.log('Else Condition')
             this.donationOutcomes[0]['noAgencyChecked'] = false;
             const fieldsMap = new Map();
             fieldsMap.set('AgencyName', 'Please enter agency name');
-            fieldsMap.set('Website', 'Please enter website');
-            fieldsMap.set('Phone', 'Please enter phone number');
-            fieldsMap.set('Email', 'Please enter email');
-            fieldsMap.set('CoordinatorName', 'Please enter coordinator name');
-
             let isValid = true;
             this.template.querySelectorAll('lightning-input').forEach(input => {
                 if (fieldsMap.has(input.name) && input.value === '' && input.name == 'AgencyName') {
@@ -562,31 +535,20 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
             });
 
             if (isValid) {
-                for (let i in this.totalSelectedCycles) {
-                    this.totalSelectedCycles[i] = parseInt(this.totalSelectedCycles[i]);
-                }
+                this.unselectedCycles = [];
                 for (let i = 1; i <= this.totalDonationsCount; i++) {
-                    if (this.totalSelectedCycles.includes(i)) {
-                        continue;
-                    }
-
-                    let alreadyExists = false;
-                    for (let j = 0; j < this.unselectedCycles.length; j++) {
-                        if (this.unselectedCycles[j].cycledId === i) {
-                            alreadyExists = true;
-                            break;
+                    if (!this.totalSelectedCycles.includes(i)) {
+                        let alreadyExists = this.unselectedCycles.some(cycle => cycle.cycledId === i);
+                        if (!alreadyExists) {
+                            let obj = {};
+                            obj['label'] = 'Cycle ' + i;
+                            obj['checked'] = false;
+                            obj['disabled'] = false;
+                            obj['confirmedNo'] = false;
+                            obj['cycledId'] = i;
+                            obj['selectedYes'] = false
+                            this.unselectedCycles.push(obj);
                         }
-                    }
-
-                    if (!alreadyExists) {
-                        let obj = {};
-                        obj['label'] = 'Cycle ' + i;
-                        obj['checked'] = false;
-                        obj['disabled'] = false;
-                        obj['confirmedNo'] = false;
-                        obj['cycledId'] = i;
-                        obj['selectedYes'] = false
-                        this.unselectedCycles.push(obj);
                     }
                 }
 
@@ -617,17 +579,13 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
                     }
                 }
                 if (navigateToNextscreen) {
-                    console.log('this.donationOutcomes >>> ' + JSON.stringify(this.donationOutcomes));
                     this.donationOutcomes[0]['totalSelectedCycles'] = this.totalSelectedCycles;
                     this.donationOutcomes[0]['unselectedCycles'] = this.unselectedCycles;
                     this.contactObj['agenciesWithoutCode'] = this.donationOutcomes;
-                    console.clear();
-                    console.log('this.contactObj >>> ' + JSON.stringify(this.contactObj));
                     this.dispatchEvent(new CustomEvent('next', { detail: this.contactObj }));
                 }
             }
         }
-        //  }
     }
 
     handleYesClick(event) {
@@ -721,11 +679,6 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
                     resultArray.push('confirmedNo');
                 }
             })
-            //alert('>');
-            console.log('>')
-            console.log(JSON.stringify(this.unselectedCycles))
-            console.log(JSON.stringify(this.totalSelectedCycles))
-            console.log('>')
             this.showMissedCycles = resultArray.length > 0 ? true : false;
         }
         else {
@@ -747,15 +700,10 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
             if (cycle['cycledId'] == cycleId) {
                 obj['selectedYes'] = false;
             }
-            // else{
-            //     obj['confirmedNo'] = false;
-            // }
             return obj;
         });
         this.notIntrestedForAgencyCyclesList = this.unselectedCycles.filter(cycle => cycle.selectedYes == true);
-        console.log(JSON.stringify(this.unselectedCycles));
-        console.log('notIntrestedForAgencyCyclesList Yes >>> ' + JSON.stringify(this.notIntrestedForAgencyCyclesList))
-        // this.notIntrestedForAgencyCyclesList = [];
+        this.notIntrestedForAgencyCyclesList = [];
         this.showMissedPopupBackButton = true;
     }
 
@@ -772,20 +720,13 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
                 if (cycle['cycledId'] == cycleId) {
                     obj['selectedYes'] = true;
                 }
-                // else{
-                //     obj['confirmedNo'] = true;
-                // }
                 return obj;
             });
             this.notIntrestedForAgencyCyclesList = this.unselectedCycles.filter(cycle => cycle.selectedYes == true);
-            console.log(JSON.stringify(this.unselectedCycles));
-            console.log('notIntrestedForAgencyCyclesList No >>> ' + JSON.stringify(this.notIntrestedForAgencyCyclesList))
             this.showMissedPopupBackButton = false;
         }
         catch (e) {
-            console.log('error')
-            console.log(e.message)
-            confirm.log(e.stack)
+            console.error(`handleMissedCycleNoClick Error: ${e?.name || 'Error'} - ${e?.message} | Stack: ${e?.stack}`);
         }
 
     }
@@ -795,8 +736,6 @@ export default class DonorPreRegEggDonorAgency extends LightningElement {
         this.unselectedCycles = this.unselectedCycles.filter(cycle =>
             !this.unselectedCyclesFilterList.includes(cycle.label)
         );
-
-
     }
 
     handleNextFromMissedPopup() {

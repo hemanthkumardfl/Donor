@@ -50,7 +50,7 @@ export default class DonorPreRegEggClinic extends LightningElement {
     };
 
 
-    get showAddAnother(){
+    get showAddAnother() {
         return (this.donationOutcomes.length < this.totalDonationsCount);
     }
 
@@ -164,27 +164,27 @@ export default class DonorPreRegEggClinic extends LightningElement {
         }
     }
 
-    handleLookupData(event){
-        try{
+    handleLookupData(event) {
+        try {
             console.log(event.detail);
             let index = event.target.dataset.index;
             let datatype = event.target.dataset.type;
             if (datatype == 'Account') {
                 this.donationOutcomes[index]['disableAddIcon'] = event.detail;
-                
+
             }
             else if (datatype == 'Contact') {
                 this.donationOutcomes[index]['disableContactAddIcon'] = event.detail;
             }
         }
-        catch(e){
+        catch (e) {
             console.log(e.stack);
             console.log(e.message);
         }
     }
 
-    handleOpenCreateCoordinator(event){
-         try {
+    handleOpenCreateCoordinator(event) {
+        try {
             let index = parseInt(event.target.dataset.index);
             let datatype = event.target.dataset.type;
             if (datatype == 'Contact') {
@@ -243,25 +243,25 @@ export default class DonorPreRegEggClinic extends LightningElement {
 
     /***************************************************************************************************************************/
 
-    handleCancelLookup(event){
-         try{
+    handleCancelLookup(event) {
+        try {
             let index = parseInt(event.target.dataset.index);
             this.donationOutcomes = this.donationOutcomes.map((outcome, outcomeIndex) => {
-                if(outcomeIndex == index){
-                    return{
-                        ... outcome,
+                if (outcomeIndex == index) {
+                    return {
+                        ...outcome,
                         ClinicName: '',
                         Website: '',
                         Phone: '',
-                        Email: '',
-                        DoctorName:'',
-                        CityStateOfClinic:''
+                        DoctorName: '',
+                        CityStateOfClinic: '',
+                        isDisabled: false
                     }
                 }
                 return outcome;
             })
         }
-        catch(e){
+        catch (e) {
             console.log(e.stack);
             console.log(e.message);
         }
@@ -277,8 +277,8 @@ export default class DonorPreRegEggClinic extends LightningElement {
             }))
         }));
         console.log('this.donationOutcomes after >>> ' + JSON.stringify(this.donationOutcomes));
-        console.log('this.donationOutcomes.length >>> '+this.donationOutcomes.length);
-        console.log('this.totalDonationsCount >>> '+this.totalDonationsCount);
+        console.log('this.donationOutcomes.length >>> ' + this.donationOutcomes.length);
+        console.log('this.totalDonationsCount >>> ' + this.totalDonationsCount);
         if (this.donationOutcomes.length < this.totalDonationsCount) {
             this.showNumberedHeadings = true;
             const newCyclesList = Array(this.totalDonationsCount)

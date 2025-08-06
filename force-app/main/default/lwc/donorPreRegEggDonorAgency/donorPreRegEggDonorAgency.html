@@ -115,25 +115,26 @@
                 </div>
             </lightning-layout-item>
 
-            <lightning-layout-item size="12" key={outcome.index} padding="around-small" class="inputParentCls">
-                <lightning-layout multiple-rows horizontal-align="spread">
-                    <lightning-layout-item size="11">
-                        <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact"
-                            object-label="Account" object-api-name="Account" field-api-name="Name"
-                            other-field-api-name="Phone" selected-record-id={outcome.agencyId}
-                            selected-record-id-change={outcome.agencyId} record-type-name="Agency"
-                            onvalueselected={handleValueSelectedOnAccount} onlookupdata={handleLookupData}
-                            oncancellookup = {handleCancelLookup}
-                            data-type="Account" data-index={outcome.index} class="recordPickerCls"
-                            lookup-placeholder="Search your Egg agency...">
-                        </c-d21_-dynamic-custom-lookup>
-                    </lightning-layout-item>
-                    <lightning-layout-item size="1" class="slds-p-left_medium slds-p-top_medium">
-                        <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add"
-                            disabled={outcome.disableAddIcon} onclick={handleOpenCreateCoordinator}
-                            style="cursor:pointer" data-index={index} data-type="Account" size="medium"></lightning-button-icon>
-                    </lightning-layout-item>
-                </lightning-layout>
+            <lightning-layout-item size="12" key={outcome.index} padding="around-small"
+                style="display:flex;justify-content:space-between;">
+                <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact" object-label="Account"
+                    object-api-name="Account" field-api-name="Name" other-field-api-name="Phone"
+                    selected-record-id={outcome.agencyId} selected-record-id-change={outcome.agencyId}
+                    record-type-name="Agency" onvalueselected={handleValueSelectedOnAccount}
+                    is-disabled={outcome.isDisabled} onlookupdata={handleLookupData} oncancellookup={handleCancelLookup}
+                    data-type="Account" data-index={outcome.index} class="recordPickerCls"
+                    lookup-placeholder="Search your Egg agency..." style="width:100%">
+                </c-d21_-dynamic-custom-lookup>
+                <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add"
+                    class="slds-p-top_medium slds-p-left_medium" disabled={outcome.disableAddIcon}
+                    onclick={handleOpenCreateCoordinator} style="cursor:pointer" data-index={index} data-type="Account"
+                    size="medium">
+                </lightning-button-icon>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" key={outcome.index} if:false={outcome.disableAddIcon} class="slds-p-left_medium">
+                <p class="error-message">No Agency/Egg Bank Are Found With Your Search You Can Click On Add Icon Button
+                    To Add Agency/Egg Bank Manually.</p>
             </lightning-layout-item>
 
 
@@ -169,26 +170,30 @@
                     disabled={outcome.isDisabled}>
                 </lightning-input>
             </lightning-layout-item> -->
-
-            <lightning-layout-item size="12" padding="around-small" key={outcome.index} class="inputParentCls">
+            <lightning-layout-item size="12" key={outcome.index} class="slds-p-left_small slds-p-top_small">
                 <span class="textcls inputscls">Coordinator Name</span>
-                <lightning-layout multiple-rows horizontal-align="spread">
-                    <lightning-layout-item size="11">
-                        <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact"
-                            object-label="Contact" object-api-name="Contact" field-api-name="Name"
-                            parent-record-id={outcome.agencyId} parent-field-api-name="AccountId"
-                            onlookupdata={handleLookupData} selected-record-id={outcome.CoordinatorName}
-                            data-type="Contact" data-index={outcome.index} record-type-name="coordinator"
-                            selected-record-id-change={outcome.CoordinatorName} other-field-api-name="Phone"
-                            onvalueselected={handleValueSelectedOnAccount}>
-                        </c-d21_-dynamic-custom-lookup>
-                    </lightning-layout-item>
-                    <lightning-layout-item size="1" class="slds-p-left_medium slds-p-top_medium">
-                        <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add"
-                            disabled={outcome.disableContactAddIcon} onclick={handleOpenCreateCoordinator}
-                            style="cursor:pointer;position:relative;bottom:0.7em" data-index={index} data-type="Contact" size="medium"></lightning-button-icon>
-                    </lightning-layout-item>
-                </lightning-layout>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" key={outcome.index}
+                class="slds-p-left_small slds-p-right_small slds-p-bottom_small"
+                style="display:flex;justify-content:space-between;">
+                <c-d21_-dynamic-custom-lookup label="" selected-icon-name="standard:contact" object-label="Contact"
+                    style="width:100%" object-api-name="Contact" field-api-name="Name"
+                    parent-record-id={outcome.agencyId} parent-field-api-name="AccountId"
+                    onlookupdata={handleLookupData} selected-record-id={outcome.CoordinatorName} data-type="Contact"
+                    data-index={outcome.index} record-type-name="coordinator" is-disabled={outcome.isContactDisabled}
+                    selected-record-id-change={outcome.CoordinatorName} other-field-api-name="Phone"
+                    onvalueselected={handleValueSelectedOnAccount}>
+                </c-d21_-dynamic-custom-lookup>
+
+                <lightning-button-icon icon-name="utility:add" alternative-text="Add!" title="Add"
+                    class="slds-p-top_large slds-p-left_medium" disabled={outcome.disableContactAddIcon}
+                    onclick={handleOpenCreateCoordinator} style="cursor:pointer;position:relative;bottom:0.7em"
+                    data-index={index} data-type="Contact" size="medium"></lightning-button-icon>
+
+            </lightning-layout-item>
+
+            <lightning-layout-item size="12" key={outcome.index} if:false={outcome.disableContactAddIcon} class="slds-p-left_medium">
+                <p class="error-message">No Coordinators Found. Click the Add Icon to Add a Coordinator Manually.</p>
             </lightning-layout-item>
 
             <lightning-layout-item size="12" key={outcome.index} if:true={outcome.openCoordinator}

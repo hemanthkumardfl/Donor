@@ -415,6 +415,14 @@ lightning-record-picker label {
     --slds-c-icon-color-foreground: #c61212; 
 	--slds-c-icon-color-background: white
 }
+
+.inputWidth{
+	width : 20%;
+}
+
+.error-message {
+    color: red;
+}
 /* for safari browser starts here*/
 @supports (-webkit-touch-callout: none) {
 	 

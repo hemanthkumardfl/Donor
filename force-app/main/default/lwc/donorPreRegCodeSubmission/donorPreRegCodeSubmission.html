@@ -12,7 +12,55 @@
             just check the box that says "I don't have any of these codes" to continue.
         </p>
 
+
         <div class="slds-m-bottom_medium slds-p-horizontal_small paddingcls">
+            <template if:true={isEmbryoDonor}>
+                <!-- <span>Which best describes your connection to the embryo donation</span> -->
+                <lightning-combobox
+                    label="Which best describes your connection to the embryo donation"
+                    class="slds-p-bottom_small"
+                    value={embryoOptionsObj.connectionTypevalue}
+                    options={coonectionTypeOptions}
+                    onchange={handleConnectionTypeChange} >
+                </lightning-combobox>
+
+                <lightning-combobox
+                    label="Who contributed the eggs to make your embryos?"
+                    class="slds-p-bottom_small"
+                    value={embryoOptionsObj.contributedEggOptionValue}
+                    options={contributedEggOptions}
+                    onchange={handleContributedEggOptionsChange} >
+                </lightning-combobox>
+
+                <lightning-combobox
+                    label="Who contributed the sperm to make your embryos?"
+                    class="slds-p-bottom_small"
+                    value={embryoOptionsObj.contributedSpermOptionValue}
+                    options={contributedSpermOptions}
+                    onchange={handleContributedSpermOptionsChange} >
+                </lightning-combobox>
+
+                <lightning-radio-group name="radioDonationProgramGroup"
+                    label="Did you work with an embryo donation program to help facilitate this donation?"
+                    class="slds-p-bottom_small"
+                    options={donationProgramOptions}
+                    value={embryoDonationProgramValue}
+                    onchange={handleDonationProgramChange}
+                    type="radio">
+                </lightning-radio-group>
+
+                <lightning-radio-group name="radioFertilityGroup"
+                    label=" Did you work with a fertility attorney to help facilitate this donation?"
+                    class="slds-p-bottom_small"
+                    options={fertilityAttorneyOptions}
+                    value={embryoFertilityAttorneyValue}
+                    onchange={handleFertilityAttorneyChange}
+                    type="radio">
+                </lightning-radio-group>
+
+            </template>
+
+
             <div class="slds-m-bottom_small fontSizeClass">Enter codes that start with PMC:</div>
 
             <!-- PMC Code Input Group -->

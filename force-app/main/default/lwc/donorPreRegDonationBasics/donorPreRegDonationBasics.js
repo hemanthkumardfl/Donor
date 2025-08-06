@@ -20,6 +20,15 @@ export default class DonorPreRegDonationBasics extends LightningElement {
     @track nothaveIntendedParentDetailsForSperm = false;
     @track showError = false;
     @track showFinalConfirmation = false;
+    @track firstQuestionPlaceHolder = '';
+    @track secondQuestionPlaceHolder = '';
+    @track thirdQuestionPlaceHolder = '';
+    @track firstQuestion = 'For your donations, did you ever work with an agency or egg bank at any point?';
+    @track secondQuestion = 'For your donations, did you ever work with a fertility attorney at any point?';
+    @track thirdQuestion = 'Do you have the contact information (phone or email) for any of the Intended Parents that you worked with? (for independent or known matches)';
+    @track forthQuestion = 'For your upcoming donation, are you planning to work with an agency or egg bank?';
+    @track fifthQuestion = 'For your upcoming donation, have you been assigned a fertility attorney?';
+    @track sixthQuestion = 'For your upcoming donation, have you been provided the contact information (name, phone, or email) for any of the Intended Parents you plan to work with?';
 
     get isEggDonation() {
         return this.donorType === 'egg';
@@ -37,6 +46,16 @@ export default class DonorPreRegDonationBasics extends LightningElement {
                 this.liveBirths = this.contactObj.donationBasics.egg.liveBirths;
             } else {
                 this.liveBirths = 0;
+            }
+            if (this.liveBirths == 0 && this.contactObj.donationBasics.egg.currentOrFutureDonation) {
+                this.firstQuestionPlaceHolder = this.forthQuestion;
+                this.secondQuestionPlaceHolder = this.fifthQuestion;
+                this.thirdQuestionPlaceHolder = this.sixthQuestion;
+            }
+            else {
+                this.firstQuestionPlaceHolder = this.firstQuestion;
+                this.secondQuestionPlaceHolder = this.secondQuestion;
+                this.thirdQuestionPlaceHolder = this.thirdQuestion;
             }
             this.currentOrFutureDonationYes = this.contactObj.donationBasics.egg.currentOrFutureDonation;
             this.currentOrFutureDonationNo = !this.contactObj.donationBasics.egg.currentOrFutureDonation;
@@ -57,6 +76,9 @@ export default class DonorPreRegDonationBasics extends LightningElement {
         }
         else {
             this.contactObj['donationBasics'] = { egg: {}, sperm: {} };
+            this.firstQuestionPlaceHolder = this.firstQuestion;
+            this.secondQuestionPlaceHolder = this.secondQuestion;
+            this.thirdQuestionPlaceHolder = this.thirdQuestion;
         }
     }
 
@@ -71,16 +93,34 @@ export default class DonorPreRegDonationBasics extends LightningElement {
 
     handleInputChange(event) {
         this.liveBirths = parseInt(event.target.value);
+        const useFutureQuestions =
+            this.contactObj.donationBasics.egg.currentOrFutureDonation &&
+            this.liveBirths === 0;
+
+        [this.firstQuestionPlaceHolder, this.secondQuestionPlaceHolder, this.thirdQuestionPlaceHolder] =
+            useFutureQuestions
+                ? [this.forthQuestion, this.fifthQuestion, this.sixthQuestion]
+                : [this.firstQuestion, this.secondQuestion, this.thirdQuestion];
     }
 
-    handleFinalConfirm(){
+
+    handleFinalConfirm() {
         location.reload();
     }
 
     handleRadioChange(event) {
-        let { name, label } = event.target;
-        this.contactObj.donationBasics[this.donorType][name] = (label == 'Yes');
+        const { name, label } = event.target;
+        this.contactObj.donationBasics[this.donorType][name] = (label === 'Yes');
+
+        if (name === 'currentOrFutureDonation' && this.liveBirths === 0) {
+            const useFutureQuestions = (label === 'Yes');
+            [this.firstQuestionPlaceHolder, this.secondQuestionPlaceHolder, this.thirdQuestionPlaceHolder] =
+                useFutureQuestions
+                    ? [this.forthQuestion, this.fifthQuestion, this.sixthQuestion]
+                    : [this.firstQuestion, this.secondQuestion, this.thirdQuestion];
+        }
     }
+
 
     handleDonationBasicsBack() {
         this.contactObj = JSON.parse(JSON.stringify(this.contactObj));
@@ -108,7 +148,7 @@ export default class DonorPreRegDonationBasics extends LightningElement {
                 if (!allEmpty) {
                     this.dispatchEvent(new CustomEvent('next', { detail: this.contactObj }));
                 }
-                else{
+                else {
                     this.showFinalConfirmation = true;
                 }
             }

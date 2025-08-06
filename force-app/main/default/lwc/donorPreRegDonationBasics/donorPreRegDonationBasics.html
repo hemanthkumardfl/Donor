@@ -3,7 +3,7 @@
 
     <div class="modalBackdrop" if:true={showFinalConfirmation}>
       <div class="modalContainer slds-p-around_small">
-        <span class="headingcls slds-p-top_xx-small">Thank you for your interest in Donor 21. Please return to our site
+        <span class="slds-p-top_xx-small textcls">Thank you for your interest in Donor 21. Please return to our site
           and complete your registration once you are in cycle or are planning to complete a future donation. Thank you
           again for your interest in helping others to grow their family.
         </span>
@@ -49,8 +49,7 @@
           </div>
         </div>
 
-        <span class="textcls slds-p-top_medium">For your donations, did you ever work with an agency or egg bank at any
-          point? </span>
+        <span class="textcls slds-p-top_medium">{firstQuestionPlaceHolder} </span>
         <div class="radioinputs slds-p-bottom_large slds-p-top_small">
           <div>
             <lightning-input type="radio" label="Yes" name="workWithAnyAgencyOrEggBank" onchange={handleRadioChange}
@@ -62,8 +61,7 @@
           </div>
         </div>
 
-        <span class="textcls slds-p-top_medium">For your donations, did you ever work with a fertility attorney at any
-          point? </span>
+        <span class="textcls slds-p-top_medium">{secondQuestionPlaceHolder} </span>
         <div class="radioinputs slds-p-bottom_large slds-p-top_small">
           <div>
             <lightning-input type="radio" label="Yes" name="workWithAttorney" onchange={handleRadioChange}
@@ -75,8 +73,7 @@
           </div>
         </div>
 
-        <span class="textcls slds-p-top_medium">Do you have the contact information (phone or email) for any of the
-          Intended Parents that you worked with? (for independent or known matches)
+        <span class="textcls slds-p-top_medium">{thirdQuestionPlaceHolder}
         </span>
         <div class="radioinputs slds-p-bottom_large slds-p-top_small">
           <div>

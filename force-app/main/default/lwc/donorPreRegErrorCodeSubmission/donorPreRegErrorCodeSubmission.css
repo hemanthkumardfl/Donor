@@ -78,6 +78,7 @@ p {
 }
 
 .section-box {
+    cursor : pointer;
     /* background-color: rgb(242, 242, 242); */
 }
 
